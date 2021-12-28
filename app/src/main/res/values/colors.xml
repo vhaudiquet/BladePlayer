@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bladeLogoBack">#2C3D4F</color>
+    <color name="bladeGrey">#616161</color>
+    <color name="bladeGreyDark">#212121</color>
+    <color name="bladeGreyLight">#bdbdbd</color>
+    <color name="bladeGreyLighter">#e0e0e0</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="textGrey">#424242</color>
+</resources>

@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.BladePlayer" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary color -->
+        <item name="colorPrimary">@color/bladeGrey</item>
+        <item name="colorPrimaryVariant">@color/bladeGreyLighter</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary color -->
+        <item name="colorSecondary">@color/bladeGreyLighter</item>
+        <item name="colorSecondaryVariant">@color/bladeGreyLight</item>
+        <item name="colorOnSecondary">@color/textGrey</item>
+
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <!-- Window background : color shown during loading -->
+        <item name="android:windowBackground">@color/bladeGreyLighter</item>
+    </style>
+
+    <style name="Theme.BladePlayer.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.BladePlayer.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.BladePlayer.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Blade Player</string>
+
+    <string name="navigation_drawer_open">Ouvrir le menu</string>
+    <string name="navigation_drawer_close">Fermer le menu</string>
+
+    <string name="action_settings">Paramètres</string>
+
+    <string name="library">Bibliothèque</string>
+    <string name="artists">Artistes</string>
+    <string name="albums">Albums</string>
+    <string name="songs">Titres</string>
+    <string name="playlists">Playlists</string>
+</resources>
