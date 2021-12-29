@@ -9,8 +9,8 @@ android {
         applicationId "v.blade"
         minSdk 21
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 25
+        versionName "2.0-alpha1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,6 +42,7 @@ dependencies {
 
     /* Spotify : librespot */
     implementation 'xyz.gianlu.librespot:librespot-java:1.6.2'
+    implementation 'androidx.preference:preference:1.1.1'
 
     //testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

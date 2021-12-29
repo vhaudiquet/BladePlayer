@@ -4,6 +4,7 @@
     <string name="navigation_drawer_open">Ouvrir le menu</string>
     <string name="navigation_drawer_close">Fermer le menu</string>
 
+    <string name="action_sync">Synchronisation</string>
     <string name="action_settings">Paramètres</string>
 
     <string name="library">Bibliothèque</string>
@@ -11,4 +12,9 @@
     <string name="albums">Albums</string>
     <string name="songs">Titres</string>
     <string name="playlists">Playlists</string>
+
+    <string name="sources">Sources</string>
+    <string name="about">À propos de…</string>
+
+    <string name="add_source">Ajouter une source…</string>
 </resources>

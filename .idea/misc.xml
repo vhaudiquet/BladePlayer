@@ -4,11 +4,20 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_add.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_album.xml" value="0.1078125" />
         <entry key="app/src/main/res/drawable/ic_artist.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_info_24px.xml" value="0.1078125" />
         <entry key="app/src/main/res/drawable/ic_menu_camera.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_menu_gallery.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_playlist.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_recent_actors_48px.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_song.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_sources_24px.xml" value="0.1078125" />
+        <entry key="app/src/main/res/drawable/ic_sync.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/side_nav_bar.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/sync.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.19739583333333333" />
@@ -16,8 +25,13 @@
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/fragment_library.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/nav_header_main.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/settings_activity.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/settings_fragment_sources.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/menu/main.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/xml/header_preferences.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/xml/messages_preferences.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/xml/sync_preferences.xml" value="0.19739583333333333" />
       </map>
     </option>
   </component>

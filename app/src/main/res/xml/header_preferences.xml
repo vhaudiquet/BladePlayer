@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:fragment="v.blade.ui.SettingsActivity$SourcesFragment"
+        app:icon="@drawable/ic_sources_24px"
+        app:key="sources"
+        app:title="@string/sources" />
+
+    <Preference
+        app:fragment="v.blade.ui.SettingsActivity$AboutFragment"
+        app:icon="@drawable/ic_info_24px"
+        app:key="about"
+        app:title="@string/about" />
+
+</PreferenceScreen>
