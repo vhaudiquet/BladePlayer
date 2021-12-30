@@ -39,10 +39,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
+    implementation 'androidx.preference:preference:1.1.1'
 
     /* Spotify : librespot */
-    implementation 'xyz.gianlu.librespot:librespot-java:1.6.2'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'xyz.gianlu.librespot:librespot-lib:1.6.2'
 
     //testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

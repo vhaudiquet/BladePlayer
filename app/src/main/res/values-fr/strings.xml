@@ -17,4 +17,12 @@
     <string name="about">À propos de…</string>
 
     <string name="add_source">Ajouter une source…</string>
+
+    <string name="spotify">Spotify</string>
+    <string name="spotify_desc">Lire de la musique depuis un compte Spotify</string>
+    <string name="local">Local</string>
+    <string name="local_desc">Lire de la musique depuis les fichiers du téléphone</string>
+
+    <string name="item_image">Image</string>
+    <string name="item_more">Plus…</string>
 </resources>
