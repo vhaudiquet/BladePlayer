@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    /* AndroidX (Jetpack) : compat libraries, and Material */
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
@@ -40,6 +41,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.preference:preference:1.1.1'
+
+    /* Image loading : Picasso */
+    implementation 'com.squareup.picasso:picasso:2.8'
 
     /* Spotify : librespot */
     implementation 'xyz.gianlu.librespot:librespot-lib:1.6.2'

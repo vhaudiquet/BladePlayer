@@ -25,4 +25,9 @@
 
     <string name="item_image">Image</string>
     <string name="item_more">Plus…</string>
+
+    <string name="source_down_desc">Désactivé - Vérifier la configuration</string>
+    <string name="source_need_init_desc">En attente de synchronisation</string>
+    <string name="source_connecting_desc">Connexion…</string>
+    <string name="source_ready_desc">Prêt</string>
 </resources>

@@ -1,5 +1,6 @@
 package v.blade.ui;
 
+import android.annotation.SuppressLint;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,14 +17,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
+
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentAboutBinding;
 import v.blade.databinding.SettingsFragmentSourcesBinding;
+import v.blade.sources.Source;
 import v.blade.sources.local.Local;
 import v.blade.sources.spotify.Spotify;
 
@@ -117,6 +123,209 @@ public class SettingsActivity extends AppCompatActivity implements
 
     public static class SourcesFragment extends Fragment
     {
+        private static class AddSourceAdapter implements ListAdapter
+        {
+            static class ViewHolder
+            {
+                private final TextView titleView;
+                private final ImageView imageView;
+                private final TextView subtitleView;
+                private final ImageView moreView;
+
+                ViewHolder(View itemView)
+                {
+                    titleView = itemView.findViewById(R.id.item_element_title);
+                    imageView = itemView.findViewById(R.id.item_element_image);
+                    subtitleView = itemView.findViewById(R.id.item_element_subtitle);
+                    moreView = itemView.findViewById(R.id.item_element_more);
+
+                    moreView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public boolean areAllItemsEnabled()
+            {
+                return true;
+            }
+
+            @Override
+            public boolean isEnabled(int i)
+            {
+                return true;
+            }
+
+            @Override
+            public void registerDataSetObserver(DataSetObserver dataSetObserver)
+            {
+            }
+
+            @Override
+            public void unregisterDataSetObserver(DataSetObserver dataSetObserver)
+            {
+            }
+
+            @Override
+            public int getCount()
+            {
+                return 2;
+            }
+
+            @Override
+            public Object getItem(int i)
+            {
+                switch(i)
+                {
+                    case 0:
+                        return Local.class;
+                    case 1:
+                        return Spotify.class;
+                }
+
+                return null;
+            }
+
+            @Override
+            public long getItemId(int i)
+            {
+                return i;
+            }
+
+            @Override
+            public boolean hasStableIds()
+            {
+                return true;
+            }
+
+            @Override
+            public View getView(int i, View convertView, ViewGroup parent)
+            {
+                ViewHolder viewHolder;
+                if(convertView == null)
+                {
+                    convertView = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.item_layout, parent, false);
+                    viewHolder = new ViewHolder(convertView);
+
+                    convertView.setTag(viewHolder);
+                }
+                else viewHolder = (ViewHolder) convertView.getTag();
+
+                //noinspection rawtypes
+                Class current = (Class) getItem(i);
+                if(current != null)
+                {
+                    try
+                    {
+                        viewHolder.titleView.setText(current.getField("NAME_RESOURCE").getInt(null));
+                        viewHolder.subtitleView.setText(current.getField("DESCRIPTION_RESOURCE").getInt(null));
+                        viewHolder.imageView.setImageResource(current.getField("IMAGE_RESOURCE").getInt(null));
+                    }
+                    catch(IllegalAccessException | NoSuchFieldException ignored)
+                    {
+                    }
+                }
+
+                return convertView;
+            }
+
+            @Override
+            public int getItemViewType(int i)
+            {
+                return 0;
+            }
+
+            @Override
+            public int getViewTypeCount()
+            {
+                return 1;
+            }
+
+            @Override
+            public boolean isEmpty()
+            {
+                return false;
+            }
+        }
+
+        private static class SourceAdapter extends RecyclerView.Adapter<SourceAdapter.ViewHolder>
+        {
+            static class ViewHolder extends RecyclerView.ViewHolder
+            {
+                private final TextView titleView;
+                private final ImageView imageView;
+                private final TextView subtitleView;
+                private final ImageView moreView;
+
+                public ViewHolder(@NonNull View itemView)
+                {
+                    super(itemView);
+
+                    titleView = itemView.findViewById(R.id.item_element_title);
+                    imageView = itemView.findViewById(R.id.item_element_image);
+                    subtitleView = itemView.findViewById(R.id.item_element_subtitle);
+                    moreView = itemView.findViewById(R.id.item_element_more);
+                }
+            }
+
+            private final ItemTouchHelper touchHelper;
+
+            public SourceAdapter(ItemTouchHelper touchHelper)
+            {
+                this.touchHelper = touchHelper;
+            }
+
+            //todo check why we need that
+            @SuppressLint("ClickableViewAccessibility")
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_layout, parent, false);
+                ViewHolder viewHolder = new ViewHolder(view);
+
+                viewHolder.moreView.setImageResource(R.drawable.ic_reorder_24px);
+                viewHolder.moreView.setOnTouchListener((view1, motionEvent) ->
+                {
+                    touchHelper.startDrag(viewHolder);
+                    return true;
+                });
+
+                return viewHolder;
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+            {
+                Source current = Source.SOURCES.get(position);
+                holder.titleView.setText(current.getName());
+                holder.imageView.setImageResource(current.getImageResource());
+
+                switch(current.getStatus())
+                {
+                    case STATUS_DOWN:
+                        holder.subtitleView.setText(R.string.source_down_desc);
+                        break;
+                    case STATUS_NEED_INIT:
+                        holder.subtitleView.setText(R.string.source_need_init_desc);
+                        break;
+                    case STATUS_CONNECTING:
+                        holder.subtitleView.setText(R.string.source_connecting_desc);
+                        break;
+                    case STATUS_READY:
+                        holder.subtitleView.setText(R.string.source_ready_desc);
+                        break;
+                }
+            }
+
+            @Override
+            public int getItemCount()
+            {
+                return Source.SOURCES.size();
+            }
+        }
+
         private SettingsFragmentSourcesBinding binding;
 
         public SourcesFragment()
@@ -131,143 +340,69 @@ public class SettingsActivity extends AppCompatActivity implements
 
             //Set list to current sources
             RecyclerView sourcesListView = binding.settingsSourcesListview;
-            //TODO
+            sourcesListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback(Source.SOURCES));
+            touchHelper.attachToRecyclerView(sourcesListView);
+            SourceAdapter sourceAdapter = new SourceAdapter(touchHelper);
+            sourcesListView.setAdapter(sourceAdapter);
 
             //Set button 'add' action
             FloatingActionButton floatingActionButton = binding.settingsSourceAdd;
-            floatingActionButton.setOnClickListener(SourcesFragment::showAddSourceDialog);
+            floatingActionButton.setOnClickListener(this::showAddSourceDialog);
 
             return root;
         }
 
-        private static void showAddSourceDialog(View view)
+        //Here we can use NotifyDataSetChanged, as the list of sources will be small anyway
+        @SuppressLint("NotifyDataSetChanged")
+        private void showAddSourceDialog(View view)
         {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
             builder.setTitle(R.string.add_source);
-            builder.setAdapter(new ListAdapter()
+            final AddSourceAdapter adapter = new AddSourceAdapter();
+            builder.setAdapter(adapter, (dialogInterface, i) ->
             {
-                class ViewHolder
-                {
-                    private final TextView titleView;
-                    private final ImageView imageView;
-                    private final TextView subtitleView;
-                    private final ImageView moreView;
+                //Check if the source is already present if needed,
+                //and add source to active sources list
 
-                    ViewHolder(View itemView)
+                //noinspection rawtypes
+                Class c = (Class) adapter.getItem(i);
+
+                //Sources that can only be added once (only Local for now...)
+                if(Local.class.equals(c))
+                {
+                    boolean alreadyHasOne = false;
+                    for(Source s : Source.SOURCES)
                     {
-                        titleView = itemView.findViewById(R.id.item_element_title);
-                        imageView = itemView.findViewById(R.id.item_element_image);
-                        subtitleView = itemView.findViewById(R.id.item_element_subtitle);
-                        moreView = itemView.findViewById(R.id.item_element_more);
-                    }
-                }
-
-                @Override
-                public boolean areAllItemsEnabled()
-                {
-                    return true;
-                }
-
-                @Override
-                public boolean isEnabled(int i)
-                {
-                    return true;
-                }
-
-                @Override
-                public void registerDataSetObserver(DataSetObserver dataSetObserver)
-                {
-                }
-
-                @Override
-                public void unregisterDataSetObserver(DataSetObserver dataSetObserver)
-                {
-                }
-
-                @Override
-                public int getCount()
-                {
-                    return 2;
-                }
-
-                @Override
-                public Object getItem(int i)
-                {
-                    switch(i)
-                    {
-                        case 0:
-                            return Local.class;
-                        case 1:
-                            return Spotify.class;
-                    }
-
-                    return null;
-                }
-
-                @Override
-                public long getItemId(int i)
-                {
-                    return i;
-                }
-
-                @Override
-                public boolean hasStableIds()
-                {
-                    return true;
-                }
-
-                @Override
-                public View getView(int i, View convertView, ViewGroup parent)
-                {
-                    ViewHolder viewHolder;
-                    if(convertView == null)
-                    {
-                        convertView = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.item_layout, parent, false);
-                        viewHolder = new ViewHolder(convertView);
-
-                        convertView.setTag(viewHolder);
-                    }
-                    else viewHolder = (ViewHolder) convertView.getTag();
-
-                    //noinspection rawtypes
-                    Class current = (Class) getItem(i);
-                    if(current != null)
-                    {
-                        try
+                        if(s.getClass().equals(Local.class))
                         {
-                            viewHolder.titleView.setText(current.getField("NAME_RESOURCE").getInt(null));
-                            viewHolder.subtitleView.setText(current.getField("DESCRIPTION_RESOURCE").getInt(null));
-                            viewHolder.imageView.setImageResource(current.getField("IMAGE_RESOURCE").getInt(null));
-                        }
-                        catch(IllegalAccessException | NoSuchFieldException ignored)
-                        {
+                            alreadyHasOne = true;
+                            break;
                         }
                     }
 
-                    return convertView;
+                    if(alreadyHasOne) return;
                 }
 
-                @Override
-                public int getItemViewType(int i)
+                try
                 {
-                    return 0;
-                }
+                    Source toAdd = (Source) c.newInstance();
 
-                @Override
-                public int getViewTypeCount()
-                {
-                    return 1;
-                }
+                    //Set source default name
+                    toAdd.setName(c.getSimpleName());
 
-                @Override
-                public boolean isEmpty()
-                {
-                    return false;
+                    //Set source default status
+                    if(Local.class.equals(toAdd.getClass()))
+                        toAdd.setStatus(Source.SourceStatus.STATUS_NEED_INIT);
+                    else
+                        toAdd.setStatus(Source.SourceStatus.STATUS_DOWN);
+
+                    Source.SOURCES.add(toAdd);
+                    Objects.requireNonNull(binding.settingsSourcesListview.getAdapter()).notifyDataSetChanged();
                 }
-            }, (dialogInterface, i) ->
-            {
-                //Add source to active sources list
+                catch(IllegalAccessException | java.lang.InstantiationException ignored)
+                {
+                }
             });
 
             AlertDialog dialog = builder.create();

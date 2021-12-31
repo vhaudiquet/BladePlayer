@@ -20,8 +20,29 @@ public abstract class Source
     protected SourceStatus status = SourceStatus.STATUS_NEED_INIT;
     protected Fragment settingsFragment = null;
 
+    public Source()
+    {
+    }
+
     public String getName()
     {
         return name;
     }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public SourceStatus getStatus()
+    {
+        return this.status;
+    }
+
+    public void setStatus(SourceStatus status)
+    {
+        this.status = status;
+    }
+
+    public abstract int getImageResource();
 }

@@ -9,4 +9,9 @@ public class Spotify extends Source
     public static int DESCRIPTION_RESOURCE = R.string.spotify_desc;
     public static int IMAGE_RESOURCE = R.drawable.ic_spotify;
 
+    @Override
+    public int getImageResource()
+    {
+        return IMAGE_RESOURCE;
+    }
 }

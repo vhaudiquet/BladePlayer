@@ -8,11 +8,13 @@
         <entry key="app/src/main/res/drawable/ic_album.xml" value="0.1078125" />
         <entry key="app/src/main/res/drawable/ic_artist.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_info_24px.xml" value="0.1078125" />
+        <entry key="app/src/main/res/drawable/ic_local.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_menu_camera.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_menu_gallery.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_playlist.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_recent_actors_48px.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/drawable/ic_reorder_24px.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_song.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_sources_24px.xml" value="0.1078125" />
         <entry key="app/src/main/res/drawable/ic_spotify.xml" value="0.1078125" />
