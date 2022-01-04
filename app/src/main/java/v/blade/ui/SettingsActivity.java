@@ -1,6 +1,7 @@
 package v.blade.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -110,6 +112,17 @@ public class SettingsActivity extends AppCompatActivity implements
                 .commit();
         setTitle(pref.getTitle());
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        for(Fragment f : getSupportFragmentManager().getFragments())
+        {
+            //noinspection deprecation
+            f.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public static class HeaderFragment extends PreferenceFragmentCompat

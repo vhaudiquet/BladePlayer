@@ -20,7 +20,7 @@
         android:theme="@style/Theme.BladePlayer">
         <activity
             android:name=".ui.SettingsActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".ui.MainActivity"
             android:label="@string/action_settings" />
         <activity

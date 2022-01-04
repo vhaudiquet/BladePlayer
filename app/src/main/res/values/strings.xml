@@ -32,4 +32,6 @@
     <string name="source_ready_desc">Ready</string>
 
     <string name="sign_in">Sign in</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="auth_error">Authentication error, please try again</string>
 </resources>
