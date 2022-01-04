@@ -2,6 +2,9 @@ package v.blade.library;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import v.blade.sources.Source;
 
 public class Library
 {
@@ -30,4 +33,34 @@ public class Library
     private static ArrayList<Artist> artists_list = new ArrayList<>();
     private static ArrayList<Album> albums_list = new ArrayList<>();
     private static ArrayList<Song> songs_list = new ArrayList<>();
+
+    public static List<Artist> getArtists()
+    {
+        return artists_list;
+    }
+
+    public static List<Album> getAlbums()
+    {
+        return albums_list;
+    }
+
+    public static List<Song> getSongs()
+    {
+        return songs_list;
+    }
+
+    public static List<Playlist> getPlaylists()
+    {
+        return library_playlists;
+    }
+
+    public static void addSong(String title, String album, String[] artists, Source source, Object sourceId,
+                               String[] albumArtists, String albumMiniatureURL, int track_number, String[] artistMiniaturesUrl,
+                               String[] albumArtistsMiniatureUrl)
+    {
+        Song test = new Song();
+        test.name = title;
+        songs_list.add(test);
+        System.out.println("Added song " + title);
+    }
 }

@@ -18,7 +18,6 @@ public abstract class Source
 
     protected String name;
     protected SourceStatus status = SourceStatus.STATUS_NEED_INIT;
-    protected Fragment settingsFragment = null;
 
     public Source()
     {
@@ -45,4 +44,30 @@ public abstract class Source
     }
 
     public abstract int getImageResource();
+
+    /**
+     * Initialize source (connecting to account, server, ...)
+     */
+    public void initSource()
+    {
+        this.status = SourceStatus.STATUS_READY;
+    }
+
+    /**
+     * Action done on 'synchronize' button ; as the Blade model is 'offline',
+     * this is basically 'online register library' ; we do cache the library after
+     */
+    public abstract void synchronizeLibrary();
+
+    public abstract Fragment getSettingsFragment();
+
+    public static void synchronizeSources()
+    {
+        for(Source s : SOURCES)
+        {
+            if(s.status != SourceStatus.STATUS_READY) continue;
+
+            s.synchronizeLibrary();
+        }
+    }
 }

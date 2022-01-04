@@ -5,4 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.LibraryFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/main_listview"
+        android:fastScrollEnabled="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -130,14 +130,13 @@ public class SettingsActivity extends AppCompatActivity implements
                 private final TextView titleView;
                 private final ImageView imageView;
                 private final TextView subtitleView;
-                private final ImageView moreView;
 
                 ViewHolder(View itemView)
                 {
                     titleView = itemView.findViewById(R.id.item_element_title);
                     imageView = itemView.findViewById(R.id.item_element_image);
                     subtitleView = itemView.findViewById(R.id.item_element_subtitle);
-                    moreView = itemView.findViewById(R.id.item_element_more);
+                    ImageView moreView = itemView.findViewById(R.id.item_element_more);
 
                     moreView.setVisibility(View.GONE);
                 }
@@ -269,10 +268,12 @@ public class SettingsActivity extends AppCompatActivity implements
             }
 
             private final ItemTouchHelper touchHelper;
+            private final View.OnClickListener clickListener;
 
-            public SourceAdapter(ItemTouchHelper touchHelper)
+            public SourceAdapter(ItemTouchHelper touchHelper, View.OnClickListener clickListener)
             {
                 this.touchHelper = touchHelper;
+                this.clickListener = clickListener;
             }
 
             //todo check why we need that
@@ -291,6 +292,8 @@ public class SettingsActivity extends AppCompatActivity implements
                     touchHelper.startDrag(viewHolder);
                     return true;
                 });
+
+                viewHolder.itemView.setOnClickListener(clickListener);
 
                 return viewHolder;
             }
@@ -343,7 +346,19 @@ public class SettingsActivity extends AppCompatActivity implements
             sourcesListView.setLayoutManager(new LinearLayoutManager(getActivity()));
             ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback(Source.SOURCES));
             touchHelper.attachToRecyclerView(sourcesListView);
-            SourceAdapter sourceAdapter = new SourceAdapter(touchHelper);
+            SourceAdapter sourceAdapter = new SourceAdapter(touchHelper, view ->
+            {
+                int position = sourcesListView.getChildLayoutPosition(view);
+                Source current = Source.SOURCES.get(position);
+                Fragment sf = current.getSettingsFragment();
+                if(sf != null)
+                {
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.settings, sf)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
             sourcesListView.setAdapter(sourceAdapter);
 
             //Set button 'add' action
@@ -392,10 +407,7 @@ public class SettingsActivity extends AppCompatActivity implements
                     toAdd.setName(c.getSimpleName());
 
                     //Set source default status
-                    if(Local.class.equals(toAdd.getClass()))
-                        toAdd.setStatus(Source.SourceStatus.STATUS_NEED_INIT);
-                    else
-                        toAdd.setStatus(Source.SourceStatus.STATUS_DOWN);
+                    toAdd.setStatus(Source.SourceStatus.STATUS_DOWN);
 
                     Source.SOURCES.add(toAdd);
                     Objects.requireNonNull(binding.settingsSourcesListview.getAdapter()).notifyDataSetChanged();

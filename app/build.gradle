@@ -45,8 +45,10 @@ dependencies {
     /* Image loading : Picasso */
     implementation 'com.squareup.picasso:picasso:2.8'
 
-    /* Spotify : librespot */
+    /* Spotify : librespot + auth (+ retrofit) */
     implementation 'xyz.gianlu.librespot:librespot-lib:1.6.2'
+    implementation 'com.spotify.android:auth:1.2.6'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
     //testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

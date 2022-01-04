@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import v.blade.R;
 import v.blade.databinding.ActivityMainBinding;
+import v.blade.sources.Source;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -61,6 +62,11 @@ public class MainActivity extends AppCompatActivity
         {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+            return true;
+        }
+        else if(id == R.id.action_sync)
+        {
+            Source.synchronizeSources();
             return true;
         }
         else return super.onOptionsItemSelected(item);

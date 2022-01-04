@@ -30,4 +30,6 @@
     <string name="source_need_init_desc">En attente de synchronisation</string>
     <string name="source_connecting_desc">Connexion…</string>
     <string name="source_ready_desc">Prêt</string>
+
+    <string name="sign_in">Se connecter</string>
 </resources>

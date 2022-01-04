@@ -1,6 +1,15 @@
 package v.blade.sources.local;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.provider.MediaStore;
+
+import androidx.core.content.ContentResolverCompat;
+import androidx.fragment.app.Fragment;
+
+import v.blade.BladeApplication;
 import v.blade.R;
+import v.blade.library.Library;
 import v.blade.sources.Source;
 
 public class Local extends Source
@@ -13,5 +22,50 @@ public class Local extends Source
     public int getImageResource()
     {
         return IMAGE_RESOURCE;
+    }
+
+    @Override
+    public void synchronizeLibrary()
+    {
+        ContentResolver contentResolver = BladeApplication.appContext.getContentResolver();
+        Cursor musicCursor = ContentResolverCompat.query(contentResolver,
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
+                null, null);
+        if(musicCursor != null && musicCursor.moveToFirst())
+        {
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.MediaColumns.TITLE);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.MediaColumns._ID);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
+            int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
+            int trackNumberColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+
+            do
+            {
+                String title = musicCursor.getString(titleColumn);
+
+                //MediaStore only allows one artist String
+                //We will split this string on ',' for songs with multiple artists
+                //NOTE : we could split on ' & ', but
+                // for example this allows 'Lomepal & Stwo' but splits 'Bigflo & Oli', so no
+                //TODO : maybe find a better solution ?
+                String artist = musicCursor.getString(artistColumn);
+                String[] artists = artist.split(", ");
+                //if(artists.length == 1) artists = artist.split(" & ");
+
+                String album = musicCursor.getString(albumColumn);
+                long id = musicCursor.getLong(idColumn);
+                int track_number = musicCursor.getInt(trackNumberColumn);
+                Library.addSong(title, album, artists, this, id, artists, null, track_number, null, null);
+            }
+            while(musicCursor.moveToNext());
+
+            musicCursor.close();
+        }
+    }
+
+    @Override
+    public Fragment getSettingsFragment()
+    {
+        return null;
     }
 }
