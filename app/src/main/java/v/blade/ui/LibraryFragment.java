@@ -31,7 +31,8 @@ public class LibraryFragment extends Fragment
         View root = binding.getRoot();
 
         binding.mainListview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateContent(null);
+        String title = ((MainActivity) requireActivity()).binding == null ? getString(R.string.artists) : ((MainActivity) requireActivity()).binding.appBarMain.toolbar.getTitle().toString();
+        updateContent(title, null);
 
         return root;
     }
@@ -39,18 +40,18 @@ public class LibraryFragment extends Fragment
     /*
      * Update content to list 'replacing', or to root directory
      */
-    private void updateContent(List<? extends LibraryObject> replacing)
+    private void updateContent(String title, List<? extends LibraryObject> replacing)
     {
         if(replacing == null)
         {
             /* we are going back to top directory : artists, albums, songs, playlists */
-            if(requireActivity().getTitle().equals(getString(R.string.artists)))
+            if(title.equals(getString(R.string.artists)))
                 current = Library.getArtists();
-            else if(requireActivity().getTitle().equals(getString(R.string.albums)))
+            else if(title.equals(getString(R.string.albums)))
                 current = Library.getAlbums();
-            else if(requireActivity().getTitle().equals(getString(R.string.songs)))
+            else if(title.equals(getString(R.string.songs)))
                 current = Library.getSongs();
-            else if(requireActivity().getTitle().equals(getString(R.string.playlists)))
+            else if(title.equals(getString(R.string.playlists)))
                 current = Library.getPlaylists();
         }
         else
@@ -58,8 +59,10 @@ public class LibraryFragment extends Fragment
             current = replacing;
         }
 
-        LibraryObjectAdapter adapter = new LibraryObjectAdapter(current, this::onViewClicked);
+        LibraryObjectAdapter adapter = new LibraryObjectAdapter(current, this::onMoreClicked, this::onViewClicked);
         binding.mainListview.setAdapter(adapter);
+        if(((MainActivity) requireActivity()).binding != null)
+            ((MainActivity) requireActivity()).binding.appBarMain.toolbar.setTitle(title);
     }
 
     private void onViewClicked(View view)
@@ -72,12 +75,17 @@ public class LibraryFragment extends Fragment
     private void onElementClicked(LibraryObject element)
     {
         if(element instanceof Artist)
-            updateContent(((Artist) element).getAlbums());
+            updateContent(element.getName(), ((Artist) element).getAlbums());
         else if(element instanceof Album)
-            updateContent(((Album) element).getSongs());
+            updateContent(element.getName(), ((Album) element).getSongs());
         else if(element instanceof Playlist)
-            updateContent(((Playlist) element).getSongs());
+            updateContent(element.getName(), ((Playlist) element).getSongs());
         //TODO : if element is Song, change player playlist...
+    }
+
+    private void onMoreClicked(View view)
+    {
+
     }
 
     @Override

@@ -293,7 +293,7 @@ public interface SpotifyService
         }
 
         String country;
-        String displayName;
+        String display_name;
         String email;
         ExplicitContent explicit_content;
         ExternalUrlObject external_urls;

@@ -21,6 +21,12 @@ public class Local extends Source
     public static int DESCRIPTION_RESOURCE = R.string.local_desc;
     public static int IMAGE_RESOURCE = R.drawable.ic_local;
 
+    public Local()
+    {
+        super();
+        this.name = BladeApplication.appContext.getString(NAME_RESOURCE);
+    }
+
     @Override
     public int getImageResource()
     {
@@ -58,7 +64,7 @@ public class Local extends Source
                 String album = musicCursor.getString(albumColumn);
                 long id = musicCursor.getLong(idColumn);
                 int track_number = musicCursor.getInt(trackNumberColumn);
-                Library.addSong(title, album, artists, this, id, artists, null, track_number, null, null);
+                Library.addSong(title, album, artists, this, id, artists, null, track_number, null, null, null);
             }
             while(musicCursor.moveToNext());
 

@@ -22,8 +22,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 import v.blade.BladeApplication;
+import v.blade.library.Library;
 
 public abstract class Source
 {
@@ -152,14 +155,29 @@ public abstract class Source
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static void synchronizeSources()
     {
+        List<Future> futures = new ArrayList<>();
         for(Source s : SOURCES)
         {
             if(s.status != SourceStatus.STATUS_READY) continue;
 
-            s.synchronizeLibrary();
+            futures.add(BladeApplication.obtainExecutorService().submit(s::synchronizeLibrary));
         }
+
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            boolean allDone = false;
+            while(!allDone)
+            {
+                allDone = true;
+                for(Future f : futures) if(!f.isDone()) allDone = false;
+            }
+
+            //Every source synchronization is done, we can now sort and save library
+            Library.generateLists();
+        });
     }
 
     public static void initSources()

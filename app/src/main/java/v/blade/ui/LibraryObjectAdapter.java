@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import v.blade.R;
+import v.blade.library.Album;
 import v.blade.library.LibraryObject;
+import v.blade.library.Song;
 
 public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdapter.ViewHolder> implements ListAdapter
 {
@@ -168,6 +170,11 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         RequestCreator image = current.getImageRequest();
         if(image != null)
             image.into(viewHolder.imageView);
+
+        if(current instanceof Song)
+            viewHolder.subtitleView.setText(((Song) current).getArtistsString());
+        else if(current instanceof Album)
+            viewHolder.subtitleView.setText(((Album) current).getArtistsString());
     }
 
     @Override

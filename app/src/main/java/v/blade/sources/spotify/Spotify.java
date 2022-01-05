@@ -27,17 +27,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import kotlin.random.Random;
-import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentSpotifyBinding;
+import v.blade.library.Library;
 import v.blade.sources.Source;
 
 /*
@@ -64,6 +65,7 @@ public class Spotify extends Source
 
     public Spotify()
     {
+        super();
         this.name = BladeApplication.appContext.getString(NAME_RESOURCE);
     }
 
@@ -116,7 +118,7 @@ public class Spotify extends Source
                 .build();
         Request request = new Request.Builder().url("https://accounts.spotify.com/api/token")
                 .post(requestBody).build();
-        Call call = client.newCall(request);
+        okhttp3.Call call = client.newCall(request);
         BladeApplication.obtainExecutorService().execute(() ->
         {
             //Prepare a looper so that we can toast
@@ -124,7 +126,7 @@ public class Spotify extends Source
 
             try
             {
-                Response response = call.execute();
+                okhttp3.Response response = call.execute();
                 if(!response.isSuccessful() || response.code() != 200 || response.body() == null)
                 {
                     //noinspection ConstantConditions
@@ -168,7 +170,59 @@ public class Spotify extends Source
     @Override
     public void synchronizeLibrary()
     {
+        try
+        {
+            /* Obtain user tracks */
+            int tracksLeft;
+            int tracksIndex = 0;
+            do
+            {
+                Call<SpotifyService.PagingObject<SpotifyService.SavedTrackObject>> userTracks =
+                        service.getUserSavedTracks(AUTH_STRING, 50, tracksIndex * 50);
+                Response<SpotifyService.PagingObject<SpotifyService.SavedTrackObject>> response =
+                        userTracks.execute();
 
+                if(response.code() != 200 || response.body() == null) break;
+                SpotifyService.PagingObject<SpotifyService.SavedTrackObject> trackPaging = response.body();
+
+                for(SpotifyService.SavedTrackObject savedTrack : trackPaging.items)
+                {
+                    SpotifyService.TrackObject track = savedTrack.track;
+                    if(track.album == null || track.artists == null || track.album.images.length == 0)
+                        continue; //TODO check ?
+
+                    //album artists
+                    String[] aartists = new String[track.album.artists.length];
+                    String[] aartistsImages = new String[track.album.artists.length];
+                    for(int j = 0; j < track.album.artists.length; j++)
+                    {
+                        aartists[j] = track.album.artists[j].name;
+                    }
+
+                    //song artists
+                    String[] artists = new String[track.artists.length];
+                    String[] artistsImages = new String[track.artists.length];
+                    for(int j = 0; j < track.artists.length; j++)
+                    {
+                        artists[j] = track.artists[j].name;
+                        //artistsImages[j] = track.artists[j].images //TODO artists images ?
+                    }
+
+                    Library.addSong(track.name, track.album.name, artists, this, track.id, aartists,
+                            track.album.images[track.album.images.length - 2].url, track.track_number,
+                            artistsImages, aartistsImages, track.album.images[0].url);
+                }
+
+                tracksLeft = trackPaging.total - 50 * (tracksIndex + 1);
+                tracksIndex++;
+            }
+            while(tracksLeft > 0);
+
+            /* Obtain user albums */
+        }
+        catch(IOException ignored)
+        {
+        }
     }
 
     @Override
@@ -305,6 +359,7 @@ public class Spotify extends Source
             {
                 Source.SOURCES.remove(spotify);
                 requireActivity().onBackPressed();
+                Source.saveSources();
             });
 
             return binding.getRoot();
@@ -341,7 +396,7 @@ public class Spotify extends Source
                     .build();
             Request request = new Request.Builder().url("https://accounts.spotify.com/api/token")
                     .post(body).build();
-            Call call = client.newCall(request);
+            okhttp3.Call call = client.newCall(request);
 
             BladeApplication.obtainExecutorService().execute(() ->
             {
@@ -350,7 +405,7 @@ public class Spotify extends Source
 
                 try
                 {
-                    Response postResponse = call.execute();
+                    okhttp3.Response postResponse = call.execute();
                     if(!postResponse.isSuccessful() || postResponse.code() != 200 || postResponse.body() == null)
                     {
                         //noinspection ConstantConditions
@@ -382,7 +437,7 @@ public class Spotify extends Source
 
                     //obtain account name
                     SpotifyService.UserInformationObject user = spotify.service.getUser(spotify.AUTH_STRING).execute().body();
-                    String accountName = (user == null ? "null" : (user.displayName == null ? "null" : user.displayName));
+                    String accountName = (user == null ? "null" : (user.display_name == null ? "null" : user.display_name));
                     spotify.account_name = accountName;
 
                     //Re-set status and account textboxes

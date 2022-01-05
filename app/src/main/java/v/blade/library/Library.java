@@ -1,6 +1,9 @@
 package v.blade.library;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,13 +57,87 @@ public class Library
         return library_playlists;
     }
 
-    public static void addSong(String title, String album, String[] artists, Source source, Object sourceId,
-                               String[] albumArtists, String albumMiniatureURL, int track_number, String[] artistMiniaturesUrl,
-                               String[] albumArtistsMiniatureUrl)
+    public static synchronized void addSong(String title, String album, String[] artists, Source source, Object sourceId,
+                                            String[] albumArtists, String albumMiniatureURL, int track_number, String[] artistMiniaturesUrl,
+                                            String[] albumArtistsMiniatureUrl, String albumImageURL)
     {
-        Song test = new Song();
-        test.name = title;
-        songs_list.add(test);
-        System.out.println("Added song " + title);
+        /* obtain song artists and album artists */
+        Artist[] sartists = new Artist[artists.length];
+        for(int i = 0; i < sartists.length; i++)
+        {
+            Artist current = library_artists.get(artists[i].toLowerCase());
+
+            if(current == null)
+            {
+                current = new Artist(artists[i], Picasso.get().load(artistMiniaturesUrl[i]));
+                library_artists.put(current.name.toLowerCase(), current);
+            }
+
+            sartists[i] = current;
+        }
+
+        Artist[] saartists = new Artist[albumArtists.length];
+        for(int i = 0; i < saartists.length; i++)
+        {
+            Artist current = library_artists.get(albumArtists[i].toLowerCase());
+
+            if(current == null)
+            {
+                current = new Artist(albumArtists[i], Picasso.get().load(albumArtistsMiniatureUrl[i]));
+                library_artists.put(current.name.toLowerCase(), current);
+            }
+
+            saartists[i] = current;
+        }
+
+        /* obtain song album */
+        //noinspection ConstantConditions
+        Album salbum = library_albums.get(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase());
+        if(salbum == null)
+        {
+            salbum = new Album(album, saartists, Picasso.get().load(albumMiniatureURL), Picasso.get().load(albumImageURL));
+            //noinspection ConstantConditions
+            library_albums.put(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase(), salbum);
+            for(Artist a : saartists) a.addAlbum(salbum);
+        }
+        for(Artist a : sartists)
+            if(!a.albums.contains(salbum))
+                a.addAlbum(salbum); //NOTE: this adds albums to artists even if only a featuring
+
+        /* obtain song */
+        Song s = library_songs.get(artists[0].toLowerCase() + ":" + album.toLowerCase() + ":" + title.toLowerCase());
+        if(s == null)
+        {
+            s = new Song(title, salbum, sartists, track_number);
+            library_songs.put(artists[0].toLowerCase() + ":" + album.toLowerCase() + ":" + title.toLowerCase(), s);
+            for(Artist a : sartists) a.track_count++;
+            salbum.addSong(s);
+        }
+
+        /* update song source information */
+        s.addSource(source, sourceId);
+    }
+
+    /**
+     * Generate artists, albums, and songs lists from library HashMaps
+     */
+    @SuppressWarnings("ComparatorCombinators")
+    //NOTE : can be replaced with Comparator.comparing, but needs Android N
+    public static void generateLists()
+    {
+        //re-gen lists from hashmaps
+        artists_list = new ArrayList<>(library_artists.values());
+        Collections.sort(artists_list, (artist, t1) -> artist.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
+        albums_list = new ArrayList<>(library_albums.values());
+        Collections.sort(albums_list, (album, t1) -> album.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
+        songs_list = new ArrayList<>(library_songs.values());
+        Collections.sort(songs_list, (song, t1) -> song.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
+
+        //TODO : maybe sort playlists ??
+    }
+
+    public static void save()
+    {
+
     }
 }
