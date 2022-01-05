@@ -278,6 +278,33 @@ public interface SpotifyService
         String reason;
     }
 
+    class UserInformationObject
+    {
+        class ExplicitContent
+        {
+            boolean filter_enabled;
+            boolean filter_locked;
+        }
+
+        class Followers
+        {
+            String href;
+            int total;
+        }
+
+        String country;
+        String displayName;
+        String email;
+        ExplicitContent explicit_content;
+        ExternalUrlObject external_urls;
+        Followers followers;
+        String href;
+        ImageObject[] images;
+        String product;
+        String type;
+        String uri;
+    }
+
     /**
      * max limit is 50
      */
@@ -301,4 +328,7 @@ public interface SpotifyService
      */
     @GET("me/albums")
     Call<PagingObject<SavedAlbumObject>> getUserSavedAlbums(@Header("Authorization") String token, @Query("limit") int limit, @Query("offset") int offset);
+
+    @GET("me")
+    Call<UserInformationObject> getUser(@Header("Authorization") String token);
 }

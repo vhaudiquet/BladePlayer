@@ -2,6 +2,7 @@ package v.blade.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -447,6 +448,17 @@ public class SettingsActivity extends AppCompatActivity implements
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             binding = SettingsFragmentAboutBinding.inflate(inflater, container, false);
+
+            try
+            {
+                PackageInfo packageInfo = requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0);
+                String versionText = getText(R.string.version) + " " + packageInfo.versionName + " (" + packageInfo.versionCode + ")";
+                binding.aboutVersionText.setText(versionText);
+            }
+            catch(Exception ignored)
+            {
+            }
+
             return binding.getRoot();
         }
     }

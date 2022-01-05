@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import kotlin.random.Random;
 import okhttp3.Call;
@@ -29,6 +31,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentSpotifyBinding;
@@ -48,6 +52,7 @@ public class Spotify extends Source
     public static final int IMAGE_RESOURCE = R.drawable.ic_spotify;
 
     //Spotify AUTH : We are using 'Authorization Code Flow' with 'PKCE extension'
+    private static final String BASE_API_URL = "https://api.spotify.com/v1/";
     private static final String AUTH_TYPE = "Bearer ";
     private static final String CLIENT_ID = "048adc76814146e7bb049d89813bd6e0";
     protected static final String[] SCOPES = {"app-remote-control", "streaming", "playlist-modify-public", "playlist-modify-private", "playlist-read-private", "playlist-read-collaborative", "user-follow-modify", "user-follow-read", "user-library-modify", "user-library-read", "user-read-email", "user-read-private",
@@ -55,13 +60,101 @@ public class Spotify extends Source
     private static final int SPOTIFY_REQUEST_CODE = 0x11;
     protected static final String REDIRECT_URI = "spotify-sdk://auth";
 
-    //Spotify login informations
+    @SuppressWarnings({"FieldMayBeFinal", "unused"})
+    private static class SpotifyTokenResponse
+    {
+        private String access_token = "";
+        private String token_type = "";
+        private int expires_in = -1;
+        private String refresh_token = "";
+        private String scope = "";
+
+        public SpotifyTokenResponse()
+        {
+        }
+    }
+
+    //Spotify login information
     private String account_name;
+    private String ACCESS_TOKEN;
+    private String REFRESH_TOKEN;
+    private int TOKEN_EXPIRES_IN;
+    private String AUTH_STRING;
+    private Retrofit retrofit;
+    private SpotifyService service;
 
     @Override
     public int getImageResource()
     {
         return IMAGE_RESOURCE;
+    }
+
+    @Override
+    public void initSource()
+    {
+        if(status != SourceStatus.STATUS_NEED_INIT) return;
+
+        status = SourceStatus.STATUS_CONNECTING;
+
+        //build retrofit client
+        retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        service = retrofit.create(SpotifyService.class);
+
+        //refresh access token
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder()
+                .add("grant_type", "refresh_token")
+                .add("refresh_token", REFRESH_TOKEN)
+                .add("client_id", CLIENT_ID)
+                .build();
+        Request request = new Request.Builder().url("https://accounts.spotify.com/api/token")
+                .post(requestBody).build();
+        Call call = client.newCall(request);
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            //Prepare a looper so that we can toast
+            Looper.prepare();
+
+            try
+            {
+                Response response = call.execute();
+                if(!response.isSuccessful() || response.code() != 200 || response.body() == null)
+                {
+                    //noinspection ConstantConditions
+                    String responseBody = response.body() == null ? "Unknown error" : response.body().string();
+                    Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
+                    status = SourceStatus.STATUS_NEED_INIT;
+                    return;
+                }
+
+                Gson gson = new Gson();
+                //noinspection ConstantConditions
+                String rstring = response.body().string();
+                SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
+                if(sr == null)
+                {
+                    Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
+                    status = SourceStatus.STATUS_NEED_INIT;
+                    return;
+                }
+
+                ACCESS_TOKEN = sr.access_token;
+                TOKEN_EXPIRES_IN = sr.expires_in;
+
+                //TODO re-save new refresh token ? it can return a different one
+                // so i guess it invalidates the one before ? idk...
+                //REFRESH_TOKEN = sr.refresh_token;
+
+                AUTH_STRING = AUTH_TYPE + ACCESS_TOKEN;
+
+                status = SourceStatus.STATUS_READY;
+            }
+            catch(IOException e)
+            {
+                status = SourceStatus.STATUS_NEED_INIT;
+                Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (IOException trying to obtain token)", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -169,6 +262,18 @@ public class Spotify extends Source
                 AuthorizationClient.openLoginActivity(requireActivity(), SPOTIFY_REQUEST_CODE, request);
             });
 
+            binding.settingsSpotifyInit.setOnClickListener(view ->
+            {
+                spotify.initSource();
+                //TODO update current interface on callback
+            });
+
+            binding.settingsSpotifyRemove.setOnClickListener(view ->
+            {
+                Source.SOURCES.remove(spotify);
+                requireActivity().onBackPressed();
+            });
+
             return binding.getRoot();
         }
 
@@ -222,12 +327,44 @@ public class Spotify extends Source
                         return;
                     }
 
-                    //TODO obtain token (GSON)... easy
+                    Gson gson = new Gson();
+                    String rstring = Objects.requireNonNull(postResponse.body()).string();
+                    SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
+                    if(sr == null)
+                    {
+                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    //set token
+                    spotify.ACCESS_TOKEN = sr.access_token;
+                    spotify.REFRESH_TOKEN = sr.refresh_token;
+                    spotify.TOKEN_EXPIRES_IN = sr.expires_in;
+                    spotify.AUTH_STRING = AUTH_TYPE + spotify.ACCESS_TOKEN;
+
+                    //init and set status
+                    spotify.retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).addConverterFactory(GsonConverterFactory.create()).build();
+                    spotify.service = spotify.retrofit.create(SpotifyService.class);
+                    spotify.status = SourceStatus.STATUS_READY;
+
+                    //TODO save source
+
+                    //obtain account name
+                    SpotifyService.UserInformationObject user = spotify.service.getUser(spotify.AUTH_STRING).execute().body();
+                    String accountName = (user == null ? "null" : user.displayName);
+                    spotify.account_name = accountName;
+
+                    //Re-set status and account textboxes
+                    requireActivity().runOnUiThread(() ->
+                    {
+                        binding.settingsSpotifyStatus.setText(R.string.source_ready_desc);
+                        binding.settingsSpotifyAccount.setText(accountName);
+                        binding.settingsSpotifyAccount.setTextColor(getResources().getColor(R.color.okGreen));
+                    });
                 }
                 catch(IOException e)
                 {
                     Toast.makeText(getContext(), getString(R.string.auth_error) + " (IOException trying to obtain tokens)", Toast.LENGTH_SHORT).show();
-                    return;
                 }
             });
         }

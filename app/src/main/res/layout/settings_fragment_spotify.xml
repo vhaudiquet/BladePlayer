@@ -28,4 +28,16 @@
         android:layout_height="wrap_content"
         android:text="@string/sign_in" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settings_spotify_init"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/init" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settings_spotify_remove"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/remove" />
+
 </LinearLayout>

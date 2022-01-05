@@ -33,5 +33,14 @@
 
     <string name="sign_in">Sign in</string>
     <string name="disconnected">Disconnected</string>
-    <string name="auth_error">Authentication error, please try again</string>
+    <string name="auth_error">Authentication error</string>
+    <string name="init_error">Could not init source</string>
+    <string name="init">Initialize</string>
+    <string name="remove">Remove</string>
+    <string name="version">Version</string>
+    <string name="about_desc">Blade Player is an Android music player (by @vhaudiquet) made to play songs from multiple services.</string>
+    <string name="about_license">License : ???</string>
+    <string name="about_logo">Logo : @zularizal</string>
+    <string name="about_sources">Sources : github.com/vhaudiquet/BladePlayer</string>
+    <string name="about_libraries_used">Libraries used :</string>
 </resources>
