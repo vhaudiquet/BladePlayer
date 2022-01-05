@@ -21,8 +21,10 @@ import v.blade.library.Playlist;
 
 public class LibraryFragment extends Fragment
 {
+    public static LibraryFragment instance;
+
     private FragmentLibraryBinding binding;
-    private List<? extends LibraryObject> current;
+    public List<? extends LibraryObject> current;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState)
@@ -31,16 +33,22 @@ public class LibraryFragment extends Fragment
         View root = binding.getRoot();
 
         binding.mainListview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        String title = ((MainActivity) requireActivity()).binding == null ? getString(R.string.artists) : ((MainActivity) requireActivity()).binding.appBarMain.toolbar.getTitle().toString();
-        updateContent(title, null);
+        updateContent(getTitle(), null);
+
+        instance = this;
 
         return root;
+    }
+
+    public String getTitle()
+    {
+        return ((MainActivity) requireActivity()).binding == null ? getString(R.string.artists) : ((MainActivity) requireActivity()).binding.appBarMain.toolbar.getTitle().toString();
     }
 
     /*
      * Update content to list 'replacing', or to root directory
      */
-    private void updateContent(String title, List<? extends LibraryObject> replacing)
+    public void updateContent(String title, List<? extends LibraryObject> replacing)
     {
         if(replacing == null)
         {
@@ -53,6 +61,7 @@ public class LibraryFragment extends Fragment
                 current = Library.getSongs();
             else if(title.equals(getString(R.string.playlists)))
                 current = Library.getPlaylists();
+            else return;
         }
         else
         {

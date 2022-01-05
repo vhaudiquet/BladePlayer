@@ -20,7 +20,9 @@ import java.util.List;
 
 import v.blade.R;
 import v.blade.library.Album;
+import v.blade.library.Artist;
 import v.blade.library.LibraryObject;
+import v.blade.library.Playlist;
 import v.blade.library.Song;
 
 public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdapter.ViewHolder> implements ListAdapter
@@ -170,11 +172,23 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         RequestCreator image = current.getImageRequest();
         if(image != null)
             image.into(viewHolder.imageView);
+        else if(current instanceof Artist)
+            viewHolder.imageView.setImageResource(R.drawable.ic_artist);
+        else if(current instanceof Album || current instanceof Song)
+            viewHolder.imageView.setImageResource(R.drawable.ic_album);
+        else if(current instanceof Playlist)
+            viewHolder.imageView.setImageResource(R.drawable.ic_playlist);
 
         if(current instanceof Song)
             viewHolder.subtitleView.setText(((Song) current).getArtistsString());
         else if(current instanceof Album)
             viewHolder.subtitleView.setText(((Album) current).getArtistsString());
+        else if(current instanceof Artist)
+        {
+            String artistTrackCount = ((Artist) current).getTrackCount() + " "
+                    + viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
+            viewHolder.subtitleView.setText(artistTrackCount);
+        }
     }
 
     @Override

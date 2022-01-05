@@ -14,7 +14,7 @@ public class Artist extends LibraryObject
     {
         this.albums = new ArrayList<>();
         this.name = name;
-        this.imageRequest = Picasso.get().load(image);
+        this.imageRequest = (image == null || image.equals("")) ? null : Picasso.get().load(image);
         this.imageStr = image;
         this.track_count = 0;
     }
@@ -22,6 +22,11 @@ public class Artist extends LibraryObject
     protected void addAlbum(Album album)
     {
         this.albums.add(album);
+    }
+
+    public int getTrackCount()
+    {
+        return track_count;
     }
 
     public List<Album> getAlbums()

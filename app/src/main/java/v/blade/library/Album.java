@@ -19,8 +19,8 @@ public class Album extends LibraryObject
         this.songList = new ArrayList<>();
         this.artists = artists;
         this.imageBigStr = imageBig;
-        this.imageRequest = Picasso.get().load(imageMiniature);
-        this.imageBig = Picasso.get().load(imageBig);
+        this.imageRequest = (imageMiniature == null || imageMiniature.equals("")) ? null : Picasso.get().load(imageMiniature);
+        this.imageBig = (imageBig == null || imageBig.equals("")) ? null : Picasso.get().load(imageBig);
         this.imageStr = imageMiniature;
     }
 

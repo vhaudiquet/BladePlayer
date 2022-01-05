@@ -22,6 +22,7 @@ import java.util.List;
 import v.blade.BladeApplication;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
+import v.blade.ui.LibraryFragment;
 
 public class Library
 {
@@ -152,6 +153,11 @@ public class Library
         songs_list = new ArrayList<>(library_songs.values());
         Collections.sort(songs_list, (song, t1) -> song.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
 
+        //NotifyDatasetChanged for mainListView actualization
+        if(LibraryFragment.instance != null)
+            LibraryFragment.instance.requireActivity().runOnUiThread(() ->
+                    LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null));
+
         //TODO : maybe sort playlists ??
 
         for(Album album : albums_list)
@@ -239,8 +245,6 @@ public class Library
             StringBuilder js = new StringBuilder();
             while(reader.ready()) js.append(reader.readLine()).append("\n");
             reader.close();
-
-            System.out.println("Library :\n" + js.toString());
 
             //obtain from JSON
             JSONObject root = new JSONObject(js.toString());
