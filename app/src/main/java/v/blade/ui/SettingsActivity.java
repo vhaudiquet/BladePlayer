@@ -417,9 +417,6 @@ public class SettingsActivity extends AppCompatActivity implements
                 {
                     Source toAdd = (Source) c.newInstance();
 
-                    //Set source default name
-                    toAdd.setName(c.getSimpleName());
-
                     //Set source default status
                     toAdd.setStatus(Source.SourceStatus.STATUS_DOWN);
 

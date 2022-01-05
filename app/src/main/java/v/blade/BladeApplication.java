@@ -8,6 +8,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import v.blade.sources.Source;
+
 public class BladeApplication extends Application
 {
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 4, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
@@ -22,7 +24,12 @@ public class BladeApplication extends Application
         //Provide static access to application context (eg. for 'Local' source, needing ContentProvider)
         appContext = base;
 
-        //Initialize thread poo
+        //Load sources
+        executorService.execute(() ->
+        {
+            Source.loadSourcesFromSave();
+            Source.initSources();
+        });
     }
 
     public static ExecutorService obtainExecutorService()

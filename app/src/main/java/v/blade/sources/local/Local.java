@@ -7,6 +7,9 @@ import android.provider.MediaStore;
 import androidx.core.content.ContentResolverCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.library.Library;
@@ -67,5 +70,22 @@ public class Local extends Source
     public Fragment getSettingsFragment()
     {
         return null;
+    }
+
+    @Override
+    public JsonObject saveToJSON()
+    {
+        JsonObject jsonObject = new JsonObject();
+        Gson gson = new Gson();
+
+        jsonObject.add("class", gson.toJsonTree(Local.class.getName(), String.class));
+
+        return jsonObject;
+    }
+
+    @Override
+    public void restoreFromJSON(JsonObject jsonObject)
+    {
+
     }
 }

@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -59,6 +61,11 @@ public class Spotify extends Source
             "user-read-recently-played", "user-top-read", "user-read-playback-position", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing"};
     private static final int SPOTIFY_REQUEST_CODE = 0x11;
     protected static final String REDIRECT_URI = "spotify-sdk://auth";
+
+    public Spotify()
+    {
+        this.name = BladeApplication.appContext.getString(NAME_RESOURCE);
+    }
 
     @SuppressWarnings({"FieldMayBeFinal", "unused"})
     private static class SpotifyTokenResponse
@@ -123,6 +130,7 @@ public class Spotify extends Source
                     //noinspection ConstantConditions
                     String responseBody = response.body() == null ? "Unknown error" : response.body().string();
                     Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
+                    System.err.println(BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")");
                     status = SourceStatus.STATUS_NEED_INIT;
                     return;
                 }
@@ -141,13 +149,13 @@ public class Spotify extends Source
                 ACCESS_TOKEN = sr.access_token;
                 TOKEN_EXPIRES_IN = sr.expires_in;
 
-                //TODO re-save new refresh token ? it can return a different one
-                // so i guess it invalidates the one before ? idk...
-                //REFRESH_TOKEN = sr.refresh_token;
+                REFRESH_TOKEN = sr.refresh_token;
 
                 AUTH_STRING = AUTH_TYPE + ACCESS_TOKEN;
 
                 status = SourceStatus.STATUS_READY;
+
+                Source.saveSources();
             }
             catch(IOException e)
             {
@@ -167,6 +175,30 @@ public class Spotify extends Source
     public Fragment getSettingsFragment()
     {
         return new Spotify.SettingsFragment(this);
+    }
+
+    @Override
+    public JsonObject saveToJSON()
+    {
+        JsonObject jsonObject = new JsonObject();
+        Gson gson = new Gson();
+
+        jsonObject.add("class", gson.toJsonTree(Spotify.class.getName(), String.class));
+        jsonObject.add("account_name", gson.toJsonTree(account_name, String.class));
+        jsonObject.add("refresh_token", gson.toJsonTree(REFRESH_TOKEN, String.class));
+
+        return jsonObject;
+    }
+
+    @Override
+    public void restoreFromJSON(JsonObject jsonObject)
+    {
+        JsonElement accountNameJson = jsonObject.get("account_name");
+        if(accountNameJson != null) account_name = accountNameJson.getAsString();
+        else account_name = "null";
+
+        JsonElement refreshTokenJson = jsonObject.get("refresh_token");
+        if(refreshTokenJson != null) REFRESH_TOKEN = refreshTokenJson.getAsString();
     }
 
     public static class SettingsFragment extends Fragment
@@ -266,6 +298,7 @@ public class Spotify extends Source
             {
                 spotify.initSource();
                 //TODO update current interface on callback
+                Source.saveSources();
             });
 
             binding.settingsSpotifyRemove.setOnClickListener(view ->
@@ -347,11 +380,9 @@ public class Spotify extends Source
                     spotify.service = spotify.retrofit.create(SpotifyService.class);
                     spotify.status = SourceStatus.STATUS_READY;
 
-                    //TODO save source
-
                     //obtain account name
                     SpotifyService.UserInformationObject user = spotify.service.getUser(spotify.AUTH_STRING).execute().body();
-                    String accountName = (user == null ? "null" : user.displayName);
+                    String accountName = (user == null ? "null" : (user.displayName == null ? "null" : user.displayName));
                     spotify.account_name = accountName;
 
                     //Re-set status and account textboxes
@@ -361,6 +392,9 @@ public class Spotify extends Source
                         binding.settingsSpotifyAccount.setText(accountName);
                         binding.settingsSpotifyAccount.setTextColor(getResources().getColor(R.color.okGreen));
                     });
+
+                    //Re-Save all sources
+                    Source.saveSources();
                 }
                 catch(IOException e)
                 {
