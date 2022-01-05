@@ -18,6 +18,6 @@ public class Playlist extends LibraryObject
 
     public List<Song> getSongs()
     {
-        return null;
+        return songs;
     }
 }

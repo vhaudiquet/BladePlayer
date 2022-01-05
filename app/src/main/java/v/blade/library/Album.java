@@ -1,5 +1,6 @@
 package v.blade.library;
 
+import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
 import java.util.ArrayList;
@@ -9,15 +10,18 @@ public class Album extends LibraryObject
 {
     Artist[] artists;
     List<Song> songList;
+    String imageBigStr;
     RequestCreator imageBig;
 
-    public Album(String name, Artist[] artists, RequestCreator imageMiniature, RequestCreator imageBig)
+    public Album(String name, Artist[] artists, String imageMiniature, String imageBig)
     {
         this.name = name;
         this.songList = new ArrayList<>();
         this.artists = artists;
-        this.imageRequest = imageMiniature;
-        this.imageBig = imageBig;
+        this.imageBigStr = imageBig;
+        this.imageRequest = Picasso.get().load(imageMiniature);
+        this.imageBig = Picasso.get().load(imageBig);
+        this.imageStr = imageMiniature;
     }
 
     protected void addSong(Song s)
@@ -43,6 +47,6 @@ public class Album extends LibraryObject
 
     public List<Song> getSongs()
     {
-        return null;
+        return songList;
     }
 }

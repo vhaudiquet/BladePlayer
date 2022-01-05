@@ -235,11 +235,9 @@ public class Spotify extends Source
     public JsonObject saveToJSON()
     {
         JsonObject jsonObject = new JsonObject();
-        Gson gson = new Gson();
-
-        jsonObject.add("class", gson.toJsonTree(Spotify.class.getName(), String.class));
-        jsonObject.add("account_name", gson.toJsonTree(account_name, String.class));
-        jsonObject.add("refresh_token", gson.toJsonTree(REFRESH_TOKEN, String.class));
+        jsonObject.addProperty("class", Spotify.class.getName());
+        jsonObject.addProperty("account_name", account_name);
+        jsonObject.addProperty("refresh_token", REFRESH_TOKEN);
 
         return jsonObject;
     }
@@ -253,6 +251,7 @@ public class Spotify extends Source
 
         JsonElement refreshTokenJson = jsonObject.get("refresh_token");
         if(refreshTokenJson != null) REFRESH_TOKEN = refreshTokenJson.getAsString();
+        else status = SourceStatus.STATUS_DOWN;
     }
 
     public static class SettingsFragment extends Fragment

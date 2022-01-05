@@ -11,6 +11,7 @@ public abstract class LibraryObject
     protected String name;
     protected ArrayList<SourceInformation> sources;
     protected RequestCreator imageRequest = null;
+    protected String imageStr = null;
 
     public String getName()
     {

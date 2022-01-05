@@ -48,9 +48,19 @@ public class Song extends LibraryObject
         return sb.toString();
     }
 
+    public int getTrackNumber()
+    {
+        return track_number;
+    }
+
     public Album getAlbum()
     {
         return album;
+    }
+
+    public List<SourceInformation> getSources()
+    {
+        return sources;
     }
 
     @Override

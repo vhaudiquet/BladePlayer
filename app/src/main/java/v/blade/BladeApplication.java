@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import v.blade.library.Library;
 import v.blade.sources.Source;
 
 public class BladeApplication extends Application
@@ -29,6 +30,8 @@ public class BladeApplication extends Application
         {
             Source.loadSourcesFromSave();
             Source.initSources();
+
+            Library.loadFromCache();
         });
     }
 

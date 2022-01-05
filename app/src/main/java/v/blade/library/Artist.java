@@ -1,6 +1,6 @@
 package v.blade.library;
 
-import com.squareup.picasso.RequestCreator;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +10,12 @@ public class Artist extends LibraryObject
     List<Album> albums;
     int track_count;
 
-    public Artist(String name, RequestCreator image)
+    public Artist(String name, String image)
     {
         this.albums = new ArrayList<>();
         this.name = name;
-        this.imageRequest = image;
+        this.imageRequest = Picasso.get().load(image);
+        this.imageStr = image;
         this.track_count = 0;
     }
 
@@ -25,6 +26,6 @@ public class Artist extends LibraryObject
 
     public List<Album> getAlbums()
     {
-        return null;
+        return albums;
     }
 }

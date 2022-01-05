@@ -421,6 +421,7 @@ public class SettingsActivity extends AppCompatActivity implements
                     toAdd.setStatus(Source.SourceStatus.STATUS_DOWN);
 
                     Source.SOURCES.add(toAdd);
+                    toAdd.setIndex(Source.SOURCES.size() - 1);
                     Objects.requireNonNull(binding.settingsSourcesListview.getAdapter()).notifyDataSetChanged();
                 }
                 catch(IllegalAccessException | java.lang.InstantiationException ignored)

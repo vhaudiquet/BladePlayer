@@ -43,6 +43,7 @@ public abstract class Source
 
     protected String name;
     protected SourceStatus status = SourceStatus.STATUS_NEED_INIT;
+    protected int index;
 
     public Source()
     {
@@ -51,6 +52,16 @@ public abstract class Source
     public String getName()
     {
         return name;
+    }
+
+    public int getIndex()
+    {
+        return index;
+    }
+
+    public void setIndex(int index)
+    {
+        this.index = index;
     }
 
     public void setName(String name)
@@ -147,6 +158,7 @@ public abstract class Source
             for(int i = 0; i < sourceArray.length(); i++)
             {
                 Source s = gson.fromJson(sourceArray.get(i).toString(), Source.class);
+                s.index = i;
                 SOURCES.add(s);
             }
         }
@@ -158,7 +170,7 @@ public abstract class Source
     @SuppressWarnings("rawtypes")
     public static void synchronizeSources()
     {
-        List<Future> futures = new ArrayList<>();
+        final List<Future> futures = new ArrayList<>();
         for(Source s : SOURCES)
         {
             if(s.status != SourceStatus.STATUS_READY) continue;
@@ -168,6 +180,9 @@ public abstract class Source
 
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            //TODO : This is active waiting ; we could actually do passive waiting using a callback
+            // on synchronizeLibrary (using a lambda instead, synchronizeLibrary and call callback, checking
+            // if alldone...) ; the problem on that is that we need to wait for the for loop end to start all threads
             boolean allDone = false;
             while(!allDone)
             {
@@ -177,6 +192,7 @@ public abstract class Source
 
             //Every source synchronization is done, we can now sort and save library
             Library.generateLists();
+            Library.save();
         });
     }
 
