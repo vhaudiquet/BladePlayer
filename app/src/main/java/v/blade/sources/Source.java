@@ -34,7 +34,7 @@ public abstract class Source
     private static final String SOURCES_FILE = "/sources.json";
     public static final ArrayList<Source> SOURCES = new ArrayList<>();
 
-    public static boolean isSyncing = false;
+    public static volatile boolean isSyncing = false;
 
     public enum SourceStatus
     {

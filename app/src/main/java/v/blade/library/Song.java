@@ -15,7 +15,8 @@ public class Song extends LibraryObject
     Album album;
     int track_number;
 
-    protected Song(String name, Album album, Artist[] artists, int track_number)
+    //TODO REMOVE MAKE PROTECTED, FOR MEDIASESSION TESTING
+    public Song(String name, Album album, Artist[] artists, int track_number)
     {
         this.name = name;
         this.artists = artists;
@@ -46,6 +47,22 @@ public class Song extends LibraryObject
             if(i != artists.length - 1) sb = sb.append(", ");
         }
         return sb.toString();
+    }
+
+    public SourceInformation getBestSource()
+    {
+        //TODO : Sort the list by ids at construction, and return source.get(0) maybe
+        SourceInformation best = sources.get(0);
+        int min = sources.get(0).source.getIndex();
+        for(int i = 1; i < sources.size(); i++)
+        {
+            if(sources.get(i).source.getIndex() < min)
+            {
+                best = sources.get(i);
+                min = best.source.getIndex();
+            }
+        }
+        return best;
     }
 
     public int getTrackNumber()

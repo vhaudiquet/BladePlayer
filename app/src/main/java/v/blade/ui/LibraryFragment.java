@@ -1,6 +1,7 @@
 package v.blade.ui;
 
 import android.os.Bundle;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import v.blade.library.Artist;
 import v.blade.library.Library;
 import v.blade.library.LibraryObject;
 import v.blade.library.Playlist;
+import v.blade.library.Song;
 
 public class LibraryFragment extends Fragment
 {
@@ -89,7 +91,11 @@ public class LibraryFragment extends Fragment
             updateContent(element.getName(), ((Album) element).getSongs());
         else if(element instanceof Playlist)
             updateContent(element.getName(), ((Playlist) element).getSongs());
-        //TODO : if element is Song, change player playlist...
+            //TODO : if element is Song, change player playlist...
+        else if(element instanceof Song)
+            //TODO REMOVE THIS, TEST MEDIASESSION
+            MediaControllerCompat.getMediaController(requireActivity()).getTransportControls()
+                    .playFromMediaId((String) ((Song) element).getSources().get(0).id, null);
     }
 
     private void onMoreClicked(View view)

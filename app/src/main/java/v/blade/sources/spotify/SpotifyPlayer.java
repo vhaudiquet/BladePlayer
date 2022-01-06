@@ -4,19 +4,25 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
+import android.provider.Settings;
 
 import com.spotify.connectstate.Connect;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
+import v.blade.BladeApplication;
 import v.blade.library.Song;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
+import xyz.gianlu.librespot.audio.MetadataWrapper;
 import xyz.gianlu.librespot.core.Session;
+import xyz.gianlu.librespot.metadata.PlayableId;
 import xyz.gianlu.librespot.player.Player;
 import xyz.gianlu.librespot.player.PlayerConfiguration;
 import xyz.gianlu.librespot.player.mixing.output.OutputAudioFormat;
@@ -25,8 +31,10 @@ import xyz.gianlu.librespot.player.mixing.output.SinkOutput;
 
 public class SpotifyPlayer extends Source.Player
 {
-    private Player spotifyPlayer;
-    protected Session playerSession;
+    private WeakReference<Player> spotifyPlayer;
+    private volatile boolean isLoggingIn;
+    protected WeakReference<Session> playerSession;
+    private int trackChanges;
     protected final Spotify current;
 
     public SpotifyPlayer(Spotify source)
@@ -36,25 +44,41 @@ public class SpotifyPlayer extends Source.Player
 
     public boolean login(String username, String password)
     {
+        if(isLoggingIn) return false;
+
+        isLoggingIn = true;
+
         Session.Configuration conf = new Session.Configuration.Builder()
                 .setStoreCredentials(false)
                 .setCacheEnabled(false)
                 .build();
 
+        String deviceName = null;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1)
+            deviceName = Settings.Global.getString(BladeApplication.appContext.getContentResolver(), Settings.Global.DEVICE_NAME);
+        if(deviceName == null)
+            deviceName = Build.MANUFACTURER + " " + Build.MODEL;
+
+        //TODO : we are storing plain passwords locally
+        // this is not a critical security issue, as technically since a certain android version,
+        // only Blade can access Blade file directory. However, we could store 'blobs', it
+        // would improve security without any penalty
         Session.Builder sessionBuilder = new Session.Builder(conf);
         sessionBuilder.userPass(username, password)
                 .setPreferredLocale(Locale.getDefault().getLanguage())
                 .setDeviceType(Connect.DeviceType.SMARTPHONE)
-                .setDeviceId(null).setDeviceName("Blade");
+                .setDeviceId(null).setDeviceName("Blade (" + deviceName + ")");
 
         try
         {
-            playerSession = sessionBuilder.create();
+            playerSession = new WeakReference<>(sessionBuilder.create());
+            isLoggingIn = false;
             return true;
         }
         catch(Exception e)
         {
             e.printStackTrace();
+            isLoggingIn = false;
             return false;
         }
     }
@@ -66,31 +90,123 @@ public class SpotifyPlayer extends Source.Player
         PlayerConfiguration playerConfiguration = new PlayerConfiguration.Builder()
                 .setOutput(PlayerConfiguration.AudioOutput.CUSTOM)
                 .setOutputClass(BladeSinkOutput.class.getName())
-                .setAutoplayEnabled(false)
+                //.setAutoplayEnabled(false)
+                // NOTE : when i set autoplay disabled, the player crashes at the end of play
+                //  and i can't seem to be able to intercept that crash ; so i just set autoplay
+                //  enabled and pause the player on track end
                 .build();
 
         //init the player
-        spotifyPlayer = new Player(playerConfiguration, playerSession);
+        spotifyPlayer = new WeakReference<>(new Player(playerConfiguration, playerSession.get()));
+        spotifyPlayer.get().addEventsListener(new Player.EventsListener()
+        {
+            @Override
+            public void onContextChanged(@NotNull Player player, @NotNull String newUri)
+            {
+                //trackChanges = 0;
+            }
+
+            @Override
+            public void onTrackChanged(@NotNull Player player, @NotNull PlayableId id, @Nullable MetadataWrapper metadata, boolean userInitiated)
+            {
+                if(trackChanges >= 1)
+                {
+                    player.pause();
+                    //TODO notify mediasession that playback ended
+                }
+                trackChanges++;
+            }
+
+            @Override
+            public void onPlaybackEnded(@NotNull Player player)
+            {
+            }
+
+            @Override
+            public void onPlaybackPaused(@NotNull Player player, long trackTime)
+            {
+
+            }
+
+            @Override
+            public void onPlaybackResumed(@NotNull Player player, long trackTime)
+            {
+
+            }
+
+            @Override
+            public void onTrackSeeked(@NotNull Player player, long trackTime)
+            {
+
+            }
+
+            @Override
+            public void onMetadataAvailable(@NotNull Player player, @NotNull MetadataWrapper metadata)
+            {
+
+            }
+
+            @Override
+            public void onPlaybackHaltStateChanged(@NotNull Player player, boolean halted, long trackTime)
+            {
+
+            }
+
+            @Override
+            public void onInactiveSession(@NotNull Player player, boolean timeout)
+            {
+
+            }
+
+            @Override
+            public void onVolumeChanged(@NotNull Player player, @Range(from = 0L, to = 1L) float volume)
+            {
+
+            }
+
+            @Override
+            public void onPanicState(@NotNull Player player)
+            {
+
+            }
+
+            @Override
+            public void onStartedLoading(@NotNull Player player)
+            {
+
+            }
+
+            @Override
+            public void onFinishedLoading(@NotNull Player player)
+            {
+
+            }
+        });
     }
 
     @Override
     public void play()
     {
         if(spotifyPlayer == null) return;
-        spotifyPlayer.play();
+        if(spotifyPlayer.get() == null) init();
+
+        spotifyPlayer.get().play();
     }
 
     @Override
     public void pause()
     {
         if(spotifyPlayer == null) return;
-        spotifyPlayer.pause();
+        if(spotifyPlayer.get() == null) init();
+
+        spotifyPlayer.get().pause();
     }
 
     @Override
     public void playSong(Song song)
     {
         if(spotifyPlayer == null) return;
+        if(spotifyPlayer.get() == null) init();
 
         SourceInformation current = null;
         for(int i = 0; i < song.getSources().size(); i++)
@@ -103,24 +219,34 @@ public class SpotifyPlayer extends Source.Player
         }
         if(current == null) return;
 
-        spotifyPlayer.load("spotify:track:" + current.id, true, false);
+        trackChanges = 0;
+        spotifyPlayer.get().load("spotify:track:" + current.id, true, false);
     }
 
     @Override
     public void seekTo(int millis)
     {
-        spotifyPlayer.seek(millis);
+        if(spotifyPlayer == null) return;
+        if(spotifyPlayer.get() == null) return;
+
+        spotifyPlayer.get().seek(millis);
     }
 
     @Override
     public int getCurrentPosition()
     {
-        return spotifyPlayer.time();
+        if(spotifyPlayer == null) return 0;
+        if(spotifyPlayer.get() == null) return 0;
+
+        return spotifyPlayer.get().time();
     }
 
     /*
      * Inspired by https://github.com/devgianlu/librespot-android/blob/master/librespot-android-sink/src/main/java/xyz/gianlu/librespot/android/sink/AndroidSinkOutput.java
      * This is using https://developer.android.com/reference/android/media/AudioTrack
+     * TODO : Maybe implement other outputs, using android native decoder or libtremolo
+     *  According to https://github.com/devgianlu/librespot-android/pull/9#issuecomment-832923010, i guess that this output is the
+     *  worst one performance-wise, not sure tho
      */
     public static class BladeSinkOutput implements SinkOutput
     {
@@ -219,7 +345,8 @@ public class SpotifyPlayer extends Source.Player
         @Override
         public void stop()
         {
-            if(currentTrack != null) currentTrack.stop();
+            if(currentTrack != null && currentTrack.getPlayState() != AudioTrack.PLAYSTATE_STOPPED)
+                currentTrack.stop();
         }
 
         @SuppressWarnings("RedundantThrows")
