@@ -35,7 +35,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="auth_error">Authentication error</string>
     <string name="init_error">Could not init source</string>
-    <string name="init">Initialize</string>
+    <string name="force_init">Force initialization</string>
     <string name="remove">Remove</string>
     <string name="version">Version</string>
     <string name="about_desc">Blade Player is an Android music player (by @vhaudiquet) made to play songs from multiple services.</string>
@@ -43,4 +43,8 @@
     <string name="about_logo">Logo : @zularizal</string>
     <string name="about_sources">Sources : github.com/vhaudiquet/BladePlayer</string>
     <string name="about_libraries_used">Libraries used :</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="spotify_login_desc">(You might need to enter your credentials again, for API and Player)</string>
+    <string name="please_sync_to_apply">Please sync library to apply your changes</string>
 </resources>

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
+import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentAboutBinding;
 import v.blade.databinding.SettingsFragmentSourcesBinding;
@@ -358,7 +360,19 @@ public class SettingsActivity extends AppCompatActivity implements
             //Set list to current sources
             RecyclerView sourcesListView = binding.settingsSourcesListview;
             sourcesListView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback(Source.SOURCES));
+            ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback(Source.SOURCES)
+            {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+                {
+                    boolean tr = super.onMove(recyclerView, viewHolder, target);
+
+                    //this is 'scheduleSave' : save changes after library sync
+                    Toast.makeText(BladeApplication.appContext, R.string.please_sync_to_apply, Toast.LENGTH_LONG).show();
+
+                    return tr;
+                }
+            });
             touchHelper.attachToRecyclerView(sourcesListView);
             SourceAdapter sourceAdapter = new SourceAdapter(touchHelper, view ->
             {

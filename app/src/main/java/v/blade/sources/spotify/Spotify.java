@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import kotlin.random.Random;
 import okhttp3.FormBody;
@@ -53,6 +55,7 @@ public class Spotify extends Source
     public static final int NAME_RESOURCE = R.string.spotify;
     public static final int DESCRIPTION_RESOURCE = R.string.spotify_desc;
     public static final int IMAGE_RESOURCE = R.drawable.ic_spotify;
+    private static final int CACHE_VERSION = 1;
 
     //Spotify AUTH : We are using 'Authorization Code Flow' with 'PKCE extension'
     private static final String BASE_API_URL = "https://api.spotify.com/v1/";
@@ -67,6 +70,7 @@ public class Spotify extends Source
     {
         super();
         this.name = BladeApplication.appContext.getString(NAME_RESOURCE);
+        this.player = new SpotifyPlayer(this);
     }
 
     @SuppressWarnings({"FieldMayBeFinal", "unused"})
@@ -84,11 +88,17 @@ public class Spotify extends Source
     }
 
     //Spotify login information
-    private String account_name;
+    //Player login
+    private String account_name; //i.e. username, retrieved by api
+    private String account_login; //what the user uses to login (mail or username)
+    private String account_password;
+
+    //API login
     private String ACCESS_TOKEN;
     private String REFRESH_TOKEN;
     private int TOKEN_EXPIRES_IN;
     private String AUTH_STRING;
+
     private Retrofit retrofit;
     private SpotifyService service;
 
@@ -124,6 +134,17 @@ public class Spotify extends Source
             //Prepare a looper so that we can toast
             Looper.prepare();
 
+            //First init the player
+            boolean login = ((SpotifyPlayer) player).login(account_login, account_password);
+            if(!login)
+            {
+                Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not login)", Toast.LENGTH_SHORT).show();
+                status = SourceStatus.STATUS_NEED_INIT;
+                return;
+            }
+            player.init();
+
+            //Then init
             try
             {
                 okhttp3.Response response = call.execute();
@@ -238,6 +259,9 @@ public class Spotify extends Source
         jsonObject.addProperty("class", Spotify.class.getName());
         jsonObject.addProperty("account_name", account_name);
         jsonObject.addProperty("refresh_token", REFRESH_TOKEN);
+        jsonObject.addProperty("cache_version", CACHE_VERSION);
+        jsonObject.addProperty("account_login", account_login);
+        jsonObject.addProperty("account_password", account_password);
 
         return jsonObject;
     }
@@ -245,9 +269,21 @@ public class Spotify extends Source
     @Override
     public void restoreFromJSON(JsonObject jsonObject)
     {
+        int cache_version = jsonObject.get("cache_version") == null ? 0 : jsonObject.get("cache_version").getAsInt();
+        if(cache_version > CACHE_VERSION)
+            System.err.println("Spotify cached source with version greater than current... Trying to read with old way.");
+
+        JsonElement accountLoginJson = jsonObject.get("account_login");
+        if(accountLoginJson != null) account_login = accountLoginJson.getAsString();
+        else account_login = "null";
+
+        JsonElement accountPasswordJson = jsonObject.get("account_password");
+        if(accountPasswordJson != null) account_password = accountPasswordJson.getAsString();
+        else account_password = "null";
+
         JsonElement accountNameJson = jsonObject.get("account_name");
         if(accountNameJson != null) account_name = accountNameJson.getAsString();
-        else account_name = "null";
+        else account_name = account_login;
 
         JsonElement refreshTokenJson = jsonObject.get("refresh_token");
         if(refreshTokenJson != null) REFRESH_TOKEN = refreshTokenJson.getAsString();
@@ -303,6 +339,35 @@ public class Spotify extends Source
             //Set 'sign in' button action : call spotify auth
             binding.settingsSpotifySignIn.setOnClickListener(v ->
             {
+                //Try to login player
+                String userName = binding.settingsSpotifyUser.getText().toString();
+                String userPass = binding.settingsSpotifyPassword.getText().toString();
+
+                Future<Boolean> future = BladeApplication.obtainExecutorService().submit(() ->
+                        ((SpotifyPlayer) spotify.getPlayer()).login(userName, userPass));
+
+                boolean login;
+                try
+                {
+                    login = future.get();
+                }
+                catch(ExecutionException | InterruptedException e)
+                {
+                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not log in, interrupted, maybe try again)", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    return;
+                }
+
+                if(!login)
+                {
+                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not log in)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                spotify.getPlayer().init();
+                spotify.account_login = userName;
+                spotify.account_password = userPass;
+
                 //Generate random code for PKCE
                 int codeLen = Random.Default.nextInt(43, 128);
 
@@ -358,7 +423,8 @@ public class Spotify extends Source
             {
                 Source.SOURCES.remove(spotify);
                 requireActivity().onBackPressed();
-                Source.saveSources();
+                Toast.makeText(BladeApplication.appContext, R.string.please_sync_to_apply, Toast.LENGTH_LONG).show();
+                //this is 'scheduleSave' after library sync
             });
 
             return binding.getRoot();
@@ -448,7 +514,8 @@ public class Spotify extends Source
                     });
 
                     //Re-Save all sources
-                    Source.saveSources();
+                    //this is 'scheduleSave' after library Sync
+                    Toast.makeText(BladeApplication.appContext, R.string.please_sync_to_apply, Toast.LENGTH_LONG).show();
                 }
                 catch(IOException e)
                 {

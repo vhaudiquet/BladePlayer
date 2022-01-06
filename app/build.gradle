@@ -29,6 +29,10 @@ android {
     buildFeatures {
         viewBinding true
     }
+    packagingOptions {
+        exclude 'log4j2.xml'
+        exclude 'META-INF/DEPENDENCIES'
+    }
 }
 
 dependencies {
@@ -41,12 +45,18 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.media:media:1.4.3'
 
     /* Image loading : Picasso */
     implementation 'com.squareup.picasso:picasso:2.8'
 
     /* Spotify : librespot + auth (+ retrofit) */
-    implementation 'xyz.gianlu.librespot:librespot-lib:1.6.2'
+    implementation('xyz.gianlu.librespot:librespot-player:1.6.2:thin') {
+        exclude group: 'xyz.gianlu.librespot', module: 'librespot-sink'
+        exclude group: 'com.lmax', module: 'disruptor'
+        exclude group: 'org.apache.logging.log4j'
+    }
+    implementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0' //Needed to log librespot-player
     implementation 'com.spotify.android:auth:1.2.6'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'

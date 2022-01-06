@@ -20,7 +20,6 @@ import v.blade.sources.Source;
 
 public class MainActivity extends AppCompatActivity
 {
-
     private AppBarConfiguration mAppBarConfiguration;
     protected ActivityMainBinding binding;
 
@@ -66,6 +65,9 @@ public class MainActivity extends AppCompatActivity
         }
         else if(id == R.id.action_sync)
         {
+            if(Source.isSyncing) return false;
+
+            //TODO : handle icon change
             Source.synchronizeSources();
             return true;
         }

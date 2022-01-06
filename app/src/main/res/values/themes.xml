@@ -4,7 +4,7 @@
         <!-- Primary color -->
         <item name="colorPrimary">@color/bladeGrey</item>
         <item name="colorPrimaryVariant">@color/bladeGreyLighter</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/bladeGreyLighter</item>
         <!-- Secondary color -->
         <item name="colorSecondary">@color/bladeGreyLighter</item>
         <item name="colorSecondaryVariant">@color/bladeGreyLight</item>

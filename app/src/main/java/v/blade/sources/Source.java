@@ -27,11 +27,14 @@ import java.util.concurrent.Future;
 
 import v.blade.BladeApplication;
 import v.blade.library.Library;
+import v.blade.library.Song;
 
 public abstract class Source
 {
     private static final String SOURCES_FILE = "/sources.json";
     public static final ArrayList<Source> SOURCES = new ArrayList<>();
+
+    public static boolean isSyncing = false;
 
     public enum SourceStatus
     {
@@ -41,9 +44,25 @@ public abstract class Source
         STATUS_READY //Ready : source is ready and available for use
     }
 
+    public abstract static class Player
+    {
+        public abstract void init();
+
+        public abstract void play();
+
+        public abstract void pause();
+
+        public abstract void playSong(Song song);
+
+        public abstract void seekTo(int millis);
+
+        public abstract int getCurrentPosition();
+    }
+
     protected String name;
     protected SourceStatus status = SourceStatus.STATUS_NEED_INIT;
     protected int index;
+    protected Player player;
 
     public Source()
     {
@@ -77,6 +96,11 @@ public abstract class Source
     public void setStatus(SourceStatus status)
     {
         this.status = status;
+    }
+
+    public Player getPlayer()
+    {
+        return player;
     }
 
     public abstract int getImageResource();
@@ -170,6 +194,8 @@ public abstract class Source
     @SuppressWarnings("rawtypes")
     public static void synchronizeSources()
     {
+        isSyncing = true;
+
         final List<Future> futures = new ArrayList<>();
         for(Source s : SOURCES)
         {
@@ -193,6 +219,9 @@ public abstract class Source
             //Every source synchronization is done, we can now sort and save library
             Library.generateLists();
             Library.save();
+            Source.saveSources(); //scheduleSave, if a source changed, we stay ok...
+            //TODO : handle 'sync' icon change
+            isSyncing = false;
         });
     }
 
