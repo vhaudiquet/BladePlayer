@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="v.blade">
 
+    <!-- Start foreground service : for notifications -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <!-- Read external storage : needed for Local source -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -39,11 +42,21 @@
 
         <service
             android:name=".player.MediaBrowserService"
-            android:exported="false">
+            android:exported="true"
+            android:permission="blade">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name="androidx.media.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

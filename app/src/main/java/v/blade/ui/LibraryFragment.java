@@ -20,6 +20,7 @@ import v.blade.library.Library;
 import v.blade.library.LibraryObject;
 import v.blade.library.Playlist;
 import v.blade.library.Song;
+import v.blade.player.MediaBrowserService;
 
 public class LibraryFragment extends Fragment
 {
@@ -80,10 +81,10 @@ public class LibraryFragment extends Fragment
     {
         int position = binding.mainListview.getChildLayoutPosition(view);
         LibraryObject clicked = current.get(position);
-        onElementClicked(clicked);
+        onElementClicked(clicked, position);
     }
 
-    private void onElementClicked(LibraryObject element)
+    private void onElementClicked(LibraryObject element, int position)
     {
         if(element instanceof Artist)
             updateContent(element.getName(), ((Artist) element).getAlbums());
@@ -91,11 +92,13 @@ public class LibraryFragment extends Fragment
             updateContent(element.getName(), ((Album) element).getSongs());
         else if(element instanceof Playlist)
             updateContent(element.getName(), ((Playlist) element).getSongs());
-            //TODO : if element is Song, change player playlist...
         else if(element instanceof Song)
-            //TODO REMOVE THIS, TEST MEDIASESSION
-            MediaControllerCompat.getMediaController(requireActivity()).getTransportControls()
-                    .playFromMediaId((String) ((Song) element).getSources().get(0).id, null);
+        {
+            //noinspection unchecked
+            MediaBrowserService.getInstance().setPlaylist((List<Song>) current);
+            MediaBrowserService.getInstance().setIndex(position);
+            MediaControllerCompat.getMediaController(requireActivity()).getTransportControls().play();
+        }
     }
 
     private void onMoreClicked(View view)

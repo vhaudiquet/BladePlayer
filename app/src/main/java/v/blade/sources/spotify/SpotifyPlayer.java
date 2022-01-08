@@ -36,6 +36,7 @@ public class SpotifyPlayer extends Source.Player
     protected WeakReference<Session> playerSession;
     private int trackChanges;
     protected final Spotify current;
+    private boolean isPaused;
 
     public SpotifyPlayer(Spotify source)
     {
@@ -115,6 +116,7 @@ public class SpotifyPlayer extends Source.Player
                     //TODO notify mediasession that playback ended
                 }
                 trackChanges++;
+                isPaused = false;
             }
 
             @Override
@@ -125,13 +127,13 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onPlaybackPaused(@NotNull Player player, long trackTime)
             {
-
+                isPaused = true;
             }
 
             @Override
             public void onPlaybackResumed(@NotNull Player player, long trackTime)
             {
-
+                isPaused = false;
             }
 
             @Override
@@ -239,6 +241,15 @@ public class SpotifyPlayer extends Source.Player
         if(spotifyPlayer.get() == null) return 0;
 
         return spotifyPlayer.get().time();
+    }
+
+    @Override
+    public boolean isPaused()
+    {
+        if(spotifyPlayer == null) return false;
+        if(spotifyPlayer.get() == null) return false;
+
+        return isPaused;
     }
 
     /*

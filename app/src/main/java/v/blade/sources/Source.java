@@ -57,6 +57,8 @@ public abstract class Source
         public abstract void seekTo(int millis);
 
         public abstract int getCurrentPosition();
+
+        public abstract boolean isPaused();
     }
 
     protected String name;

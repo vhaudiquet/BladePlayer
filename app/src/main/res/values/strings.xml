@@ -47,4 +47,10 @@
     <string name="password">Password</string>
     <string name="spotify_login_desc">(You might need to enter your credentials again, for API and Player)</string>
     <string name="please_sync_to_apply">Please sync library to apply your changes</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="skip_next">Skip to next</string>
+    <string name="skip_previous">Skip to previous</string>
+    <string name="notification_channel_name">Media playback</string>
+    <string name="notification_channel_description">Media notification and controls</string>
 </resources>
