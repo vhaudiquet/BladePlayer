@@ -47,4 +47,10 @@
     <string name="password">Mot de passe</string>
     <string name="spotify_login_desc">(Vous devrez peut-être entrer vos logins une deuxième fois)</string>
     <string name="please_sync_to_apply">Synchronisez la bibliothèque pour appliquer les changements</string>
+    <string name="play">Lecture</string>
+    <string name="pause">Pause</string>
+    <string name="skip_next">Suivant</string>
+    <string name="skip_previous">Précédent</string>
+    <string name="notification_channel_name">Lecture multimédia</string>
+    <string name="notification_channel_description">Notification de lecture et contrôles</string>
 </resources>
