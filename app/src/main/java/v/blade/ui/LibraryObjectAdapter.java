@@ -2,6 +2,7 @@ package v.blade.ui;
 
 import android.annotation.SuppressLint;
 import android.database.DataSetObserver;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -70,6 +72,8 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     private ItemTouchHelper touchHelper = null;
     private final View.OnClickListener clickListener;
 
+    private int selectedPosition = -1;
+
     public LibraryObjectAdapter(List<? extends LibraryObject> objects, View.OnClickListener clickListener)
     {
         this.objects = objects == null ? new ArrayList<>() : objects;
@@ -86,6 +90,11 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     {
         this(objects, clickListener);
         this.touchHelper = touchHelper;
+    }
+
+    public void setSelectedPosition(int position)
+    {
+        this.selectedPosition = position;
     }
 
     @Override
@@ -188,6 +197,20 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
             String artistTrackCount = ((Artist) current).getTrackCount() + " "
                     + viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
             viewHolder.subtitleView.setText(artistTrackCount);
+        }
+
+        //Change background if position is selected
+        if(i == selectedPosition)
+        {
+            TypedValue colorControlActivated = new TypedValue();
+            viewHolder.itemView.getContext().getTheme().resolveAttribute(R.attr.colorControlActivated, colorControlActivated, true);
+            viewHolder.itemView.setBackground(AppCompatResources.getDrawable(viewHolder.itemView.getContext(), colorControlActivated.resourceId));
+        }
+        else
+        {
+            TypedValue colorControl = new TypedValue();
+            viewHolder.itemView.getContext().getTheme().resolveAttribute(R.attr.selectableItemBackground, colorControl, true);
+            viewHolder.itemView.setBackground(AppCompatResources.getDrawable(viewHolder.itemView.getContext(), colorControl.resourceId));
         }
     }
 

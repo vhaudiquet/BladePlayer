@@ -110,6 +110,11 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         this.index = index;
     }
 
+    public void updateIndexForReorder(int index)
+    {
+        this.index = index;
+    }
+
     public List<Song> getPlaylist()
     {
         return playlist;

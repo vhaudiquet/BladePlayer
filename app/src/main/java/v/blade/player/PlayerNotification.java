@@ -26,7 +26,7 @@ import com.squareup.picasso.Target;
 
 import v.blade.R;
 import v.blade.library.Song;
-import v.blade.ui.MainActivity;
+import v.blade.ui.PlayActivity;
 
 public class PlayerNotification
 {
@@ -108,7 +108,7 @@ public class PlayerNotification
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(service, CHANNEL_ID);
 
-        Intent openUI = new Intent(service, MainActivity.class); //TODO : CurrentPlayActivity instead
+        Intent openUI = new Intent(service, PlayActivity.class);
         openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         //Content intent : intent on notification click
@@ -123,12 +123,12 @@ public class PlayerNotification
                 .setMediaSession(token)
                 .setShowActionsInCompactView(0, 1, 2)
                 .setShowCancelButton(true)
-                .setCancelButtonIntent(contentIntent); //TODO action stop
+                .setCancelButtonIntent(null); //TODO action stop
 
         builder.setStyle(style)
                 .setWhen(0)
                 .setColor(ContextCompat.getColor(service, R.color.bladeGrey)) //TODO change to theme colorPrimary ?
-                .setSmallIcon(R.drawable.ic_album) //TODO blade notification icon
+                .setSmallIcon(R.drawable.ic_blade_notification)
                 .setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.drawable.ic_album_notification))
                 .setContentIntent(contentIntent)
                 .setContentTitle(playing.getName())

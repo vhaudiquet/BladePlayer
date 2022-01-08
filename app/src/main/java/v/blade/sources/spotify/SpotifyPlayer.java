@@ -132,12 +132,16 @@ public class SpotifyPlayer extends Source.Player
             public void onPlaybackPaused(@NotNull Player player, long trackTime)
             {
                 isPaused = true;
+
+                //TODO : we can be paused by a Spotify Connect event ; maybe notify mediasession about that
             }
 
             @Override
             public void onPlaybackResumed(@NotNull Player player, long trackTime)
             {
                 isPaused = false;
+
+                //TODO : we can be resumed by a Spotify Connect event ; maybe notify mediasession about that
             }
 
             @Override
@@ -226,6 +230,7 @@ public class SpotifyPlayer extends Source.Player
         if(current == null) return;
 
         trackChanges = 0;
+
         spotifyPlayer.get().load("spotify:track:" + current.id, true, false);
     }
 
