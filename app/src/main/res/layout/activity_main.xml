@@ -45,6 +45,7 @@
             android:id="@+id/currentplay_element_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:src="@drawable/ic_album"
             android:contentDescription="@string/item_image" />
 
         <TextView

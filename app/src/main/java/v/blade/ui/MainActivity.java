@@ -2,6 +2,7 @@ package v.blade.ui;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.PlaybackState;
@@ -44,9 +45,16 @@ public class MainActivity extends AppCompatActivity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //Set 'currentPlay' play/pause action
-        binding.currentplayElementPlaypause.setOnClickListener((view) ->
+        //Set 'currentPlay' actions
+        binding.currentplayLayout.setOnClickListener(view ->
         {
+            //Open currentPlay
+            Intent intent = new Intent(this, PlayActivity.class);
+            startActivity(intent);
+        });
+        binding.currentplayElementPlaypause.setOnClickListener(view ->
+        {
+            //Play/pause action
             MediaController mediaController = getMediaController();
             if(mediaController == null) return;
 
@@ -83,13 +91,15 @@ public class MainActivity extends AppCompatActivity
                         MediaControllerCompat.setMediaController(MainActivity.this,
                                 mediaController);
 
-                        //Register a callback so that 'currentPlay' UI stays in sync
-                        mediaController.registerCallback(new MediaControllerCompat.Callback()
+                        MediaControllerCompat.Callback mediaControllerCallback = new MediaControllerCompat.Callback()
                         {
                             @Override
                             public void onPlaybackStateChanged(PlaybackStateCompat state)
                             {
                                 super.onPlaybackStateChanged(state);
+
+                                //if not already displayed, display 'currentPlay'
+                                binding.currentplayLayout.setVisibility(View.VISIBLE);
 
                                 if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
                                     binding.currentplayElementPlaypause.setImageResource(R.drawable.ic_pause);
@@ -105,9 +115,25 @@ public class MainActivity extends AppCompatActivity
                                 binding.currentplayElementTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                                 String subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) + " - " + metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
                                 binding.currentplayElementSubtitle.setText(subtitle);
-                                binding.currentplayElementImage.setImageBitmap(metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ART));
+
+                                Bitmap art = metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ART);
+                                if(art == null)
+                                    binding.currentplayElementImage.setImageResource(R.drawable.ic_album);
+                                else binding.currentplayElementImage.setImageBitmap(art);
                             }
-                        });
+                        };
+
+                        //If mediaSession is playing/paused, display currentPlayLayout
+                        if(mediaController.isSessionReady()
+                                && (mediaController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING
+                                || mediaController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED))
+                        {
+                            mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
+                            mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+                        }
+
+                        //Register a callback so that 'currentPlay' UI stays in sync
+                        mediaController.registerCallback(mediaControllerCallback);
                     }
 
                     @Override

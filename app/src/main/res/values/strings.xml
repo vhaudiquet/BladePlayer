@@ -53,4 +53,5 @@
     <string name="skip_previous">Skip to previous</string>
     <string name="notification_channel_name">Media playback</string>
     <string name="notification_channel_description">Media notification and controls</string>
+    <string name="currently_playing">Currently playing</string>
 </resources>

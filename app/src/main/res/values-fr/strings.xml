@@ -53,4 +53,5 @@
     <string name="skip_previous">Précédent</string>
     <string name="notification_channel_name">Lecture multimédia</string>
     <string name="notification_channel_description">Notification de lecture et contrôles</string>
+    <string name="currently_playing">En écoute</string>
 </resources>
