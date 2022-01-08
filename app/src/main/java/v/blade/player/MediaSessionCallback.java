@@ -53,6 +53,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
 
             //Start service if not started (i.e. this is the first time the user clicks)
             service.startIfNotStarted();
+            service.mediaSession.setActive(true);
             service.notification.update(true);
             updatePlaybackState(true);
 

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import v.blade.library.Song;
@@ -85,7 +86,7 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result)
     {
-
+        result.sendResult(new ArrayList<>());
     }
 
     @Override

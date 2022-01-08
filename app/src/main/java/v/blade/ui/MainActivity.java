@@ -3,12 +3,17 @@ package v.blade.ui;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.media.session.MediaController;
+import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -39,6 +44,18 @@ public class MainActivity extends AppCompatActivity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //Set 'currentPlay' play/pause action
+        binding.currentplayElementPlaypause.setOnClickListener((view) ->
+        {
+            MediaController mediaController = getMediaController();
+            if(mediaController == null) return;
+
+            if(mediaController.getPlaybackState().getState() == PlaybackState.STATE_PLAYING)
+                mediaController.getTransportControls().pause();
+            else
+                mediaController.getTransportControls().play();
+        });
+
         setSupportActionBar(binding.appBarMain.toolbar);
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -65,7 +82,32 @@ public class MainActivity extends AppCompatActivity
                                 new MediaControllerCompat(MainActivity.this, token);
                         MediaControllerCompat.setMediaController(MainActivity.this,
                                 mediaController);
-                        //TODO : build transport controls
+
+                        //Register a callback so that 'currentPlay' UI stays in sync
+                        mediaController.registerCallback(new MediaControllerCompat.Callback()
+                        {
+                            @Override
+                            public void onPlaybackStateChanged(PlaybackStateCompat state)
+                            {
+                                super.onPlaybackStateChanged(state);
+
+                                if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
+                                    binding.currentplayElementPlaypause.setImageResource(R.drawable.ic_pause);
+                                else
+                                    binding.currentplayElementPlaypause.setImageResource(R.drawable.ic_play_arrow);
+                            }
+
+                            @Override
+                            public void onMetadataChanged(MediaMetadataCompat metadata)
+                            {
+                                super.onMetadataChanged(metadata);
+
+                                binding.currentplayElementTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+                                String subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) + " - " + metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+                                binding.currentplayElementSubtitle.setText(subtitle);
+                                binding.currentplayElementImage.setImageBitmap(metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ART));
+                            }
+                        });
                     }
 
                     @Override
@@ -73,7 +115,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         super.onConnectionSuspended();
                         // The Service has crashed ; Disable transport controls until it automatically reconnects
-                        //TODO Disable transport controls until it automatically reconnects
+                        binding.currentplayLayout.setVisibility(View.GONE);
                     }
 
                     @Override

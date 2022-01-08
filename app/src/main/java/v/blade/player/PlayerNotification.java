@@ -150,7 +150,22 @@ public class PlayerNotification
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
                 {
-                    ContextCompat.getMainExecutor(service).execute(() -> updateForImage(isPlaying, bitmap));
+                    ContextCompat.getMainExecutor(service).execute(() ->
+                    {
+                        //Update mediaSession metadata
+                        service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                                .putString(MediaMetadata.METADATA_KEY_TITLE, playing.getName())
+                                .putString(MediaMetadata.METADATA_KEY_ARTIST, playing.getArtistsString())
+                                .putString(MediaMetadata.METADATA_KEY_ALBUM, playing.getAlbum().getName())
+                                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, playing.getName())
+                                .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, playing.getTrackNumber())
+                                .putLong(MediaMetadata.METADATA_KEY_DURATION, service.current == null ? 0 : service.current.getDuration())
+                                .putBitmap(MediaMetadata.METADATA_KEY_ART, bitmap)
+                                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                                .build());
+
+                        updateForImage(isPlaying, bitmap);
+                    });
                 }
 
                 @Override

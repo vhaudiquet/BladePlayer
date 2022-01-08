@@ -98,6 +98,9 @@ public class LibraryFragment extends Fragment
             MediaBrowserService.getInstance().setPlaylist((List<Song>) current);
             MediaBrowserService.getInstance().setIndex(position);
             MediaControllerCompat.getMediaController(requireActivity()).getTransportControls().play();
+
+            //Show current play if not shown (updates will be done by mediasession callback)
+            ((MainActivity) requireActivity()).binding.currentplayLayout.setVisibility(View.VISIBLE);
         }
     }
 
