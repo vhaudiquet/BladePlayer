@@ -54,9 +54,11 @@ public abstract class Source
 
         public abstract void playSong(Song song);
 
-        public abstract void seekTo(int millis);
+        public abstract void seekTo(long millis);
 
-        public abstract int getCurrentPosition();
+        public abstract long getCurrentPosition();
+
+        public abstract long getDuration();
 
         public abstract boolean isPaused();
     }

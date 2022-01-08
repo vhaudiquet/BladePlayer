@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadata;
 import android.os.Build;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -64,7 +66,23 @@ public class PlayerNotification
 
     protected void update(boolean isPlaying)
     {
-        Notification notification = getNotification(isPlaying, service.getSessionToken(), service.playlist.get(service.index), null);
+        if(service.playlist == null) return;
+        if(service.index >= service.playlist.size()) return;
+        Song song = service.playlist.get(service.index);
+        if(song == null) return;
+
+        //Update mediaSession metadata
+        service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putString(MediaMetadata.METADATA_KEY_TITLE, song.getName())
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, song.getArtistsString())
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, song.getAlbum().getName())
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, song.getName())
+                .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, song.getTrackNumber())
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, service.current == null ? 0 : service.current.getDuration())
+                .build());
+
+        //Update notification
+        Notification notification = getNotification(isPlaying, service.getSessionToken(), song, null);
         if(this.notification == null)
             service.startForeground(PlayerNotification.NOTIFICATION_ID, notification);
         else

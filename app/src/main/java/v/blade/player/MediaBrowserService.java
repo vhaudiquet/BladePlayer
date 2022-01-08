@@ -24,7 +24,7 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     private static MediaBrowserService instance;
 
     protected MediaSessionCompat mediaSession;
-    private PlaybackStateCompat.Builder stateBuilder;
+    private MediaSessionCallback mediaSessionCallback;
 
     protected List<Song> playlist;
     protected int index;
@@ -55,16 +55,14 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS);
 
         //Set an initial PlaybackState
-        //TODO for now we say we can do anything at any time ; maybe we should change that
-        stateBuilder = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PREPARE
-                | PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE
-                | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_SEEK_TO
-                | PlaybackStateCompat.ACTION_SET_REPEAT_MODE | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE);
+        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
+                .setActions(PlaybackStateCompat.ACTION_PREPARE);
         mediaSession.setPlaybackState(stateBuilder.build());
 
         //Set session callbacks
-        mediaSession.setCallback(new MediaSessionCallback(this));
+        mediaSessionCallback = new MediaSessionCallback(this);
+        mediaSession.setCallback(mediaSessionCallback);
 
         setSessionToken(mediaSession.getSessionToken());
 
@@ -99,11 +97,15 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
 
     public void setPlaylist(List<Song> list)
     {
+        if(current != null) current.pause();
+        current = null;
         this.playlist = list;
     }
 
     public void setIndex(int index)
     {
+        if(current != null) current.pause();
+        current = null;
         this.index = index;
     }
 
@@ -115,6 +117,21 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     public int getIndex()
     {
         return index;
+    }
+
+    public void notifyPlaybackEnd()
+    {
+        if(playlist.size() - 1 == index)
+        {
+            setIndex(0);
+            mediaSessionCallback.updatePlaybackState(false);
+            notification.update(false);
+        }
+        else
+        {
+            setIndex(index + 1);
+            mediaSessionCallback.onPlay();
+        }
     }
 
     public static MediaBrowserService getInstance()

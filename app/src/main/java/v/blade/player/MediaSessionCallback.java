@@ -1,8 +1,9 @@
 package v.blade.player;
 
-import android.media.MediaMetadata;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+
+import androidx.core.content.ContextCompat;
 
 import v.blade.BladeApplication;
 import v.blade.library.Song;
@@ -16,6 +17,18 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         this.service = service;
     }
 
+    protected void updatePlaybackState(boolean isPlaying)
+    {
+        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PREPARE
+                | (isPlaying ? PlaybackStateCompat.ACTION_PAUSE : PlaybackStateCompat.ACTION_PLAY)
+                | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_SEEK_TO
+                | PlaybackStateCompat.ACTION_SET_REPEAT_MODE | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE);
+        stateBuilder.setState(isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
+                service.current == null ? 0 : service.current.getCurrentPosition(), 1);
+        service.mediaSession.setPlaybackState(stateBuilder.build());
+    }
+
     @Override
     public void onPlay()
     {
@@ -27,6 +40,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         if(service.current != null && service.current.isPaused())
         {
             service.notification.update(true);
+            updatePlaybackState(true);
             service.current.play();
         }
         else
@@ -40,19 +54,16 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             //Start service if not started (i.e. this is the first time the user clicks)
             service.startIfNotStarted();
             service.notification.update(true);
-
-            //Update mediaSession metadata
-            service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadata.METADATA_KEY_TITLE, song.getName())
-                    .putString(MediaMetadata.METADATA_KEY_ARTIST, song.getArtistsString())
-                    .putString(MediaMetadata.METADATA_KEY_ALBUM, song.getAlbum().getName())
-                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, song.getName())
-                    .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, song.getTrackNumber())
-                    .build());
+            updatePlaybackState(true);
 
             service.current = song.getBestSource().source.getPlayer();
             BladeApplication.obtainExecutorService().execute(() ->
-                    service.current.playSong(song));
+            {
+                service.current.playSong(song);
+                ContextCompat.getMainExecutor(service).execute(() ->
+                        service.notification.update(true));
+            });
+
         }
     }
 
@@ -62,6 +73,39 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         super.onPause();
 
         service.notification.update(false);
+        updatePlaybackState(false);
         service.current.pause();
     }
+
+    @Override
+    public void onSeekTo(long pos)
+    {
+        super.onSeekTo(pos);
+
+        if(service.current != null)
+        {
+            service.current.seekTo(pos);
+            updatePlaybackState(!service.current.isPaused());
+        }
+    }
+
+    @Override
+    public void onSkipToNext()
+    {
+        super.onSkipToNext();
+
+        service.notifyPlaybackEnd();
+    }
+
+    @Override
+    public void onSkipToPrevious()
+    {
+        super.onSkipToPrevious();
+
+        if(service.index == 0) service.index = service.playlist.size() - 1;
+        else service.setIndex(service.index - 1);
+        onPlay();
+    }
+
+
 }

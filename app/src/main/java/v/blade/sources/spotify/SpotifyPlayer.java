@@ -6,6 +6,8 @@ import android.media.AudioTrack;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.core.content.ContextCompat;
+
 import com.spotify.connectstate.Connect;
 
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +20,7 @@ import java.util.Locale;
 
 import v.blade.BladeApplication;
 import v.blade.library.Song;
+import v.blade.player.MediaBrowserService;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
 import xyz.gianlu.librespot.audio.MetadataWrapper;
@@ -113,7 +116,8 @@ public class SpotifyPlayer extends Source.Player
                 if(trackChanges >= 1)
                 {
                     player.pause();
-                    //TODO notify mediasession that playback ended
+                    ContextCompat.getMainExecutor(MediaBrowserService.getInstance())
+                            .execute(MediaBrowserService.getInstance()::notifyPlaybackEnd);
                 }
                 trackChanges++;
                 isPaused = false;
@@ -226,21 +230,34 @@ public class SpotifyPlayer extends Source.Player
     }
 
     @Override
-    public void seekTo(int millis)
+    public void seekTo(long millis)
     {
         if(spotifyPlayer == null) return;
         if(spotifyPlayer.get() == null) return;
 
-        spotifyPlayer.get().seek(millis);
+        spotifyPlayer.get().seek((int) millis);
+        //TODO : seek does not seem to happen immediately, but there does not seem to be a way to wait for seek...
+        // cf https://github.com/librespot-org/librespot-java/issues/448
     }
 
     @Override
-    public int getCurrentPosition()
+    public long getCurrentPosition()
     {
         if(spotifyPlayer == null) return 0;
         if(spotifyPlayer.get() == null) return 0;
 
         return spotifyPlayer.get().time();
+    }
+
+    @Override
+    public long getDuration()
+    {
+        if(spotifyPlayer == null) return 0;
+        if(spotifyPlayer.get() == null) return 0;
+        if(spotifyPlayer.get().currentMetadata() == null) return 0;
+
+        //noinspection ConstantConditions
+        return spotifyPlayer.get().currentMetadata().duration();
     }
 
     @Override
