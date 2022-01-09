@@ -41,6 +41,12 @@ public class SpotifyPlayer extends Source.Player
     protected final Spotify current;
     private boolean isPaused;
 
+    //TODO : this 'temp' fixes the 'multiple load() -> fatal error' bug ; find a better fix
+    private volatile boolean isLoading = false;
+
+    //TODO : remove that, temp bugfix librespot seek
+    private int tempSeekPos = -1;
+
     public SpotifyPlayer(Spotify source)
     {
         this.current = source;
@@ -221,6 +227,13 @@ public class SpotifyPlayer extends Source.Player
     public void playSong(Song song)
     {
         if(spotifyPlayer == null) return;
+
+        //This is spamclick issue 'tryfix' ; it allows to click faster but leads to another player error
+        //cf https://github.com/devgianlu/librespot-android/issues/16
+        //noinspection StatementWithEmptyBody
+        while(isLoading) ;
+        isLoading = true;
+
         if(spotifyPlayer.get() == null) init();
 
         SourceInformation current = null;
@@ -236,7 +249,23 @@ public class SpotifyPlayer extends Source.Player
 
         trackChanges = 0;
 
+        //Wait for the player to be ready ; i don't know if we need that, but we will take any
+        // waiting we can in order to tryfix 'spamclick' issue
+        try
+        {
+            spotifyPlayer.get().waitReady();
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
         spotifyPlayer.get().load("spotify:track:" + current.id, true, false);
+
+        //TODO : find a better way to wait for metadata availability
+        //noinspection StatementWithEmptyBody
+        while(spotifyPlayer.get().currentMetadata() == null) ;
+        isLoading = false;
     }
 
     @Override
@@ -248,6 +277,7 @@ public class SpotifyPlayer extends Source.Player
         spotifyPlayer.get().seek((int) millis);
         //TODO : seek does not seem to happen immediately, but there does not seem to be a way to wait for seek...
         // cf https://github.com/librespot-org/librespot-java/issues/448
+        tempSeekPos = (int) millis;
     }
 
     @Override
@@ -255,6 +285,14 @@ public class SpotifyPlayer extends Source.Player
     {
         if(spotifyPlayer == null) return 0;
         if(spotifyPlayer.get() == null) return 0;
+
+        //TODO : find a better way to wait for seek (cf seekTo)
+        if(tempSeekPos != -1)
+        {
+            int tr = tempSeekPos;
+            tempSeekPos = -1;
+            return tr;
+        }
 
         return spotifyPlayer.get().time();
     }

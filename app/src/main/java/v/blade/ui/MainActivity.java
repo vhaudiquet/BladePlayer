@@ -106,9 +106,7 @@ public class MainActivity extends AppCompatActivity
 
                                 //if not already displayed, display 'currentPlay'
                                 if(binding.appBarMain.contentMain.currentplayLayout.getVisibility() != View.VISIBLE)
-                                {
                                     binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.VISIBLE);
-                                }
 
                                 if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
                                     binding.appBarMain.contentMain.currentplayElementPlaypause.setImageResource(R.drawable.ic_pause);
