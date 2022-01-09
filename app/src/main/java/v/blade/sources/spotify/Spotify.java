@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -41,6 +42,7 @@ import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentSpotifyBinding;
 import v.blade.library.Library;
+import v.blade.library.Song;
 import v.blade.sources.Source;
 
 /*
@@ -240,9 +242,130 @@ public class Spotify extends Source
             while(tracksLeft > 0);
 
             /* Obtain user albums */
+            int albumsLeft;
+            int albumIndex = 0;
+            do
+            {
+                Call<SpotifyService.PagingObject<SpotifyService.SavedAlbumObject>> userAlbums =
+                        service.getUserSavedAlbums(AUTH_STRING, 50, albumIndex * 50);
+                Response<SpotifyService.PagingObject<SpotifyService.SavedAlbumObject>> response =
+                        userAlbums.execute();
+
+                if(response.code() != 200 || response.body() == null) break;
+                SpotifyService.PagingObject<SpotifyService.SavedAlbumObject> albumPaging = response.body();
+
+                for(SpotifyService.SavedAlbumObject savedAlbum : albumPaging.items)
+                {
+                    SpotifyService.AlbumObject album = savedAlbum.album;
+                    if(album.artists == null || album.tracks == null || album.images.length == 0)
+                        continue;
+
+                    //album artists
+                    String[] aartists = new String[album.artists.length];
+                    String[] aartistsImages = new String[album.artists.length];
+                    for(int j = 0; j < album.artists.length; j++)
+                    {
+                        aartists[j] = album.artists[j].name;
+                    }
+
+                    //add every song in album
+                    for(SpotifyService.SimplifiedTrackObject track : album.tracks.items)
+                    {
+                        //song artists
+                        String[] artists = new String[track.artists.length];
+                        String[] artistsImages = new String[track.artists.length];
+                        for(int j = 0; j < track.artists.length; j++)
+                        {
+                            artists[j] = track.artists[j].name;
+                            //artistsImages[j] = track.artists[j].images //TODO artists images ?
+                        }
+
+                        Library.addSong(track.name, album.name, artists, this, track.id, aartists,
+                                album.images[album.images.length - 2].url, track.track_number,
+                                artistsImages, aartistsImages, album.images[0].url);
+                    }
+                }
+
+                albumsLeft = albumPaging.total - 50 * (albumIndex + 1);
+                albumIndex++;
+            }
+            while(albumsLeft > 0);
+
+            /* Obtain user playlists */
+            int playlistsLeft;
+            int playlistIndex = 0;
+            do
+            {
+                Call<SpotifyService.PagingObject<SpotifyService.SimplifiedPlaylistObject>> userPlaylists =
+                        service.getListOfCurrentUserPlaylists(AUTH_STRING, 50, playlistIndex * 50);
+                Response<SpotifyService.PagingObject<SpotifyService.SimplifiedPlaylistObject>> response =
+                        userPlaylists.execute();
+
+                if(response.code() != 200 || response.body() == null) break;
+                SpotifyService.PagingObject<SpotifyService.SimplifiedPlaylistObject> playlistPaging = response.body();
+
+                for(SpotifyService.SimplifiedPlaylistObject playlist : playlistPaging.items)
+                {
+                    //Obtain song list
+                    ArrayList<Song> songList = new ArrayList<>();
+
+                    int songsLeft;
+                    int songIndex = 0;
+                    do
+                    {
+                        Call<SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject>> playlistTracks =
+                                service.getPlaylistItems(AUTH_STRING, playlist.id, 100, songIndex * 100);
+                        Response<SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject>> response2 =
+                                playlistTracks.execute();
+
+                        if(response2.code() != 200 || response2.body() == null) break;
+                        SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject> songsPaging = response2.body();
+
+                        for(SpotifyService.PlaylistTrackObject playlistTrack : songsPaging.items)
+                        {
+                            SpotifyService.TrackObject track = playlistTrack.track;
+                            if(track.album == null || track.artists == null || track.album.images.length == 0)
+                                continue;
+
+                            //album artists
+                            String[] aartists = new String[track.album.artists.length];
+                            String[] aartistsImages = new String[track.album.artists.length];
+                            for(int j = 0; j < track.album.artists.length; j++)
+                            {
+                                aartists[j] = track.album.artists[j].name;
+                            }
+
+                            //song artists
+                            String[] artists = new String[track.artists.length];
+                            String[] artistsImages = new String[track.artists.length];
+                            for(int j = 0; j < track.artists.length; j++)
+                            {
+                                artists[j] = track.artists[j].name;
+                                //artistsImages[j] = track.artists[j].images //TODO artists images ?
+                            }
+
+                            Song song = Library.addSongHandle(track.name, track.album.name, artists, this, track.id, aartists,
+                                    track.album.images[track.album.images.length - 2].url, track.track_number,
+                                    artistsImages, aartistsImages, track.album.images[0].url);
+                            songList.add(song);
+                        }
+
+                        songsLeft = songsPaging.total - 100 * (songIndex + 1);
+                        songIndex++;
+                    }
+                    while(songsLeft > 0);
+
+                    Library.addPlaylist(playlist.name, songList, playlist.images.length == 0 ? null : (playlist.images[0] == null ? null : playlist.images[0].url));
+                }
+
+                playlistsLeft = playlistPaging.total - 50 * (playlistIndex + 1);
+                playlistIndex++;
+            }
+            while(playlistsLeft > 0);
         }
-        catch(IOException ignored)
+        catch(IOException e)
         {
+            e.printStackTrace();
         }
     }
 

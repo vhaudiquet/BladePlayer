@@ -198,8 +198,9 @@ public class MainActivity extends AppCompatActivity
         {
             if(Source.isSyncing) return false;
 
-            //TODO : handle icon change
-            Source.synchronizeSources();
+            item.setIcon(R.drawable.ic_hourglass);
+            Source.synchronizeSources(() ->
+                    this.runOnUiThread(() -> item.setIcon(R.drawable.ic_sync)));
             return true;
         }
         else return super.onOptionsItemSelected(item);

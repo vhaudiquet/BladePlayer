@@ -1,19 +1,19 @@
 package v.blade.library;
 
-import com.squareup.picasso.RequestCreator;
+import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Playlist extends LibraryObject
 {
-    List<Song> songs;
+    final List<Song> songs;
 
-    public Playlist(String name, RequestCreator image)
+    public Playlist(String name, List<Song> songList, String image)
     {
         this.name = name;
-        this.imageRequest = image;
-        this.songs = new ArrayList<>();
+        this.imageStr = image;
+        this.imageRequest = (image == null || image.equals("")) ? null : Picasso.get().load(image);
+        this.songs = songList;
     }
 
     public List<Song> getSongs()

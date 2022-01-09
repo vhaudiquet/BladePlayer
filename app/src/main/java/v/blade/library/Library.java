@@ -138,6 +138,92 @@ public class Library
         return s;
     }
 
+    public static synchronized Song addSongHandle(String title, String album, String[] artists, Source source, Object sourceId,
+                                                  String[] albumArtists, String albumMiniatureURL, int track_number, String[] artistMiniaturesUrl,
+                                                  String[] albumArtistsMiniatureUrl, String albumImageURL)
+    {
+        /* obtain song artists and album artists */
+        Artist[] sartists = new Artist[artists.length];
+        for(int i = 0; i < sartists.length; i++)
+        {
+            Artist current = library_artists.get(artists[i].toLowerCase());
+            if(current == null) current = handled_artists.get(artists[i].toLowerCase());
+
+            if(current == null)
+            {
+                current = new Artist(artists[i], artistMiniaturesUrl[i]);
+                handled_artists.put(current.name.toLowerCase(), current);
+            }
+
+            sartists[i] = current;
+        }
+
+        Artist[] saartists = new Artist[albumArtists.length];
+        for(int i = 0; i < saartists.length; i++)
+        {
+            Artist current = library_artists.get(albumArtists[i].toLowerCase());
+
+            if(current == null) current = handled_artists.get(albumArtists[i].toLowerCase());
+
+            if(current == null)
+            {
+                current = new Artist(albumArtists[i], albumArtistsMiniatureUrl[i]);
+                handled_artists.put(current.name.toLowerCase(), current);
+            }
+
+            saartists[i] = current;
+        }
+
+        /* obtain song album */
+        //noinspection ConstantConditions
+        Album salbum = library_albums.get(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase());
+        if(salbum == null)
+            //noinspection ConstantConditions
+            salbum = handled_albums.get(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase());
+        if(salbum == null)
+        {
+            salbum = new Album(album, saartists, albumMiniatureURL, albumImageURL);
+            //noinspection ConstantConditions
+            handled_albums.put(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase(), salbum);
+        }
+
+        /* obtain song */
+        Song s = library_songs.get(artists[0].toLowerCase() + ":" + album.toLowerCase() + ":" + title.toLowerCase());
+        if(s == null)
+            s = handled_songs.get(artists[0].toLowerCase() + ":" + album.toLowerCase() + ":" + title.toLowerCase());
+        if(s == null)
+        {
+            s = new Song(title, salbum, sartists, track_number);
+            handled_songs.put(artists[0].toLowerCase() + ":" + album.toLowerCase() + ":" + title.toLowerCase(), s);
+        }
+
+        /* update song source information */
+        s.addSource(source, sourceId);
+
+        return s;
+    }
+
+    public static synchronized void addPlaylist(String title, List<Song> songList, String imageMiniatureUrl)
+    {
+        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl);
+        library_playlists.add(playlist);
+    }
+
+    /**
+     * Reset the playlist, to be used before a library synchronization
+     */
+    public static void reset()
+    {
+        library_artists = new HashMap<>();
+        library_albums = new HashMap<>();
+        library_songs = new HashMap<>();
+        library_playlists = new ArrayList<>();
+
+        handled_artists = new HashMap<>();
+        handled_albums = new HashMap<>();
+        handled_songs = new HashMap<>();
+    }
+
     /**
      * Generate artists, albums, and songs lists from library HashMaps
      */
@@ -175,41 +261,31 @@ public class Library
         JsonObject libraryObject = new JsonObject();
         libraryObject.addProperty("version", LIBRARY_CACHE_VERSION);
 
+        //Save library songs
         JsonArray library = new JsonArray();
-
         for(Song s : songs_list)
         {
-            JsonObject songJson = new JsonObject();
-            songJson.addProperty("name", s.getName());
-            songJson.addProperty("track_number", s.getTrackNumber());
-            songJson.addProperty("album", s.getAlbum().getName());
-
-            songJson.addProperty("album_art", s.getAlbum().imageStr);
-            songJson.addProperty("album_art_big", s.getAlbum().imageBigStr);
-            JsonArray aartists = new JsonArray();
-            for(Artist a : s.getAlbum().getArtists()) aartists.add(a.getName());
-            songJson.add("album_artists", aartists);
-            //TODO : save album_art, album_art_big, album artists only on first album encounter
-
-            //TODO : handle artists imgs
-            JsonArray artists = new JsonArray();
-            for(Artist a : s.getArtists()) artists.add(a.getName());
-            songJson.add("artists", artists);
-
-            JsonArray sources = new JsonArray();
-            for(SourceInformation si : s.getSources())
-            {
-                JsonObject sourceJson = new JsonObject();
-                sourceJson.addProperty("source", si.source.getIndex());
-                sourceJson.add("id", gson.toJsonTree(si.id));
-                sources.add(sourceJson);
-            }
-            songJson.add("sources", sources);
-
+            JsonObject songJson = songJson(s, gson);
             library.add(songJson);
         }
-
         libraryObject.add("library", library);
+
+        //Save library playlists
+        JsonArray playlists = new JsonArray();
+        for(Playlist playlist : library_playlists)
+        {
+            JsonObject playlistJson = new JsonObject();
+
+            playlistJson.addProperty("name", playlist.getName());
+            playlistJson.addProperty("art", playlist.imageStr);
+
+            JsonArray playlistSongs = new JsonArray();
+            for(Song s : playlist.getSongs()) playlistSongs.add(songJson(s, gson));
+            playlistJson.add("songs", playlistSongs);
+
+            playlists.add(playlistJson);
+        }
+        libraryObject.add("playlists", playlists);
 
         //Write JSON Object to file
         File libraryFile = new File(BladeApplication.appContext.getFilesDir().getAbsolutePath() + LIBRARY_FILE);
@@ -230,6 +306,38 @@ public class Library
         catch(IOException ignored)
         {
         }
+    }
+
+    private static JsonObject songJson(Song s, Gson gson)
+    {
+        JsonObject songJson = new JsonObject();
+        songJson.addProperty("name", s.getName());
+        songJson.addProperty("track_number", s.getTrackNumber());
+        songJson.addProperty("album", s.getAlbum().getName());
+
+        songJson.addProperty("album_art", s.getAlbum().imageStr);
+        songJson.addProperty("album_art_big", s.getAlbum().imageBigStr);
+        JsonArray aartists = new JsonArray();
+        for(Artist a : s.getAlbum().getArtists()) aartists.add(a.getName());
+        songJson.add("album_artists", aartists);
+        //TODO : save album_art, album_art_big, album artists only on first album encounter
+
+        //TODO : handle artists imgs
+        JsonArray artists = new JsonArray();
+        for(Artist a : s.getArtists()) artists.add(a.getName());
+        songJson.add("artists", artists);
+
+        JsonArray sources = new JsonArray();
+        for(SourceInformation si : s.getSources())
+        {
+            JsonObject sourceJson = new JsonObject();
+            sourceJson.addProperty("source", si.source.getIndex());
+            sourceJson.add("id", gson.toJsonTree(si.id));
+            sources.add(sourceJson);
+        }
+        songJson.add("sources", sources);
+
+        return songJson;
     }
 
     /**
@@ -255,45 +363,94 @@ public class Library
                 return;
             }
 
+            //Restore library songs
             JSONArray library = root.getJSONArray("library");
-
             for(int i = 0; i < library.length(); i++)
             {
                 JSONObject s = library.getJSONObject(i);
+                jsonSong(s, false);
+            }
 
-                JSONArray artistsJson = s.getJSONArray("artists");
-                String[] artists = new String[artistsJson.length()];
-                String[] artistsImages = new String[artistsJson.length()];
-                for(int j = 0; j < artistsJson.length(); j++) artists[j] = artistsJson.getString(j);
+            //Restore playlists
+            JSONArray playlists = root.getJSONArray("playlists");
+            for(int i = 0; i < playlists.length(); i++)
+            {
+                JSONObject p = playlists.getJSONObject(i);
 
-                JSONArray aartistsJson = s.getJSONArray("album_artists");
-                String[] aartists = new String[aartistsJson.length()];
-                String[] aartistsImages = new String[aartistsJson.length()];
-                for(int j = 0; j < aartistsJson.length(); j++)
-                    aartists[j] = aartistsJson.getString(j);
+                ArrayList<Song> songList = new ArrayList<>();
+                JSONArray songArray = p.getJSONArray("songs");
+                for(int j = 0; j < songArray.length(); j++)
+                    songList.add(jsonSong(songArray.getJSONObject(j), true));
 
-                JSONArray sourcesJson = s.getJSONArray("sources");
-                JSONObject source0Json = sourcesJson.getJSONObject(0);
-                Source source0 = Source.SOURCES.get(source0Json.getInt("source"));
-
-
-                Song song = addSong(s.getString("name"), s.getString("album"), artists, source0,
-                        source0Json.get("id"), aartists, s.getString("album_art"), s.getInt("track_number"),
-                        artistsImages, aartistsImages, s.getString("album_art_big"));
-
-                //Add all other sources to song
-                for(int j = 1; j < sourcesJson.length(); j++)
+                String art;
+                try
                 {
-                    JSONObject sourceJson = sourcesJson.getJSONObject(j);
-                    Source source = Source.SOURCES.get(sourceJson.getInt("source"));
-                    song.addSource(source, sourceJson.get("id"));
+                    art = p.getString("art");
                 }
+                catch(JSONException noArt)
+                {
+                    art = null;
+                }
+
+                addPlaylist(p.getString("name"), songList, art);
             }
 
             Library.generateLists();
         }
-        catch(IOException | JSONException ignored)
+        catch(IOException | JSONException e)
         {
+            e.printStackTrace();
         }
+    }
+
+    private static Song jsonSong(JSONObject s, boolean handled) throws JSONException
+    {
+        JSONArray artistsJson = s.getJSONArray("artists");
+        String[] artists = new String[artistsJson.length()];
+        String[] artistsImages = new String[artistsJson.length()];
+        for(int j = 0; j < artistsJson.length(); j++) artists[j] = artistsJson.getString(j);
+
+        JSONArray aartistsJson = s.getJSONArray("album_artists");
+        String[] aartists = new String[aartistsJson.length()];
+        String[] aartistsImages = new String[aartistsJson.length()];
+        for(int j = 0; j < aartistsJson.length(); j++)
+            aartists[j] = aartistsJson.getString(j);
+
+        JSONArray sourcesJson = s.getJSONArray("sources");
+        JSONObject source0Json = sourcesJson.getJSONObject(0);
+        Source source0 = Source.SOURCES.get(source0Json.getInt("source"));
+
+        String art;
+        String bigArt;
+        try
+        {
+            art = s.getString("album_art");
+            bigArt = s.getString("album_art_big");
+        }
+        catch(JSONException noArt)
+        {
+            art = null;
+            bigArt = null;
+        }
+
+        Song song;
+        if(handled)
+            song = addSongHandle(s.getString("name"), s.getString("album"), artists, source0,
+                    source0Json.get("id"), aartists, art, s.getInt("track_number"),
+                    artistsImages, aartistsImages, bigArt);
+        else
+            song = addSong(s.getString("name"), s.getString("album"), artists, source0,
+                    source0Json.get("id"), aartists, art, s.getInt("track_number"),
+                    artistsImages, aartistsImages, bigArt);
+
+        //Add all other sources to song
+        for(int j = 1; j < sourcesJson.length(); j++)
+        {
+            JSONObject sourceJson = sourcesJson.getJSONObject(j);
+            Source source = Source.SOURCES.get(sourceJson.getInt("source"));
+            song.addSource(source, sourceJson.get("id"));
+        }
+
+        return song;
     }
 }

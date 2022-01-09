@@ -196,10 +196,14 @@ public abstract class Source
     }
 
     @SuppressWarnings("rawtypes")
-    public static void synchronizeSources()
+    public static void synchronizeSources(Runnable doneCallback)
     {
         isSyncing = true;
 
+        //Reset the library
+        Library.reset();
+
+        //Synchronize every source
         final List<Future> futures = new ArrayList<>();
         for(Source s : SOURCES)
         {
@@ -208,6 +212,7 @@ public abstract class Source
             futures.add(BladeApplication.obtainExecutorService().submit(s::synchronizeLibrary));
         }
 
+        //Save library and sources after synchronization
         BladeApplication.obtainExecutorService().execute(() ->
         {
             //TODO : This is active waiting ; we could actually do passive waiting using a callback
@@ -224,7 +229,7 @@ public abstract class Source
             Library.generateLists();
             Library.save();
             Source.saveSources(); //scheduleSave, if a source changed, we stay ok...
-            //TODO : handle 'sync' icon change
+            doneCallback.run();
             isSyncing = false;
         });
     }
