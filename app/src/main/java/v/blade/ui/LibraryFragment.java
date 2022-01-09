@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import v.blade.R;
 import v.blade.databinding.FragmentLibraryBinding;
@@ -31,7 +32,21 @@ public class LibraryFragment extends Fragment
     public static LibraryFragment instance;
 
     private FragmentLibraryBinding binding;
-    public List<? extends LibraryObject> current;
+    private List<? extends LibraryObject> current;
+
+    private static class BackInformation
+    {
+        private String title;
+        private List<? extends LibraryObject> list;
+
+        private BackInformation(String title, List<? extends LibraryObject> list)
+        {
+            this.title = title;
+            this.list = list;
+        }
+    }
+
+    private Stack<BackInformation> backStack = new Stack<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState)
@@ -54,8 +69,9 @@ public class LibraryFragment extends Fragment
 
     /*
      * Update content to list 'replacing', or to root directory
+     * If we are updating because going back, we should not push to back : shouldPushToBack is false
      */
-    public void updateContent(String title, List<? extends LibraryObject> replacing)
+    private void updateContent(String title, List<? extends LibraryObject> replacing, boolean shouldPushToBack)
     {
         if(replacing == null)
         {
@@ -69,9 +85,16 @@ public class LibraryFragment extends Fragment
             else if(title.equals(getString(R.string.playlists)))
                 current = Library.getPlaylists();
             else return;
+
+            //Reset backstack
+            backStack = new Stack<>();
         }
         else
         {
+            //Push previous state to backStack
+            if(shouldPushToBack)
+                backStack.push(new BackInformation(getTitle(), current));
+
             current = replacing;
         }
 
@@ -79,6 +102,16 @@ public class LibraryFragment extends Fragment
         binding.mainListview.setAdapter(adapter);
         if(((MainActivity) requireActivity()).binding != null)
             ((MainActivity) requireActivity()).binding.appBarMain.toolbar.setTitle(title);
+    }
+
+    public void updateContent(String title, List<? extends LibraryObject> replacing)
+    {
+        updateContent(title, replacing, true);
+    }
+
+    private void updateContent(BackInformation backInformation)
+    {
+        updateContent(backInformation.title, backInformation.list, false);
     }
 
     private void onViewClicked(View view)
@@ -175,5 +208,13 @@ public class LibraryFragment extends Fragment
     {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void onBackPressed()
+    {
+        if(backStack.isEmpty())
+            requireActivity().finish();
+        else
+            updateContent(backStack.pop());
     }
 }

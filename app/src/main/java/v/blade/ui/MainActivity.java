@@ -18,8 +18,10 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity
     protected ActivityMainBinding binding;
 
     protected MediaBrowserCompat mediaBrowser;
+
+    private NavHostFragment navHostFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,7 +77,9 @@ public class MainActivity extends AppCompatActivity
                 R.id.nav_artists, R.id.nav_albums, R.id.nav_songs, R.id.nav_playlists)
                 .setOpenableLayout(drawer)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+        assert navHostFragment != null;
+        NavController navController = navHostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
@@ -218,7 +224,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        //TODO handle back presses here
+        //NOTE : there should be only one child fragment (i dont even know how multiple fragments would be possible)
+        if(navHostFragment.getChildFragmentManager().getFragments().size() != 0)
+        {
+            Fragment child = navHostFragment.getChildFragmentManager().getFragments().get(0);
+            if(child instanceof LibraryFragment)
+            {
+                ((LibraryFragment) child).onBackPressed();
+                //We handle backPresses directly in LibraryFragment, so we want to intercept the main back processing
+                return;
+            }
+        }
         super.onBackPressed();
     }
 }

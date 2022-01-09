@@ -280,13 +280,13 @@ public interface SpotifyService
 
     class UserInformationObject
     {
-        class ExplicitContent
+        static class ExplicitContent
         {
             boolean filter_enabled;
             boolean filter_locked;
         }
 
-        class Followers
+        static class Followers
         {
             String href;
             int total;
