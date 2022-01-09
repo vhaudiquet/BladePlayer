@@ -199,6 +199,10 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
             viewHolder.subtitleView.setText(artistTrackCount);
         }
 
+        //If 'moreClickListener', put object as more view tag
+        if(moreClickListener != null)
+            viewHolder.moreView.setTag(current);
+
         //Change background if position is selected
         if(i == selectedPosition)
         {

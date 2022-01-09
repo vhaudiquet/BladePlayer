@@ -1,15 +1,18 @@
 package v.blade.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import v.blade.R;
@@ -24,6 +27,7 @@ import v.blade.player.MediaBrowserService;
 
 public class LibraryFragment extends Fragment
 {
+    //We keep a global instance of LibraryFragment to be able to update lists on Library update (launch, sync)
     public static LibraryFragment instance;
 
     private FragmentLibraryBinding binding;
@@ -101,9 +105,69 @@ public class LibraryFragment extends Fragment
         }
     }
 
+    //TODO : maybe fix that ? switch on something else ?
+    @SuppressLint("NonConstantResourceId")
     private void onMoreClicked(View view)
     {
-
+        LibraryObject element = (LibraryObject) view.getTag();
+        PopupMenu popupMenu = new PopupMenu(requireContext(), view);
+        popupMenu.setOnMenuItemClickListener(item ->
+        {
+            switch(item.getItemId())
+            {
+                case R.id.action_play:
+                    ArrayList<Song> playlist = new ArrayList<>();
+                    if(element instanceof Song) playlist.add((Song) element);
+                    else if(element instanceof Album) playlist.addAll(((Album) element).getSongs());
+                    else if(element instanceof Artist)
+                        for(Album a : ((Artist) element).getAlbums()) playlist.addAll(a.getSongs());
+                    else if(element instanceof Playlist)
+                        playlist.addAll(((Playlist) element).getSongs());
+                    MediaBrowserService.getInstance().setPlaylist(playlist);
+                    MediaBrowserService.getInstance().setIndex(0);
+                    LibraryFragment.this.requireActivity().getMediaController().getTransportControls().play();
+                    return true;
+                case R.id.action_play_next:
+                    ArrayList<Song> playlistAddNext = new ArrayList<>();
+                    if(element instanceof Song) playlistAddNext.add((Song) element);
+                    else if(element instanceof Album)
+                        playlistAddNext.addAll(((Album) element).getSongs());
+                    else if(element instanceof Artist) for(Album a : ((Artist) element).getAlbums())
+                        playlistAddNext.addAll(a.getSongs());
+                    else if(element instanceof Playlist)
+                        playlistAddNext.addAll(((Playlist) element).getSongs());
+                    if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                        MediaBrowserService.getInstance().getPlaylist().addAll(MediaBrowserService.getInstance().getIndex() + 1, playlistAddNext);
+                    else
+                    {
+                        MediaBrowserService.getInstance().setPlaylist(playlistAddNext);
+                        MediaBrowserService.getInstance().setIndex(0);
+                        LibraryFragment.this.requireActivity().getMediaController().getTransportControls().play();
+                    }
+                    return true;
+                case R.id.action_add_to_playlist:
+                    ArrayList<Song> playlistAdd = new ArrayList<>();
+                    if(element instanceof Song) playlistAdd.add((Song) element);
+                    else if(element instanceof Album)
+                        playlistAdd.addAll(((Album) element).getSongs());
+                    else if(element instanceof Artist) for(Album a : ((Artist) element).getAlbums())
+                        playlistAdd.addAll(a.getSongs());
+                    else if(element instanceof Playlist)
+                        playlistAdd.addAll(((Playlist) element).getSongs());
+                    if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                        MediaBrowserService.getInstance().getPlaylist().addAll(playlistAdd);
+                    else
+                    {
+                        MediaBrowserService.getInstance().setPlaylist(playlistAdd);
+                        MediaBrowserService.getInstance().setIndex(0);
+                        LibraryFragment.this.requireActivity().getMediaController().getTransportControls().play();
+                    }
+                    return true;
+            }
+            return false;
+        });
+        popupMenu.inflate(R.menu.item_more);
+        popupMenu.show();
     }
 
     @Override

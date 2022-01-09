@@ -54,4 +54,6 @@
     <string name="notification_channel_name">Media playback</string>
     <string name="notification_channel_description">Media notification and controls</string>
     <string name="currently_playing">Currently playing</string>
+    <string name="play_next">Play after current song</string>
+    <string name="add_to_current_playlist">Add to current playlist</string>
 </resources>
