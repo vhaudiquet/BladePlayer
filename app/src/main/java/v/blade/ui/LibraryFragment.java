@@ -31,13 +31,13 @@ public class LibraryFragment extends Fragment
     //We keep a global instance of LibraryFragment to be able to update lists on Library update (launch, sync)
     public static LibraryFragment instance;
 
-    private FragmentLibraryBinding binding;
+    protected FragmentLibraryBinding binding;
     private List<? extends LibraryObject> current;
 
     private static class BackInformation
     {
-        private String title;
-        private List<? extends LibraryObject> list;
+        private final String title;
+        private final List<? extends LibraryObject> list;
 
         private BackInformation(String title, List<? extends LibraryObject> list)
         {

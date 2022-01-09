@@ -50,13 +50,13 @@ public class MainActivity extends AppCompatActivity
         setContentView(binding.getRoot());
 
         //Set 'currentPlay' actions
-        binding.currentplayLayout.setOnClickListener(view ->
+        binding.appBarMain.contentMain.currentplayLayout.setOnClickListener(view ->
         {
             //Open currentPlay
             Intent intent = new Intent(this, PlayActivity.class);
             startActivity(intent);
         });
-        binding.currentplayElementPlaypause.setOnClickListener(view ->
+        binding.appBarMain.contentMain.currentplayElementPlaypause.setOnClickListener(view ->
         {
             //Play/pause action
             MediaController mediaController = getMediaController();
@@ -105,13 +105,15 @@ public class MainActivity extends AppCompatActivity
                                 super.onPlaybackStateChanged(state);
 
                                 //if not already displayed, display 'currentPlay'
-                                binding.currentplayLayout.setVisibility(View.VISIBLE);
-                                //TODO : resize mainListView layout
+                                if(binding.appBarMain.contentMain.currentplayLayout.getVisibility() != View.VISIBLE)
+                                {
+                                    binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.VISIBLE);
+                                }
 
                                 if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
-                                    binding.currentplayElementPlaypause.setImageResource(R.drawable.ic_pause);
+                                    binding.appBarMain.contentMain.currentplayElementPlaypause.setImageResource(R.drawable.ic_pause);
                                 else
-                                    binding.currentplayElementPlaypause.setImageResource(R.drawable.ic_play_arrow);
+                                    binding.appBarMain.contentMain.currentplayElementPlaypause.setImageResource(R.drawable.ic_play_arrow);
                             }
 
                             @Override
@@ -119,14 +121,15 @@ public class MainActivity extends AppCompatActivity
                             {
                                 super.onMetadataChanged(metadata);
 
-                                binding.currentplayElementTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+                                binding.appBarMain.contentMain.currentplayElementTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                                 String subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) + " - " + metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
-                                binding.currentplayElementSubtitle.setText(subtitle);
+                                binding.appBarMain.contentMain.currentplayElementSubtitle.setText(subtitle);
 
                                 Bitmap art = metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ART);
                                 if(art == null)
-                                    binding.currentplayElementImage.setImageResource(R.drawable.ic_album);
-                                else binding.currentplayElementImage.setImageBitmap(art);
+                                    binding.appBarMain.contentMain.currentplayElementImage.setImageResource(R.drawable.ic_album);
+                                else
+                                    binding.appBarMain.contentMain.currentplayElementImage.setImageBitmap(art);
                             }
                         };
 
@@ -148,7 +151,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         super.onConnectionSuspended();
                         // The Service has crashed ; Disable transport controls until it automatically reconnects
-                        binding.currentplayLayout.setVisibility(View.GONE);
+                        binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.GONE);
                     }
 
                     @Override
