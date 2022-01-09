@@ -15,8 +15,7 @@ public class Song extends LibraryObject
     Album album;
     int track_number;
 
-    //TODO REMOVE MAKE PROTECTED, FOR MEDIASESSION TESTING
-    public Song(String name, Album album, Artist[] artists, int track_number)
+    protected Song(String name, Album album, Artist[] artists, int track_number)
     {
         this.name = name;
         this.artists = artists;

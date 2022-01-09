@@ -52,6 +52,9 @@ import v.blade.sources.Source;
  * It would be nice to use librespot for everything, but i don't think it is possible to
  * use it 'as is' for web api access...
  */
+//TODO : Spotify AUTH does not support PKCE if Spotify App is installed, i think ; we will need
+// to go back to 'client secret' exchange, which is completely dumb, as then the secret is public
+// (i have no backend) ; another solution would be to put the secret on valou3433.fr but yeah
 public class Spotify extends Source
 {
     public static final int NAME_RESOURCE = R.string.spotify;
@@ -599,7 +602,7 @@ public class Spotify extends Source
                         //noinspection ConstantConditions
                         String responseBody = (postResponse.body() == null ? "Unknown error" : postResponse.body().string());
                         Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + postResponse.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
-                        System.err.println("Spotify AUTH token error : " + postResponse.code() + " : " + responseBody);
+                        System.err.println("BLADE-SPOTIFY: Spotify AUTH token error : " + postResponse.code() + " : " + responseBody);
                         return;
                     }
 

@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 import v.blade.R;
 import v.blade.databinding.ActivityPlayBinding;
 import v.blade.player.MediaBrowserService;
@@ -122,11 +124,25 @@ public class PlayActivity extends AppCompatActivity
         //Set 'playList' layout height to image height
         binding.playList.getLayoutParams().height = binding.playAlbum.getHeight();
 
+        //Disable long clicks on the playList view
+        binding.playList.setOnLongClickListener(v -> true);
+
         //Set playlist adapter/touchHelper/clickListener
+
         binding.playList.setLayoutManager(new LinearLayoutManager(this));
         ItemTouchHelper touchHelper = new ItemTouchHelper(
                 new TouchHelperCallback(MediaBrowserService.getInstance().getPlaylist())
                 {
+                    @Override
+                    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder)
+                    {
+                        int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                        //Enable swipe out, except on currently playing song
+                        int swipeFlags = viewHolder.getAdapterPosition() == MediaBrowserService.getInstance().getIndex() ?
+                                0 : ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                        return makeMovementFlags(dragFlags, swipeFlags);
+                    }
+
                     @Override
                     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
                     {
@@ -146,14 +162,24 @@ public class PlayActivity extends AppCompatActivity
 
                         return tr;
                     }
+
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+                    {
+                        super.onSwiped(viewHolder, direction);
+
+                        //Notify adapter
+                        int pos = viewHolder.getAdapterPosition();
+                        Objects.requireNonNull(binding.playList.getAdapter()).notifyItemRemoved(pos);
+                    }
                 });
-        touchHelper.attachToRecyclerView(binding.playList);
         LibraryObjectAdapter adapter = new LibraryObjectAdapter(MediaBrowserService.getInstance().getPlaylist()
                 , touchHelper, view ->
         {
             MediaBrowserService.getInstance().setIndex(binding.playList.getChildAdapterPosition(view));
             getMediaController().getTransportControls().play();
         });
+        touchHelper.attachToRecyclerView(binding.playList);
         binding.playList.setAdapter(adapter);
 
         adapter.setSelectedPosition(MediaBrowserService.getInstance().getIndex());

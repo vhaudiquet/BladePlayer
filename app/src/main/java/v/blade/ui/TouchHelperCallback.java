@@ -57,6 +57,23 @@ public class TouchHelperCallback extends ItemTouchHelper.Callback
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
     {
+        if(toOrderObject == null && toOrderList == null) return;
 
+        int position = viewHolder.getAdapterPosition();
+        if(toOrderObject != null)
+        {
+            System.arraycopy(toOrderObject, position + 1, toOrderObject, position, toOrderObject.length - position);
+            toOrderObject[toOrderObject.length - 1] = null;
+        }
+        else toOrderList.remove(position);
+
+        //NOTE: Adapter still needs to be notified ; this method needs to be overloaded
+    }
+
+    @Override
+    public boolean isLongPressDragEnabled()
+    {
+        //NOTE : we disable long press drag; i find that not intuitive, and it is bugged anyway
+        return false;
     }
 }

@@ -53,8 +53,13 @@ public class SpotifyPlayer extends Source.Player
         isLoggingIn = true;
 
         Session.Configuration conf = new Session.Configuration.Builder()
+
+                //NOTE : this seems to fix https://github.com/librespot-org/librespot-java/issues/447,
+                // but it is a bad fix ; TODO find a better fix catching the interrupted timeout exception ?
+                .setConnectionTimeout(-1)
+
                 .setStoreCredentials(false)
-                .setCacheEnabled(false)
+                .setCacheEnabled(false) //TODO : why do we disable cache ? what cache does this exactly controls ? song cache ? we may want that...
                 .build();
 
         String deviceName = null;

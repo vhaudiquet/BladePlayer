@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
 
                                 //if not already displayed, display 'currentPlay'
                                 binding.currentplayLayout.setVisibility(View.VISIBLE);
+                                //TODO : resize mainListView layout
 
                                 if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
                                     binding.currentplayElementPlaypause.setImageResource(R.drawable.ic_pause);
