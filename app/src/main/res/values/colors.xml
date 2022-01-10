@@ -10,4 +10,5 @@
     <color name="textGrey">#FF424242</color>
     <color name="errorRed">#FFf44336</color>
     <color name="okGreen">#FF76ff03</color>
+    <color name="enabledFilter">#FFb3e5fc</color>
 </resources>

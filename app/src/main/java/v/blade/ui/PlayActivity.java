@@ -2,6 +2,7 @@ package v.blade.ui;
 
 import android.content.ComponentName;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
@@ -15,6 +16,7 @@ import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,7 +79,22 @@ public class PlayActivity extends AppCompatActivity
         binding.playSkipnext.setOnClickListener(view -> getMediaController().getTransportControls().skipToNext());
 
         //Set shuffle and repeat actions
-        //TODO set shuffle and repeat buttons actions
+        binding.playShuffle.setOnClickListener(view ->
+        {
+            if(MediaControllerCompat.getMediaController(this).getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_NONE)
+                MediaControllerCompat.getMediaController(this).getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+            else
+                MediaControllerCompat.getMediaController(this).getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+        });
+        binding.playRepeat.setOnClickListener(view ->
+        {
+            if(MediaControllerCompat.getMediaController(this).getRepeatMode() == PlaybackStateCompat.REPEAT_MODE_NONE)
+                MediaControllerCompat.getMediaController(this).getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+            else if(MediaControllerCompat.getMediaController(this).getRepeatMode() == PlaybackStateCompat.REPEAT_MODE_ONE)
+                MediaControllerCompat.getMediaController(this).getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+            else
+                MediaControllerCompat.getMediaController(this).getTransportControls().setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+        });
 
         //Set seekBar action
         binding.playSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
@@ -185,12 +202,58 @@ public class PlayActivity extends AppCompatActivity
 
                                 updatePlaylist();
                             }
+
+                            @Override
+                            public void onShuffleModeChanged(int shuffleMode)
+                            {
+                                super.onShuffleModeChanged(shuffleMode);
+
+                                if(shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL
+                                        || shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_GROUP)
+                                {
+                                    binding.playShuffle.setColorFilter(ContextCompat.getColor(PlayActivity.this, R.color.enabledFilter),
+                                            PorterDuff.Mode.SRC_ATOP);
+                                }
+                                else
+                                {
+                                    binding.playShuffle.setColorFilter(null);
+                                }
+
+                                updatePlaylist();
+                            }
+
+                            @Override
+                            public void onRepeatModeChanged(int repeatMode)
+                            {
+                                super.onRepeatModeChanged(repeatMode);
+
+                                switch(repeatMode)
+                                {
+                                    case PlaybackStateCompat.REPEAT_MODE_INVALID:
+                                    case PlaybackStateCompat.REPEAT_MODE_NONE:
+                                        binding.playRepeat.setImageResource(R.drawable.ic_repeat);
+                                        binding.playRepeat.setColorFilter(null);
+                                        break;
+                                    case PlaybackStateCompat.REPEAT_MODE_ONE:
+                                        binding.playRepeat.setImageResource(R.drawable.ic_repeat_one);
+                                        binding.playRepeat.setColorFilter(ContextCompat.getColor(PlayActivity.this, R.color.enabledFilter),
+                                                PorterDuff.Mode.SRC_ATOP);
+                                        break;
+                                    case PlaybackStateCompat.REPEAT_MODE_ALL:
+                                    case PlaybackStateCompat.REPEAT_MODE_GROUP:
+                                        binding.playRepeat.setImageResource(R.drawable.ic_repeat);
+                                        binding.playRepeat.setColorFilter(ContextCompat.getColor(PlayActivity.this, R.color.enabledFilter),
+                                                PorterDuff.Mode.SRC_ATOP);
+                                        break;
+                                }
+                            }
                         };
 
                         //on connection, actualize UI
                         mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
                         mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
-                        updatePlaylist();
+                        mediaControllerCallback.onShuffleModeChanged(mediaController.getShuffleMode());
+                        mediaControllerCallback.onRepeatModeChanged(mediaController.getRepeatMode());
 
                         //Register a callback so that UI stays in sync
                         mediaController.registerCallback(mediaControllerCallback);

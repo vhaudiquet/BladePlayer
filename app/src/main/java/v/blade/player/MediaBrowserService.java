@@ -1,5 +1,7 @@
 package v.blade.player;
 
+import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import java.util.List;
 
 import v.blade.library.Song;
 import v.blade.sources.Source;
+import v.blade.ui.PlayActivity;
 
 public class MediaBrowserService extends MediaBrowserServiceCompat
 {
@@ -29,6 +32,9 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
 
     protected List<Song> playlist;
     protected int index;
+
+    protected List<Song> shuffleBackupList;
+
     protected Source.Player current;
     private boolean isStarted = false;
     protected PlayerNotification notification;
@@ -65,6 +71,17 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         mediaSessionCallback = new MediaSessionCallback(this);
         mediaSession.setCallback(mediaSessionCallback);
 
+        //Set mediaSession activity
+        Intent openUI = new Intent(this, PlayActivity.class);
+        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        int contentIntentFlags = PendingIntent.FLAG_CANCEL_CURRENT;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+            contentIntentFlags |= PendingIntent.FLAG_IMMUTABLE;
+        @SuppressLint("UnspecifiedImmutableFlag") //This must be a bug in my IDE, but the linter reports this warning here...
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0x42, openUI, contentIntentFlags);
+        mediaSession.setSessionActivity(contentIntent);
+
+        //Set service mediaSession
         setSessionToken(mediaSession.getSessionToken());
 
         //Init notification manager
@@ -127,11 +144,24 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
 
     public void notifyPlaybackEnd()
     {
+        //Handle repeat current song mode
+        if(mediaSession.getController().getRepeatMode() == PlaybackStateCompat.REPEAT_MODE_ONE)
+        {
+            setIndex(index);
+            mediaSessionCallback.onPlay();
+            return;
+        }
+
         if(playlist.size() - 1 == index)
         {
             setIndex(0);
-            mediaSessionCallback.updatePlaybackState(false);
-            notification.update(false);
+            if(mediaSession.getController().getRepeatMode() == PlaybackStateCompat.REPEAT_MODE_NONE)
+            {
+                //Stop playback
+                mediaSessionCallback.updatePlaybackState(false);
+                notification.update(false);
+            }
+            else mediaSessionCallback.onPlay(); //Repeat playback
         }
         else
         {

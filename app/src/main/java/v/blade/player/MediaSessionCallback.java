@@ -6,6 +6,11 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.core.content.ContextCompat;
+import androidx.media.AudioFocusRequestCompat;
+import androidx.media.AudioManagerCompat;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import v.blade.BladeApplication;
 import v.blade.library.Song;
@@ -15,6 +20,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
     protected MediaBrowserService service;
 
     private final AudioManager audioManager;
+    private AudioFocusRequestCompat lastAudioFocusRequest;
     private boolean playOnAudioFocus = false;
     private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange ->
     {
@@ -70,8 +76,10 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         super.onPlay();
 
         //Ask for audio focus
-        int audioFocus = audioManager.requestAudioFocus(audioFocusChangeListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        lastAudioFocusRequest = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN)
+                .setOnAudioFocusChangeListener(audioFocusChangeListener)
+                .build();
+        int audioFocus = AudioManagerCompat.requestAudioFocus(audioManager, lastAudioFocusRequest);
         if(audioFocus != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return;
 
         /* Either we were paused and we resume play, or we play from playlist and we have to
@@ -114,7 +122,11 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         super.onPause();
 
         //Handle audiofocus
-        if(!playOnAudioFocus) audioManager.abandonAudioFocus(audioFocusChangeListener);
+        if(!playOnAudioFocus && lastAudioFocusRequest != null)
+        {
+            AudioManagerCompat.abandonAudioFocusRequest(audioManager, lastAudioFocusRequest);
+            lastAudioFocusRequest = null;
+        }
 
         service.notification.update(false);
         updatePlaybackState(false);
@@ -138,7 +150,9 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
     {
         super.onSkipToNext();
 
-        service.notifyPlaybackEnd();
+        if(service.playlist.size() - 1 == service.index) service.setIndex(0);
+        else service.setIndex(service.index + 1);
+        onPlay();
     }
 
     @Override
@@ -151,5 +165,49 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         onPlay();
     }
 
+    @Override
+    public void onSetShuffleMode(int shuffleMode)
+    {
+        super.onSetShuffleMode(shuffleMode);
 
+        if(shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_NONE
+                && service.mediaSession.getController().getShuffleMode() != PlaybackStateCompat.SHUFFLE_MODE_NONE)
+        {
+            //Retreive index
+            int index = service.shuffleBackupList.indexOf(service.playlist.get(service.index));
+
+            //Restore playlist and index
+            service.playlist = service.shuffleBackupList;
+            service.index = index;
+
+            //Disable shuffle mode
+            service.mediaSession.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+        }
+        else if(service.mediaSession.getController().getShuffleMode() == PlaybackStateCompat.SHUFFLE_MODE_NONE)
+        {
+            //Generate shuffled list
+            ArrayList<Song> shuffled = new ArrayList<>(service.playlist);
+            Collections.shuffle(shuffled);
+            shuffled.remove(service.playlist.get(service.index));
+            shuffled.add(0, service.playlist.get(service.index));
+
+            //Backup list
+            service.shuffleBackupList = service.playlist;
+
+            //Set list
+            service.playlist = shuffled;
+            service.index = 0;
+
+            //Enable shuffle mode
+            service.mediaSession.setShuffleMode(shuffleMode);
+        }
+    }
+
+    @Override
+    public void onSetRepeatMode(int repeatMode)
+    {
+        super.onSetRepeatMode(repeatMode);
+
+        service.mediaSession.setRepeatMode(repeatMode);
+    }
 }
