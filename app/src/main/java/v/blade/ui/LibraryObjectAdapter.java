@@ -36,7 +36,8 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         ImageView imageView;
         ImageView moreView;
 
-        //todo check why we need that
+        //cf. https://stackoverflow.com/questions/47107105/android-button-has-setontouchlistener-called-on-it-but-does-not-override-perform
+        //for example for explication
         @SuppressLint("ClickableViewAccessibility")
         public ViewHolder(@NonNull View itemView)
         {
@@ -68,8 +69,8 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     }
 
     private final List<? extends LibraryObject> objects;
-    private View.OnClickListener moreClickListener = null;
-    private ItemTouchHelper touchHelper = null;
+    private View.OnClickListener moreClickListener;
+    private ItemTouchHelper touchHelper;
     private final View.OnClickListener clickListener;
 
     private int selectedPosition = -1;
@@ -84,12 +85,14 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     {
         this(objects, clickListener);
         this.moreClickListener = moreClickListener;
+        this.touchHelper = null;
     }
 
     public LibraryObjectAdapter(List<? extends LibraryObject> objects, ItemTouchHelper touchHelper, View.OnClickListener clickListener)
     {
         this(objects, clickListener);
         this.touchHelper = touchHelper;
+        this.moreClickListener = null;
     }
 
     public void setSelectedPosition(int position)

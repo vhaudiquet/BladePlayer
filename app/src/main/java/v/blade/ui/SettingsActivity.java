@@ -292,7 +292,6 @@ public class SettingsActivity extends AppCompatActivity implements
                 this.clickListener = clickListener;
             }
 
-            //todo check why we need that
             @SuppressLint("ClickableViewAccessibility")
             @NonNull
             @Override
