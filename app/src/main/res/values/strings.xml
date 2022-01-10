@@ -56,4 +56,6 @@
     <string name="currently_playing">Currently playing</string>
     <string name="play_next">Play after current song</string>
     <string name="add_to_current_playlist">Add to current playlist</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat">Repeat</string>
 </resources>

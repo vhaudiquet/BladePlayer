@@ -56,4 +56,6 @@
     <string name="currently_playing">En écoute</string>
     <string name="play_next">Lire juste après</string>
     <string name="add_to_current_playlist">Ajouter à la liste en cours de lecture</string>
+    <string name="shuffle">Aléatoire</string>
+    <string name="repeat">Répéter</string>
 </resources>

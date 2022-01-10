@@ -2,6 +2,7 @@ package v.blade.ui;
 
 import android.content.ComponentName;
 import android.graphics.Bitmap;
+import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -9,6 +10,8 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +19,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import v.blade.R;
 import v.blade.databinding.ActivityPlayBinding;
@@ -53,6 +59,73 @@ public class PlayActivity extends AppCompatActivity
             showingPlaylist = !showingPlaylist;
         });
 
+        //Set play button action
+        binding.playPlay.setOnClickListener(view ->
+        {
+            if(getMediaController().getPlaybackState().getState() == PlaybackState.STATE_PLAYING)
+            {
+                getMediaController().getTransportControls().pause();
+            }
+            else
+            {
+                getMediaController().getTransportControls().play();
+            }
+        });
+
+        //Set skip buttons actions
+        binding.playSkipprev.setOnClickListener(view -> getMediaController().getTransportControls().skipToPrevious());
+        binding.playSkipnext.setOnClickListener(view -> getMediaController().getTransportControls().skipToNext());
+
+        //Set shuffle and repeat actions
+        //TODO set shuffle and repeat buttons actions
+
+        //Set seekBar action
+        binding.playSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+            {
+                if(fromUser) getMediaController().getTransportControls().seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar)
+            {
+
+            }
+        });
+
+        //Setup task that will update seekBar/position every second
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                runOnUiThread(() ->
+                {
+                    if(getMediaController() != null
+                            && getMediaController().getPlaybackState().getState() == PlaybackState.STATE_PLAYING
+                            && binding.playSeekbar.getMax() != 0)
+                    {
+                        int progress = binding.playSeekbar.getProgress() + 1000;
+
+                        int positionMins = (progress / 60000) % 60000;
+                        int positionSecs = progress % 60000 / 1000;
+                        String positionString = String.format(Locale.getDefault(), "%02d:%02d", positionMins, positionSecs);
+                        binding.playTime.setText(positionString);
+                        binding.playSeekbar.setProgress(progress);
+                    }
+                });
+            }
+        }, 0, 1000);
+
         mediaBrowser = new MediaBrowserCompat(this, new ComponentName(this, MediaBrowserService.class),
                 new MediaBrowserCompat.ConnectionCallback()
                 {
@@ -73,6 +146,19 @@ public class PlayActivity extends AppCompatActivity
                             {
                                 super.onPlaybackStateChanged(state);
 
+                                //Set play/pause button
+                                if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
+                                    binding.playPlay.setImageResource(R.drawable.ic_pause_circle);
+                                else
+                                    binding.playPlay.setImageResource(R.drawable.ic_play_circle);
+
+                                //Set playtime
+                                long positionMillis = state.getPosition();
+                                long positionMins = (positionMillis / 60000) % 60000;
+                                long positionSecs = positionMillis % 60000 / 1000;
+                                String positionString = String.format(Locale.getDefault(), "%02d:%02d", positionMins, positionSecs);
+                                binding.playTime.setText(positionString);
+                                binding.playSeekbar.setProgress((int) positionMillis);
                             }
 
                             @Override
@@ -83,6 +169,14 @@ public class PlayActivity extends AppCompatActivity
                                 binding.playTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                                 String subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) + " \u00B7 " + metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
                                 binding.playSubtitle.setText(subtitle);
+
+                                //Set duration
+                                long durationMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+                                long durationMins = (durationMillis / 60000) % 60000;
+                                long durationSecs = durationMillis % 60000 / 1000;
+                                String durationString = String.format(Locale.getDefault(), "%02d:%02d", durationMins, durationSecs);
+                                binding.playDuration.setText(durationString);
+                                binding.playSeekbar.setMax((int) durationMillis);
 
                                 //Set art
                                 Bitmap art = metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ART);
@@ -122,7 +216,9 @@ public class PlayActivity extends AppCompatActivity
     private void updatePlaylist()
     {
         //Set 'playList' layout height to image height
-        binding.playList.getLayoutParams().height = binding.playAlbum.getHeight();
+        binding.playList.getLayoutParams().height = binding.playAlbum.getHeight()
+                + ((ViewGroup.MarginLayoutParams) binding.playAlbum.getLayoutParams()).topMargin
+                + ((ViewGroup.MarginLayoutParams) binding.playAlbum.getLayoutParams()).bottomMargin;
 
         //Disable long clicks on the playList view
         binding.playList.setOnLongClickListener(v -> true);

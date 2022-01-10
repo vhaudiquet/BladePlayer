@@ -9,16 +9,20 @@
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_artist.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_hourglass.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_pause.xml" value="0.21510416666666668" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_pause_circle.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_play_arrow.xml" value="0.21510416666666668" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_play_circle.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_playlist.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_reorder_24px.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_repeat.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_shuffle.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_skip_next.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_skip_previous.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/thumb.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/track.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout-v23/fragment_library.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/activity_main.xml" value="0.29483695652173914" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/activity_play.xml" value="0.3625" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/activity_play.xml" value="0.16" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/app_bar_main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/content_main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/fragment_library.xml" value="0.3625" />
