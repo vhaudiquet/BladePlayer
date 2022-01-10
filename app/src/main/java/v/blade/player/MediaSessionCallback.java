@@ -1,5 +1,7 @@
 package v.blade.player;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -10,11 +12,44 @@ import v.blade.library.Song;
 
 public class MediaSessionCallback extends MediaSessionCompat.Callback
 {
-    protected final MediaBrowserService service;
+    protected MediaBrowserService service;
+
+    private final AudioManager audioManager;
+    private boolean playOnAudioFocus = false;
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange ->
+    {
+
+        switch(focusChange)
+        {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if(service.mediaSession.getController().getPlaybackState().getState() != PlaybackStateCompat.STATE_PLAYING
+                        && playOnAudioFocus)
+                {
+                    //if we gain audiofocus, check if we have to resume and resume if needed
+                    onPlay();
+                    playOnAudioFocus = false;
+                }
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                if(service.mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING)
+                {
+                    //if we lose audiofocus for a little ammount of time, pause for this time and resume when we can
+                    playOnAudioFocus = true;
+                    onPause();
+                }
+            case AudioManager.AUDIOFOCUS_LOSS:
+                if(service.mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING)
+                {
+                    onPause();
+                }
+        }
+    };
 
     protected MediaSessionCallback(MediaBrowserService service)
     {
         this.service = service;
+        this.audioManager = (AudioManager) service.getSystemService(Context.AUDIO_SERVICE);
     }
 
     protected void updatePlaybackState(boolean isPlaying)
@@ -33,6 +68,11 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
     public void onPlay()
     {
         super.onPlay();
+
+        //Ask for audio focus
+        int audioFocus = audioManager.requestAudioFocus(audioFocusChangeListener,
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if(audioFocus != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return;
 
         /* Either we were paused and we resume play, or we play from playlist and we have to
          *   call playSong()
@@ -72,6 +112,9 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
     public void onPause()
     {
         super.onPause();
+
+        //Handle audiofocus
+        if(!playOnAudioFocus) audioManager.abandonAudioFocus(audioFocusChangeListener);
 
         service.notification.update(false);
         updatePlaybackState(false);

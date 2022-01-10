@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.os.Build;
@@ -70,24 +71,60 @@ public class PlayerNotification
         Song song = service.playlist.get(service.index);
         if(song == null) return;
 
-        //Update mediaSession metadata
-        service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadata.METADATA_KEY_TITLE, song.getName())
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, song.getArtistsString())
-                .putString(MediaMetadata.METADATA_KEY_ALBUM, song.getAlbum().getName())
-                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, song.getName())
-                .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, song.getTrackNumber())
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, service.current == null ? 0 : service.current.getDuration())
-                .build());
-
         //Update notification
-        Notification notification = getNotification(isPlaying, service.getSessionToken(), song, null);
         if(this.notification == null)
-            service.startForeground(PlayerNotification.NOTIFICATION_ID, notification);
-        else
-            notificationManager.notify(PlayerNotification.NOTIFICATION_ID, notification);
+        {
+            //Update mediaSession metadata
+            service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, song.getName())
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, song.getArtistsString())
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM, song.getAlbum().getName())
+                    .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, song.getName())
+                    .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, song.getTrackNumber())
+                    .putLong(MediaMetadata.METADATA_KEY_DURATION, service.current == null ? 0 : service.current.getDuration())
+                    .build());
 
-        this.notification = notification;
+            //There is no notification ; we must display it quick and update it for image later
+            Notification notification = getNotification(isPlaying, service.getSessionToken(), song, null);
+            service.startForeground(PlayerNotification.NOTIFICATION_ID, notification);
+            this.notification = notification;
+        }
+        else
+        {
+            //We can wait image loading to update notification
+            song.getBigImageRequest().into(new Target()
+            {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
+                {
+                    //Update mediaSession metadata
+                    service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                            .putString(MediaMetadata.METADATA_KEY_TITLE, song.getName())
+                            .putString(MediaMetadata.METADATA_KEY_ARTIST, song.getArtistsString())
+                            .putString(MediaMetadata.METADATA_KEY_ALBUM, song.getAlbum().getName())
+                            .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE, song.getName())
+                            .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, song.getTrackNumber())
+                            .putLong(MediaMetadata.METADATA_KEY_DURATION, service.current == null ? 0 : service.current.getDuration())
+                            .putBitmap(MediaMetadata.METADATA_KEY_ART, bitmap)
+                            .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
+                            .build());
+
+                    Notification notification = getNotification(isPlaying, service.getSessionToken(), song, bitmap);
+                    PlayerNotification.this.notification = notification;
+                    notificationManager.notify(PlayerNotification.NOTIFICATION_ID, notification);
+                }
+
+                @Override
+                public void onBitmapFailed(Exception e, Drawable errorDrawable)
+                {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable)
+                {
+                }
+            });
+        }
     }
 
     private void updateForImage(boolean isPlaying, Bitmap image)
@@ -128,8 +165,6 @@ public class PlayerNotification
                 .setWhen(0)
                 .setColor(ContextCompat.getColor(service, R.color.bladeGrey)) //TODO change to theme colorPrimary ?
                 .setSmallIcon(R.drawable.ic_blade_notification)
-                //NOTE : do we really want this below ?
-                //.setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.drawable.ic_album_notification))
                 .setContentIntent(contentIntent)
                 .setContentTitle(playing.getName())
                 .setContentText(playing.getArtistsString() + " - " + playing.getAlbum().getName())
@@ -182,6 +217,8 @@ public class PlayerNotification
                 {
                 }
             });
+        else
+            builder.setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.drawable.ic_album));
 
         return builder;
     }
