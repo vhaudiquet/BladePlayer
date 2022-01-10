@@ -251,6 +251,7 @@ public class SpotifyPlayer extends Source.Player
 
         //Wait for the player to be ready ; i don't know if we need that, but we will take any
         // waiting we can in order to tryfix 'spamclick' issue
+        /* removed : this causes a really weird behavior
         try
         {
             spotifyPlayer.get().waitReady();
@@ -258,7 +259,7 @@ public class SpotifyPlayer extends Source.Player
         catch(InterruptedException e)
         {
             e.printStackTrace();
-        }
+        }*/
 
         spotifyPlayer.get().load("spotify:track:" + current.id, true, false);
 

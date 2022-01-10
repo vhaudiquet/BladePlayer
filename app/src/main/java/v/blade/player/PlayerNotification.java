@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.os.Build;
@@ -129,13 +128,18 @@ public class PlayerNotification
                 .setWhen(0)
                 .setColor(ContextCompat.getColor(service, R.color.bladeGrey)) //TODO change to theme colorPrimary ?
                 .setSmallIcon(R.drawable.ic_blade_notification)
-                .setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.drawable.ic_album_notification))
+                //NOTE : do we really want this below ?
+                //.setLargeIcon(BitmapFactory.decodeResource(service.getResources(), R.drawable.ic_album_notification))
                 .setContentIntent(contentIntent)
                 .setContentTitle(playing.getName())
                 .setContentText(playing.getArtistsString() + " - " + playing.getAlbum().getName())
                 .setDeleteIntent(null)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(isPlaying);
+
+        builder.addAction(prevAction);
+        builder.addAction(isPlaying ? pauseAction : playAction);
+        builder.addAction(nextAction);
 
         //TODO : actually we should replace that with remoteview and stuff like here i think :
         // https://stackoverflow.com/questions/26888247/easiest-way-to-use-picasso-in-notification-icon
@@ -178,10 +182,6 @@ public class PlayerNotification
                 {
                 }
             });
-
-        builder.addAction(prevAction);
-        builder.addAction(isPlaying ? pauseAction : playAction);
-        builder.addAction(nextAction);
 
         return builder;
     }
