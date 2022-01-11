@@ -22,12 +22,12 @@ jobs:
 
       - name: Restore Blade keystore (for app signing)
         run: |
-          echo "${{ secrets.BLADE_KEYSTORE }} > blade-keystore.b64
+          echo "${{ secrets.BLADE_KEYSTORE }}" > blade-keystore.b64
           base64 -d blade-keystore.b64 --output blade-keystore.jks
 
       - name: Restore debug keystore (for debug configurations)
         run: |
-          echo "${{ secrets.DEBUG_KEYSTORE }} > debug.b64
+          echo "${{ secrets.DEBUG_KEYSTORE }}" > debug.b64
           base64 -d debug.b64 --output ~/.android/debug.keystore
 
       - name: Grant execute permission for gradlew
