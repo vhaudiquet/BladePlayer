@@ -102,7 +102,7 @@ public class SpotifyConnectionTest
          */
 
         //Wait for window showup
-        Thread.sleep(4000);
+        Thread.sleep(12000);
 
         //Fill webview login infos and click on connect
         onWebView(withResourceName("com_spotify_sdk_login_webview"))
@@ -130,7 +130,7 @@ public class SpotifyConnectionTest
         {
         }
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);
 
         //Done : check that it went well
         assert Source.SOURCES.get(newSpotifyIndex).getStatus() == Source.SourceStatus.STATUS_READY;

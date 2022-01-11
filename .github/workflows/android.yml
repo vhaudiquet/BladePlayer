@@ -45,4 +45,8 @@ jobs:
           script: |
             ./gradlew installDebug
             ./gradlew installDebugAndroidTest
-            adb shell am instrument -w -m -e spotify_user ${{ secrets.SPOTIFY_USER }} -e spotify_password ${{ secrets.SPOTIFY_PASSWORD }} -e debug false v.blade.test/androidx.test.runner.AndroidJUnitRunner
+            adb shell am instrument -w -m -e spotify_user ${{ secrets.SPOTIFY_USER }} -e spotify_password ${{ secrets.SPOTIFY_PASSWORD }} -e debug false v.blade.test/androidx.test.runner.AndroidJUnitRunner > log
+            cat log
+            if grep -q "FAILURES" log; then
+              false
+            fi
