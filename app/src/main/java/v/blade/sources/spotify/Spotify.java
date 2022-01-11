@@ -3,7 +3,6 @@ package v.blade.sources.spotify;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +20,11 @@ import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import kotlin.random.Random;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -66,6 +61,8 @@ public class Spotify extends Source
     private static final String BASE_API_URL = "https://api.spotify.com/v1/";
     private static final String AUTH_TYPE = "Bearer ";
     private static final String CLIENT_ID = "048adc76814146e7bb049d89813bd6e0";
+    //This should not be exposed, but i have no other choice, as the Spotify app does not seem to support PKCE
+    private static final String CLIENT_SECRET = "854982b95dc04100a2009ebb8a8df758";
     protected static final String[] SCOPES = {"app-remote-control", "streaming", "playlist-modify-public", "playlist-modify-private", "playlist-read-private", "playlist-read-collaborative", "user-follow-modify", "user-follow-read", "user-library-modify", "user-library-read", "user-read-email", "user-read-private",
             "user-read-recently-played", "user-top-read", "user-read-playback-position", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing"};
     private static final int SPOTIFY_REQUEST_CODE = 0x11;
@@ -125,6 +122,7 @@ public class Spotify extends Source
         service = retrofit.create(SpotifyService.class);
 
         //refresh access token
+        System.out.println("BLADE-SPOTIFY: Refresh token " + REFRESH_TOKEN);
         OkHttpClient client = new OkHttpClient();
         RequestBody requestBody = new FormBody.Builder()
                 .add("grant_type", "refresh_token")
@@ -177,7 +175,8 @@ public class Spotify extends Source
                 ACCESS_TOKEN = sr.access_token;
                 TOKEN_EXPIRES_IN = sr.expires_in;
 
-                REFRESH_TOKEN = sr.refresh_token;
+                if(sr.refresh_token != null && !sr.refresh_token.equals(""))
+                    REFRESH_TOKEN = sr.refresh_token;
 
                 AUTH_STRING = AUTH_TYPE + ACCESS_TOKEN;
 
@@ -494,6 +493,7 @@ public class Spotify extends Source
                 spotify.account_login = userName;
                 spotify.account_password = userPass;
 
+                /* PKCE: not supported by Spotify app
                 //Generate random code for PKCE
                 int codeLen = Random.Default.nextInt(43, 128);
 
@@ -528,13 +528,14 @@ public class Spotify extends Source
                             && base64code.charAt(index) != '\r'
                             && base64code.charAt(index) != ' ') break;
                 }
-                base64code = base64code.substring(0, index + 1);
+                base64code = base64code.substring(0, index + 1);*/
 
                 AuthorizationRequest request = new AuthorizationRequest.Builder(CLIENT_ID,
                         AuthorizationResponse.Type.CODE, REDIRECT_URI)
                         .setShowDialog(false).setScopes(SCOPES)
-                        .setCustomParam("code_challenge_method", "S256")
-                        .setCustomParam("code_challenge", base64code).build();
+                        //.setCustomParam("code_challenge_method", "S256")
+                        //.setCustomParam("code_challenge", base64code)
+                        .build();
                 AuthorizationClient.openLoginActivity(requireActivity(), SPOTIFY_REQUEST_CODE, request);
             });
 
@@ -583,7 +584,8 @@ public class Spotify extends Source
                     .add("code", code)
                     .add("redirect_uri", REDIRECT_URI)
                     .add("client_id", CLIENT_ID)
-                    .add("code_verifier", codeVerifier)
+                    .add("client_secret", CLIENT_SECRET)
+                    //.add("code_verifier", codeVerifier)
                     .build();
             Request request = new Request.Builder().url("https://accounts.spotify.com/api/token")
                     .post(body).build();

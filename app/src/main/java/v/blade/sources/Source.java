@@ -64,12 +64,13 @@ public abstract class Source
     }
 
     protected String name;
-    protected SourceStatus status = SourceStatus.STATUS_NEED_INIT;
+    protected SourceStatus status;
     protected int index;
     protected Player player;
 
     public Source()
     {
+        this.status = SourceStatus.STATUS_NEED_INIT;
     }
 
     public String getName()
