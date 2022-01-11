@@ -24,6 +24,13 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/about_buildtype_text"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+        <com.google.android.material.textview.MaterialTextView
             android:textAlignment="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

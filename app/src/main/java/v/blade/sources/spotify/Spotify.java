@@ -128,6 +128,7 @@ public class Spotify extends Source
                 .add("grant_type", "refresh_token")
                 .add("refresh_token", REFRESH_TOKEN)
                 .add("client_id", CLIENT_ID)
+                .add("client_secret", CLIENT_SECRET)
                 .build();
         Request request = new Request.Builder().url("https://accounts.spotify.com/api/token")
                 .post(requestBody).build();
@@ -142,6 +143,7 @@ public class Spotify extends Source
             if(!login)
             {
                 Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not login)", Toast.LENGTH_SHORT).show();
+                System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not login)");
                 status = SourceStatus.STATUS_NEED_INIT;
                 return;
             }
@@ -156,7 +158,7 @@ public class Spotify extends Source
                     //noinspection ConstantConditions
                     String responseBody = response.body() == null ? "Unknown error" : response.body().string();
                     Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
-                    System.err.println(BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")");
+                    System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")");
                     status = SourceStatus.STATUS_NEED_INIT;
                     return;
                 }
@@ -168,6 +170,7 @@ public class Spotify extends Source
                 if(sr == null)
                 {
                     Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
+                    System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not parse JSON Token)");
                     status = SourceStatus.STATUS_NEED_INIT;
                     return;
                 }
@@ -188,6 +191,7 @@ public class Spotify extends Source
             {
                 status = SourceStatus.STATUS_NEED_INIT;
                 Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (IOException trying to obtain token)", Toast.LENGTH_SHORT).show();
+                System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (IOException trying to obtain token)");
             }
         });
     }

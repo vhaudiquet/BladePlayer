@@ -31,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Objects;
 
 import v.blade.BladeApplication;
+import v.blade.BuildConfig;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentAboutBinding;
 import v.blade.databinding.SettingsFragmentSourcesBinding;
@@ -465,6 +466,8 @@ public class SettingsActivity extends AppCompatActivity implements
                 PackageInfo packageInfo = requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0);
                 String versionText = getText(R.string.version) + " " + packageInfo.versionName + " (" + packageInfo.versionCode + ")";
                 binding.aboutVersionText.setText(versionText);
+                String buildTypeText = getString(R.string.build_type) + " : " + BuildConfig.BUILD_TYPE;
+                binding.aboutBuildtypeText.setText(buildTypeText);
             }
             catch(Exception ignored)
             {

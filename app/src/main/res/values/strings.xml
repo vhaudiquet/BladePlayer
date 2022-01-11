@@ -58,4 +58,5 @@
     <string name="add_to_current_playlist">Add to current playlist</string>
     <string name="shuffle">Shuffle</string>
     <string name="repeat">Repeat</string>
+    <string name="build_type" translatable="false">Build type</string>
 </resources>
