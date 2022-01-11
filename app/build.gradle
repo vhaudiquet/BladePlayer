@@ -15,8 +15,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("../blade-keystore.jks")
+            keyAlias "blade-release"
+            if(project.hasProperty("releaseStorePassword"))
+                storePassword project.getProperty("storePassword")
+            if(project.hasProperty("releaseKeyPassword"))
+                keyPassword project.getProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
