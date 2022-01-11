@@ -102,13 +102,24 @@ public class SpotifyConnectionTest
          */
 
         //Wait for window showup
-        Thread.sleep(12000);
+        boolean windowOn = false;
+        while(!windowOn)
+        {
+            try
+            {
+                onWebView(withResourceName("com_spotify_sdk_login_webview"))
+                        .withElement(findElement(Locator.ID, "login-username"))
+                        .perform(webKeys(spotifyUser));
+                closeSoftKeyboard();
+                windowOn = true;
+            }
+            catch(RuntimeException e)
+            {
+                Thread.sleep(1000);
+            }
+        }
 
         //Fill webview login infos and click on connect
-        onWebView(withResourceName("com_spotify_sdk_login_webview"))
-                .withElement(findElement(Locator.ID, "login-username"))
-                .perform(webKeys(spotifyUser));
-        closeSoftKeyboard();
         onWebView(withResourceName("com_spotify_sdk_login_webview"))
                 .withElement(findElement(Locator.ID, "login-password"))
                 .perform(webKeys(spotifyPass));
@@ -130,7 +141,7 @@ public class SpotifyConnectionTest
         {
         }
 
-        Thread.sleep(3000);
+        Thread.sleep(1000);
 
         //Done : check that it went well
         assert Source.SOURCES.get(newSpotifyIndex).getStatus() == Source.SourceStatus.STATUS_READY;
