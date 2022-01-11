@@ -326,9 +326,13 @@ public class PlayActivity extends AppCompatActivity
                     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
                     {
                         super.onSwiped(viewHolder, direction);
+                        int pos = viewHolder.getAdapterPosition();
+
+                        //Update index
+                        if(pos < MediaBrowserService.getInstance().getIndex())
+                            MediaBrowserService.getInstance().updateIndexForReorder(MediaBrowserService.getInstance().getIndex() - 1);
 
                         //Notify adapter
-                        int pos = viewHolder.getAdapterPosition();
                         Objects.requireNonNull(binding.playList.getAdapter()).notifyItemRemoved(pos);
                     }
                 });
