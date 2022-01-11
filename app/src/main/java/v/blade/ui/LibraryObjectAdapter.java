@@ -201,6 +201,12 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
                     + viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
             viewHolder.subtitleView.setText(artistTrackCount);
         }
+        else if(current instanceof Playlist)
+        {
+            String playlistTrackCount = ((Playlist) current).getSongs().size() + " " +
+                    viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
+            viewHolder.subtitleView.setText(playlistTrackCount);
+        }
 
         //If 'moreClickListener', put object as more view tag
         if(moreClickListener != null)

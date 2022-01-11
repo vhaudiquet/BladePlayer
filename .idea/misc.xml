@@ -9,21 +9,16 @@
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_artist.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_hourglass.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_pause.xml" value="0.21510416666666668" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_pause_circle.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_play_arrow.xml" value="0.21510416666666668" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_play_circle.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_playlist.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_reorder_24px.xml" value="0.37864583333333335" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_repeat.xml" value="0.37864583333333335" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_repeat_one.xml" value="0.2078125" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_shuffle.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_skip_next.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_skip_previous.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/thumb.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/track.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout-v23/fragment_library.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/activity_main.xml" value="0.29483695652173914" />
-        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/activity_play.xml" value="0.16" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/activity_play.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/app_bar_main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/content_main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/fragment_library.xml" value="0.3625" />
@@ -50,6 +45,7 @@
         <entry key="app/src/main/res/drawable/side_nav_bar.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/sync.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/activity_play.xml" value="0.22" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.19739583333333333" />
@@ -62,6 +58,7 @@
         <entry key="app/src/main/res/layout/settings_fragment_sources.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/settings_fragment_spotify.xml" value="0.13677536231884058" />
         <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/menu/item_more.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/menu/main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/xml/header_preferences.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/xml/messages_preferences.xml" value="0.19739583333333333" />
