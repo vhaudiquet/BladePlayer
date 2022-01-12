@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     protected ActivityMainBinding binding;
 
     protected MediaBrowserCompat mediaBrowser;
+    private MediaControllerCompat.Callback mediaControllerCallback;
 
     private NavHostFragment navHostFragment;
 
@@ -97,12 +98,18 @@ public class MainActivity extends AppCompatActivity
                         MediaControllerCompat.setMediaController(MainActivity.this,
                                 mediaController);
 
-                        MediaControllerCompat.Callback mediaControllerCallback = new MediaControllerCompat.Callback()
+                        mediaControllerCallback = new MediaControllerCompat.Callback()
                         {
                             @Override
                             public void onPlaybackStateChanged(PlaybackStateCompat state)
                             {
                                 super.onPlaybackStateChanged(state);
+
+                                if(state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED)
+                                {
+                                    binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.GONE);
+                                    return;
+                                }
 
                                 //if not already displayed, display 'currentPlay'
                                 if(binding.appBarMain.contentMain.currentplayLayout.getVisibility() != View.VISIBLE)
@@ -118,6 +125,8 @@ public class MainActivity extends AppCompatActivity
                             public void onMetadataChanged(MediaMetadataCompat metadata)
                             {
                                 super.onMetadataChanged(metadata);
+
+                                if(metadata == null) return;
 
                                 binding.appBarMain.contentMain.currentplayElementTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                                 String subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) + " - " + metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
@@ -136,8 +145,8 @@ public class MainActivity extends AppCompatActivity
                                 && (mediaController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING
                                 || mediaController.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED))
                         {
-                            mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
                             mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+                            mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
                         }
 
                         //Register a callback so that 'currentPlay' UI stays in sync
@@ -149,6 +158,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         super.onConnectionSuspended();
                         // The Service has crashed ; Disable transport controls until it automatically reconnects
+                        System.out.println("STOPPED");
                         binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.GONE);
                     }
 
@@ -173,7 +183,9 @@ public class MainActivity extends AppCompatActivity
     {
         super.onStop();
 
-        //TODO unregister callbacks...
+        if(MediaControllerCompat.getMediaController(this) != null)
+            MediaControllerCompat.getMediaController(this).unregisterCallback(mediaControllerCallback);
+
         mediaBrowser.disconnect();
     }
 
@@ -181,6 +193,14 @@ public class MainActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
+        if(mediaController != null)
+        {
+            mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+            mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
+        }
+
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 

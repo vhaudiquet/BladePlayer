@@ -34,6 +34,7 @@ public class PlayActivity extends AppCompatActivity
 {
     private ActivityPlayBinding binding;
     private MediaBrowserCompat mediaBrowser;
+    private MediaControllerCompat.Callback mediaControllerCallback;
     private boolean showingPlaylist = false;
 
     @Override
@@ -156,12 +157,19 @@ public class PlayActivity extends AppCompatActivity
                         MediaControllerCompat.setMediaController(PlayActivity.this,
                                 mediaController);
 
-                        MediaControllerCompat.Callback mediaControllerCallback = new MediaControllerCompat.Callback()
+                        mediaControllerCallback = new MediaControllerCompat.Callback()
                         {
                             @Override
                             public void onPlaybackStateChanged(PlaybackStateCompat state)
                             {
                                 super.onPlaybackStateChanged(state);
+
+                                if(state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED)
+                                {
+                                    //Go back, exit activity
+                                    onBackPressed();
+                                    return;
+                                }
 
                                 //Set play/pause button
                                 if(state.getState() == PlaybackStateCompat.STATE_PLAYING)
@@ -182,6 +190,8 @@ public class PlayActivity extends AppCompatActivity
                             public void onMetadataChanged(MediaMetadataCompat metadata)
                             {
                                 super.onMetadataChanged(metadata);
+
+                                if(metadata == null) return;
 
                                 binding.playTitle.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                                 String subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST) + " \u00B7 " + metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
@@ -250,8 +260,8 @@ public class PlayActivity extends AppCompatActivity
                         };
 
                         //on connection, actualize UI
-                        mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
                         mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+                        mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
                         mediaControllerCallback.onShuffleModeChanged(mediaController.getShuffleMode());
                         mediaControllerCallback.onRepeatModeChanged(mediaController.getRepeatMode());
 
@@ -361,7 +371,9 @@ public class PlayActivity extends AppCompatActivity
     {
         super.onStop();
 
-        //TODO unregister callbacks...
+        if(MediaControllerCompat.getMediaController(this) != null)
+            MediaControllerCompat.getMediaController(this).unregisterCallback(mediaControllerCallback);
+
         mediaBrowser.disconnect();
     }
 

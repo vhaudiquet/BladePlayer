@@ -109,8 +109,22 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        if(intent != null && intent.getAction() != null && intent.getAction().equals("stop"))
+        {
+            //Set playback state to stopped to notify UI
+            PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
+                    .setActions(PlaybackStateCompat.ACTION_PREPARE);
+            mediaSession.setPlaybackState(stateBuilder.build());
+
+            //Stop service
+            isStarted = false;
+            stopSelf();
+            return START_STICKY;
+        }
+
         MediaButtonReceiver.handleIntent(mediaSession, intent);
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     public void setPlaylist(List<Song> list)
@@ -159,7 +173,7 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
             {
                 //Stop playback
                 mediaSessionCallback.updatePlaybackState(false);
-                notification.update(false);
+                notification.update();
             }
             else mediaSessionCallback.onPlay(); //Repeat playback
         }

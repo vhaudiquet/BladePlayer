@@ -26,6 +26,8 @@ public class Song extends LibraryObject
 
     protected void addSource(Source source, Object id)
     {
+        if(source == null || id == null) return;
+
         //check if song contains same source
         for(SourceInformation si : sources) if(si.source == source) return;
 
@@ -50,6 +52,8 @@ public class Song extends LibraryObject
 
     public SourceInformation getBestSource()
     {
+        if(sources.size() == 0) return null;
+
         //TODO : Sort the list by ids at construction, and return source.get(0) maybe
         SourceInformation best = sources.get(0);
         int min = sources.get(0).source.getIndex();

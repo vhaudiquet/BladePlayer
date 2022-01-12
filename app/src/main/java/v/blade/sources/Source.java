@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import v.blade.BladeApplication;
+import v.blade.BuildConfig;
 import v.blade.library.Library;
 import v.blade.library.Song;
 
@@ -178,6 +179,10 @@ public abstract class Source
             while(reader.ready()) j.append(reader.readLine()).append("\n");
             reader.close();
 
+            //noinspection ConstantConditions
+            if(BuildConfig.BUILD_TYPE.equals("debug"))
+                System.out.println("BLADE: Restoring sources from: " + j.toString());
+
             //obtain from JSON
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.registerTypeAdapter(Source.class, new SourceAdapter());
@@ -191,8 +196,9 @@ public abstract class Source
                 SOURCES.add(s);
             }
         }
-        catch(IOException | JSONException ignored)
+        catch(IOException | JSONException e)
         {
+            e.printStackTrace();
         }
     }
 

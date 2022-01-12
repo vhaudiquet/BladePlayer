@@ -59,4 +59,5 @@
     <string name="shuffle">Shuffle</string>
     <string name="repeat">Repeat</string>
     <string name="build_type" translatable="false">Build type</string>
+    <string name="song_no_source_error">This song has no source information. Something must be wrong in sources configuration…</string>
 </resources>

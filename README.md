@@ -11,7 +11,7 @@ Blade is available on [Google Play], or [here on GitHub].
 
 ## Feature overview
 
-## About Spotify
+### About Spotify
 
 You will need a **Spotify Premium** account to play music from [Spotify], but you can use Blade
 without a premium account (to play your Spotify playlists from other sources, for example)

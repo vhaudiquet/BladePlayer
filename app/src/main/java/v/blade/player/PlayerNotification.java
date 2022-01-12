@@ -1,5 +1,6 @@
 package v.blade.player;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.RequiresApi;
@@ -42,6 +42,8 @@ public class PlayerNotification
     private final NotificationCompat.Action nextAction;
     private final NotificationCompat.Action prevAction;
 
+    private boolean isServiceForeground = false;
+
     protected PlayerNotification(MediaBrowserService service)
     {
         this.service = service;
@@ -64,7 +66,7 @@ public class PlayerNotification
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createChannel();
     }
 
-    protected void update(boolean isPlaying)
+    protected void update()
     {
         if(service.playlist == null) return;
         if(service.index >= service.playlist.size()) return;
@@ -85,8 +87,9 @@ public class PlayerNotification
                     .build());
 
             //There is no notification ; we must display it quick and update it for image later
-            Notification notification = getNotification(isPlaying, service.getSessionToken(), song, null);
-            service.startForeground(PlayerNotification.NOTIFICATION_ID, notification);
+            Notification notification = getNotification(song, null);
+            service.startForeground(NOTIFICATION_ID, notification);
+            isServiceForeground = true;
             this.notification = notification;
         }
         else
@@ -109,9 +112,26 @@ public class PlayerNotification
                             .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                             .build());
 
-                    Notification notification = getNotification(isPlaying, service.getSessionToken(), song, bitmap);
+                    Notification notification = getNotification(song, bitmap);
                     PlayerNotification.this.notification = notification;
                     notificationManager.notify(PlayerNotification.NOTIFICATION_ID, notification);
+
+                    //This makes our service 'killable' if unbound to activity, as it is
+                    // no longer viewed as foreground to the system ;
+                    // however it also allows to swipe out the notification
+                    if(service.mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING)
+                    {
+                        if(!isServiceForeground)
+                        {
+                            service.startForeground(NOTIFICATION_ID, notification);
+                            isServiceForeground = true;
+                        }
+                    }
+                    else
+                    {
+                        service.stopForeground(false);
+                        isServiceForeground = false;
+                    }
                 }
 
                 @Override
@@ -127,20 +147,21 @@ public class PlayerNotification
         }
     }
 
-    private void updateForImage(boolean isPlaying, Bitmap image)
+    private void updateForImage(Bitmap image)
     {
-        Notification notification = getNotification(isPlaying, service.getSessionToken(), service.playlist.get(service.index), image);
+        Notification notification = getNotification(service.playlist.get(service.index), image);
         notificationManager.notify(PlayerNotification.NOTIFICATION_ID, notification);
         this.notification = notification;
     }
 
-    private Notification getNotification(boolean isPlaying, MediaSessionCompat.Token token, Song playing, Bitmap largeIcon)
+    private Notification getNotification(Song playing, Bitmap largeIcon)
     {
-        return buildNotification(isPlaying, token, playing, largeIcon).build();
+        return buildNotification(playing, largeIcon).build();
     }
 
-    private NotificationCompat.Builder buildNotification(boolean isPlaying, MediaSessionCompat.Token token, Song playing, Bitmap largeIcon)
+    private NotificationCompat.Builder buildNotification(Song playing, Bitmap largeIcon)
     {
+        boolean isPlaying = service.mediaSession.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING;
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(service, CHANNEL_ID);
 
@@ -154,12 +175,20 @@ public class PlayerNotification
 
         PendingIntent contentIntent = PendingIntent.getActivity(service, REQUEST_CODE, openUI, contentIntentFlags);
 
+        Intent stopService = new Intent(service, MediaBrowserService.class);
+        stopService.setAction("stop");
+        int deleteIntentFlags = 0;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+            deleteIntentFlags |= PendingIntent.FLAG_IMMUTABLE;
+        @SuppressLint("UnspecifiedImmutableFlag")
+        PendingIntent deleteIntent = PendingIntent.getService(service, REQUEST_CODE, stopService, deleteIntentFlags);
+
         //MediaStyle, with 3 actions (skip_previous, play/pause, skip_next) and notification building
         androidx.media.app.NotificationCompat.MediaStyle style = new androidx.media.app.NotificationCompat.MediaStyle()
-                .setMediaSession(token)
+                .setMediaSession(service.getSessionToken())
                 .setShowActionsInCompactView(0, 1, 2)
-                .setShowCancelButton(true)
-                .setCancelButtonIntent(null); //TODO action stop
+                .setShowCancelButton(!isPlaying)
+                .setCancelButtonIntent(deleteIntent);
 
         builder.setStyle(style)
                 .setWhen(0)
@@ -168,7 +197,7 @@ public class PlayerNotification
                 .setContentIntent(contentIntent)
                 .setContentTitle(playing.getName())
                 .setContentText(playing.getArtistsString() + " - " + playing.getAlbum().getName())
-                .setDeleteIntent(null)
+                .setDeleteIntent(deleteIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(isPlaying);
 
@@ -203,7 +232,7 @@ public class PlayerNotification
                                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                                 .build());
 
-                        updateForImage(isPlaying, bitmap);
+                        updateForImage(bitmap);
                     });
                 }
 

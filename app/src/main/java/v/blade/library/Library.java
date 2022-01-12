@@ -418,7 +418,15 @@ public class Library
 
         JSONArray sourcesJson = s.getJSONArray("sources");
         JSONObject source0Json = sourcesJson.getJSONObject(0);
-        Source source0 = Source.SOURCES.get(source0Json.getInt("source"));
+        Source source0 = null;
+        try
+        {
+            source0 = Source.SOURCES.get(source0Json.getInt("source"));
+        }
+        catch(IndexOutOfBoundsException exception)
+        {
+            System.out.println("BLADE: Song saved with a source that does not exist, skipping this source");
+        }
 
         String art;
         String bigArt;

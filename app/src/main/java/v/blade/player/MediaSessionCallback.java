@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.media.AudioFocusRequestCompat;
@@ -13,7 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import v.blade.BladeApplication;
+import v.blade.R;
 import v.blade.library.Song;
+import v.blade.sources.SourceInformation;
 
 public class MediaSessionCallback extends MediaSessionCompat.Callback
 {
@@ -87,8 +90,8 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
          */
         if(service.current != null && service.current.isPaused())
         {
-            service.notification.update(true);
             updatePlaybackState(true);
+            service.notification.update();
             service.current.play();
         }
         else
@@ -98,19 +101,25 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             if(service.playlist == null || service.playlist.size() <= service.index) return;
             Song song = service.playlist.get(service.index);
             if(song == null) return;
+            SourceInformation bestSource = song.getBestSource();
+            if(bestSource == null)
+            {
+                Toast.makeText(service, service.getString(R.string.song_no_source_error), Toast.LENGTH_LONG).show();
+                return;
+            }
 
             //Start service if not started (i.e. this is the first time the user clicks)
             service.startIfNotStarted();
             service.mediaSession.setActive(true);
-            service.notification.update(true);
             updatePlaybackState(true);
+            service.notification.update();
 
-            service.current = song.getBestSource().source.getPlayer();
+            service.current = bestSource.source.getPlayer();
             BladeApplication.obtainExecutorService().execute(() ->
             {
                 service.current.playSong(song);
                 ContextCompat.getMainExecutor(service).execute(() ->
-                        service.notification.update(true));
+                        service.notification.update());
             });
 
         }
@@ -128,8 +137,8 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             lastAudioFocusRequest = null;
         }
 
-        service.notification.update(false);
         updatePlaybackState(false);
+        service.notification.update();
         service.current.pause();
     }
 
