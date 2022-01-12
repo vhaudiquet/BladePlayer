@@ -59,4 +59,5 @@
     <string name="shuffle">Aléatoire</string>
     <string name="repeat">Répéter</string>
     <string name="song_no_source_error">Ce titre n\'a pas de source associée. Quelque chose doit être cassé dans la configuration des sources…</string>
+    <string name="search">Rechercher</string>
 </resources>

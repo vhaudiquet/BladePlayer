@@ -217,4 +217,9 @@ public class LibraryFragment extends Fragment
         else
             updateContent(backStack.pop());
     }
+
+    protected void onSearch(String query)
+    {
+        updateContent(getString(R.string.search), Library.search(query));
+    }
 }

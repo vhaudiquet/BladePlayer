@@ -12,8 +12,11 @@
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_play_arrow.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_playlist.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_reorder_24px.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_search.xml" value="0.37864583333333335" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_settings.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_skip_next.xml" value="0.21510416666666668" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_skip_previous.xml" value="0.21510416666666668" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/ic_sync.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/thumb.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/drawable/track.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout-v23/fragment_library.xml" value="0.3625" />
@@ -28,6 +31,7 @@
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/settings_fragment_spotify.xml" value="0.29347826086956524" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/menu/main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/xml/header_preferences.xml" value="0.3625" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/xml/searchable.xml" value="0.19166666666666668" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/ic_album.xml" value="0.1078125" />

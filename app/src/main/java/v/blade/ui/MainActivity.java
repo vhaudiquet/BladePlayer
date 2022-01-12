@@ -1,6 +1,8 @@
 package v.blade.ui;
 
+import android.app.SearchManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -15,6 +17,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -209,6 +212,12 @@ public class MainActivity extends AppCompatActivity
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setQueryHint(getString(R.string.search));
+
         return true;
     }
 
@@ -228,10 +237,30 @@ public class MainActivity extends AppCompatActivity
 
             item.setIcon(R.drawable.ic_hourglass);
             Source.synchronizeSources(() ->
-                    this.runOnUiThread(() -> item.setIcon(R.drawable.ic_sync)));
+                    this.runOnUiThread(() -> item.setIcon(R.drawable.ic_sync_24px)));
             return true;
         }
         else return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+
+        if(intent != null && intent.getAction() != null && Intent.ACTION_SEARCH.equals(intent.getAction()))
+        {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            if(navHostFragment.getChildFragmentManager().getFragments().size() != 0)
+            {
+                Fragment child = navHostFragment.getChildFragmentManager().getFragments().get(0);
+                if(child instanceof LibraryFragment)
+                {
+                    ((LibraryFragment) child).onSearch(query);
+                }
+            }
+        }
     }
 
     @Override

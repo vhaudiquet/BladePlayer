@@ -461,4 +461,19 @@ public class Library
 
         return song;
     }
+
+    public static List<Song> search(String query)
+    {
+        ArrayList<Song> result = new ArrayList<>();
+
+        for(Song s : songs_list)
+            if(s.getName().toLowerCase().contains(query.toLowerCase()))
+                result.add(s);
+
+        for(Song s : handled_songs.values())
+            if(s.getName().toLowerCase().contains(query.toLowerCase()) && !result.contains(s))
+                result.add(s);
+
+        return result;
+    }
 }
