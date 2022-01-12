@@ -203,9 +203,9 @@ public class Library
         return s;
     }
 
-    public static synchronized void addPlaylist(String title, List<Song> songList, String imageMiniatureUrl)
+    public static synchronized void addPlaylist(String title, List<Song> songList, String imageMiniatureUrl, Source source, Object id)
     {
-        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl);
+        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl, new SourceInformation(source, id));
         library_playlists.add(playlist);
     }
 
@@ -282,6 +282,9 @@ public class Library
             JsonArray playlistSongs = new JsonArray();
             for(Song s : playlist.getSongs()) playlistSongs.add(songJson(s, gson));
             playlistJson.add("songs", playlistSongs);
+
+            playlistJson.addProperty("source", playlist.getSource().source.getIndex());
+            playlistJson.add("id", gson.toJsonTree(playlist.getSource().id));
 
             playlists.add(playlistJson);
         }
@@ -392,7 +395,9 @@ public class Library
                     art = null;
                 }
 
-                addPlaylist(p.getString("name"), songList, art);
+                addPlaylist(p.getString("name"), songList, art,
+                        Source.SOURCES.get(p.getInt("source")),
+                        p.get("id"));
             }
 
             Library.generateLists();

@@ -71,7 +71,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     private final List<? extends LibraryObject> objects;
     private View.OnClickListener moreClickListener;
     private ItemTouchHelper touchHelper;
-    private final View.OnClickListener clickListener;
+    private View.OnClickListener clickListener;
 
     private int selectedPosition = -1;
 
@@ -98,6 +98,11 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     public void setSelectedPosition(int position)
     {
         this.selectedPosition = position;
+    }
+
+    public void setClickListener(View.OnClickListener clickListener)
+    {
+        this.clickListener = clickListener;
     }
 
     @Override

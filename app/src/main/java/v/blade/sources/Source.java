@@ -28,6 +28,7 @@ import java.util.concurrent.Future;
 import v.blade.BladeApplication;
 import v.blade.BuildConfig;
 import v.blade.library.Library;
+import v.blade.library.Playlist;
 import v.blade.library.Song;
 
 public abstract class Source
@@ -130,6 +131,19 @@ public abstract class Source
     public abstract JsonObject saveToJSON();
 
     public abstract void restoreFromJSON(JsonObject jsonObject);
+
+    public void addSongToPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        //Add track to playlist locally
+        playlist.getSongs().add(song);
+
+        //Save library
+        Library.save();
+        saveSources();
+
+        //Run callback
+        callback.run();
+    }
 
     /**
      * Blade saves all sources informations/configurations in a cache sources json file

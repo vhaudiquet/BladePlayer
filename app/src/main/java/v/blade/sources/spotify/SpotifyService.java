@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -305,6 +306,11 @@ public interface SpotifyService
         String uri;
     }
 
+    class PlaylistAddResponse
+    {
+        String snapshot_id;
+    }
+
     /**
      * max limit is 50
      */
@@ -331,4 +337,7 @@ public interface SpotifyService
 
     @GET("me")
     Call<UserInformationObject> getUser(@Header("Authorization") String token);
+
+    @POST("playlists/{playlist_id}/tracks")
+    Call<PlaylistAddResponse> appendTrackToPlaylist(@Header("Authorization") String token, @Path("playlist_id") String playlist_id, @Query("uris") String uris);
 }

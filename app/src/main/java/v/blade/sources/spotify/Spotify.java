@@ -37,8 +37,10 @@ import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentSpotifyBinding;
 import v.blade.library.Library;
+import v.blade.library.Playlist;
 import v.blade.library.Song;
 import v.blade.sources.Source;
+import v.blade.sources.SourceInformation;
 
 /*
  * Spotify strategy :
@@ -361,7 +363,10 @@ public class Spotify extends Source
                     }
                     while(songsLeft > 0);
 
-                    Library.addPlaylist(playlist.name, songList, playlist.images.length == 0 ? null : (playlist.images[0] == null ? null : playlist.images[0].url));
+                    Library.addPlaylist(playlist.name, songList,
+                            playlist.images.length == 0 ? null :
+                                    (playlist.images[0] == null ? null : playlist.images[0].url),
+                            this, playlist.id);
                 }
 
                 playlistsLeft = playlistPaging.total - 50 * (playlistIndex + 1);
@@ -417,6 +422,45 @@ public class Spotify extends Source
         JsonElement refreshTokenJson = jsonObject.get("refresh_token");
         if(refreshTokenJson != null) REFRESH_TOKEN = refreshTokenJson.getAsString();
         else status = SourceStatus.STATUS_DOWN;
+    }
+
+    @Override
+    public void addSongToPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            String id = null;
+            for(SourceInformation s : song.getSources())
+            {
+                if(s.source == this)
+                {
+                    id = (String) s.id;
+                    break;
+                }
+            }
+
+            //Add track to playlist on Spotify
+            Call<SpotifyService.PlaylistAddResponse> call =
+                    service.appendTrackToPlaylist(AUTH_STRING, (String) playlist.getSource().id, "spotify:track:" + id);
+            try
+            {
+                Response<SpotifyService.PlaylistAddResponse> response = call.execute();
+
+                if(response.code() != 201)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not add " + song.getName() + " to playlist " + playlist.getName() + " : " + response.code());
+                    failureCallback.run();
+                    return;
+                }
+            }
+            catch(IOException e)
+            {
+                failureCallback.run();
+                return;
+            }
+
+            super.addSongToPlaylist(song, playlist, callback, failureCallback);
+        });
     }
 
     public static class SettingsFragment extends Fragment

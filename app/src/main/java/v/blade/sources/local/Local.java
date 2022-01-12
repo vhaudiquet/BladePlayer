@@ -13,6 +13,8 @@ import com.google.gson.JsonObject;
 import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.library.Library;
+import v.blade.library.Playlist;
+import v.blade.library.Song;
 import v.blade.sources.Source;
 
 public class Local extends Source
@@ -91,6 +93,12 @@ public class Local extends Source
 
     @Override
     public void restoreFromJSON(JsonObject jsonObject)
+    {
+
+    }
+
+    @Override
+    public void addSongToPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
     {
 
     }

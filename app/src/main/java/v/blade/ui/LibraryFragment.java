@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -25,6 +27,8 @@ import v.blade.library.LibraryObject;
 import v.blade.library.Playlist;
 import v.blade.library.Song;
 import v.blade.player.MediaBrowserService;
+import v.blade.sources.Source;
+import v.blade.sources.SourceInformation;
 
 public class LibraryFragment extends Fragment
 {
@@ -142,8 +146,18 @@ public class LibraryFragment extends Fragment
     @SuppressLint("NonConstantResourceId")
     private void onMoreClicked(View view)
     {
+        //Obtain object and menu
         LibraryObject element = (LibraryObject) view.getTag();
         PopupMenu popupMenu = new PopupMenu(requireContext(), view);
+        popupMenu.inflate(R.menu.item_more);
+
+        //Set element visibility depending on context
+        if(element instanceof Song)
+        {
+            popupMenu.getMenu().getItem(3).setVisible(true);
+        }
+
+        //Set actions
         popupMenu.setOnMenuItemClickListener(item ->
         {
             switch(item.getItemId())
@@ -196,10 +210,12 @@ public class LibraryFragment extends Fragment
                         LibraryFragment.this.requireActivity().getMediaController().getTransportControls().play();
                     }
                     return true;
+                case R.id.action_add_to_list:
+                    assert element instanceof Song;
+                    openAddToPlaylistDialog((Song) element);
             }
             return false;
         });
-        popupMenu.inflate(R.menu.item_more);
         popupMenu.show();
     }
 
@@ -221,5 +237,47 @@ public class LibraryFragment extends Fragment
     protected void onSearch(String query)
     {
         updateContent(getString(R.string.search), Library.search(query));
+    }
+
+    private void openAddToPlaylistDialog(Song toAdd)
+    {
+        //Build the lists of playlists suitable to receive toAdd
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        for(Playlist playlist : Library.getPlaylists())
+        {
+            for(SourceInformation s : toAdd.getSources())
+            {
+                if(s.source == playlist.getSource().source)
+                {
+                    playlists.add(playlist);
+                    break;
+                }
+            }
+        }
+
+        //Build adapter and dialog with clickListener
+        LibraryObjectAdapter adapter = new LibraryObjectAdapter(playlists, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.add_to_playlist))
+                .setAdapter(adapter, null);
+        final AlertDialog dialog = builder.create();
+
+        adapter.setClickListener(view ->
+        {
+            int position = dialog.getListView().getPositionForView(view);
+            Playlist current = (Playlist) adapter.getItem(position);
+            Source source = current.getSource().source;
+
+            source.addSongToPlaylist(toAdd, current, () -> requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), getString(R.string.song_added_to_list, toAdd.getName(), current.getName()),
+                                    Toast.LENGTH_SHORT).show()),
+                    () -> requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), getString(R.string.song_added_to_list_error, toAdd.getName(), current.getName()),
+                                    Toast.LENGTH_SHORT).show()));
+
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 }
