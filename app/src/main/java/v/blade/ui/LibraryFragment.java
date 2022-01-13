@@ -146,7 +146,7 @@ public class LibraryFragment extends Fragment
         else if(element instanceof Song)
         {
             //noinspection unchecked
-            MediaBrowserService.getInstance().setPlaylist((List<Song>) current);
+            MediaBrowserService.getInstance().setPlaylist(new ArrayList<>((List<Song>) current));
             MediaBrowserService.getInstance().setIndex(position);
             MediaControllerCompat.getMediaController(requireActivity()).getTransportControls().play();
         }

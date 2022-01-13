@@ -143,6 +143,7 @@ public class PlayActivity extends AppCompatActivity
                 });
             }
         }, 0, 1000);
+        //TODO : fix start progress (activity launch will set to 0...)
 
         mediaBrowser = new MediaBrowserCompat(this, new ComponentName(this, MediaBrowserService.class),
                 new MediaBrowserCompat.ConnectionCallback()

@@ -8,6 +8,7 @@
         android:id="@+id/item_element_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_margin="2dp"
         android:contentDescription="@string/item_image" />
 
     <TextView
