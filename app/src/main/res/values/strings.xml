@@ -59,11 +59,15 @@
     <string name="shuffle">Shuffle</string>
     <string name="repeat">Repeat</string>
     <string name="build_type" translatable="false">Build type</string>
-    <string name="song_no_source_error">This song has no source information. Something must be wrong in sources configuration…</string>
+    <string name="song_no_source_error">This song has no ready source. Something must be wrong in sources configuration…</string>
     <string name="search">Search</string>
     <string name="add_to_playlist">Add to playlist…</string>
     <string name="manage_libraries">Manage libraries</string>
     <string name="remove_from_list">Remove from playlist</string>
     <string name="song_added_to_list">Added %1$s to list %2$s</string>
     <string name="song_added_to_list_error">Could not add %1$s to list %2$s</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="name">Name</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="could_not_create_playlist">Could not create playlist %1$s</string>
 </resources>

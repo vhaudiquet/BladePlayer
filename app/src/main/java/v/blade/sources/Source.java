@@ -145,6 +145,8 @@ public abstract class Source
         callback.run();
     }
 
+    public abstract void createPlaylist(String name, BladeApplication.Callback<Playlist> callback, Runnable failureCallback);
+
     /**
      * Blade saves all sources informations/configurations in a cache sources json file
      */

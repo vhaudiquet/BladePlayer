@@ -203,10 +203,11 @@ public class Library
         return s;
     }
 
-    public static synchronized void addPlaylist(String title, List<Song> songList, String imageMiniatureUrl, Source source, Object id)
+    public static synchronized Playlist addPlaylist(String title, List<Song> songList, String imageMiniatureUrl, Source source, Object id)
     {
         Playlist playlist = new Playlist(title, songList, imageMiniatureUrl, new SourceInformation(source, id));
         library_playlists.add(playlist);
+        return playlist;
     }
 
     /**

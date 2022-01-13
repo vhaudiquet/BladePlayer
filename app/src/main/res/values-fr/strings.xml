@@ -58,11 +58,14 @@
     <string name="add_to_current_playlist">Ajouter à la liste en cours de lecture</string>
     <string name="shuffle">Aléatoire</string>
     <string name="repeat">Répéter</string>
-    <string name="song_no_source_error">Ce titre n\'a pas de source associée. Quelque chose doit être cassé dans la configuration des sources…</string>
+    <string name="song_no_source_error">Ce titre n\'a pas de source prête associée. Quelque chose doit être cassé dans la configuration des sources…</string>
     <string name="search">Rechercher</string>
     <string name="add_to_playlist">Ajouter à la liste…</string>
     <string name="manage_libraries">Gérer les bibliothèques</string>
     <string name="remove_from_list">Supprimer de la liste</string>
     <string name="song_added_to_list">%1$s a été ajouté à %2$s</string>
     <string name="song_added_to_list_error">%1$s n\'a pas pu être ajouté à %2$s</string>
+    <string name="new_playlist">Nouvelle playlist</string>
+    <string name="name">Nom</string>
+    <string name="could_not_create_playlist">La playlist %1$s n\'a pas pu être créée</string>
 </resources>

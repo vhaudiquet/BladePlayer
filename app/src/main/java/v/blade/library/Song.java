@@ -54,12 +54,12 @@ public class Song extends LibraryObject
     {
         if(sources.size() == 0) return null;
 
-        //TODO : Sort the list by ids at construction, and return source.get(0) maybe
-        SourceInformation best = sources.get(0);
-        int min = sources.get(0).source.getIndex();
-        for(int i = 1; i < sources.size(); i++)
+        SourceInformation best = null;
+        int min = sources.size();
+        for(int i = 0; i < sources.size(); i++)
         {
-            if(sources.get(i).source.getIndex() < min)
+            if(sources.get(i).source.getIndex() < min
+                    && sources.get(i).source.getStatus() == Source.SourceStatus.STATUS_READY)
             {
                 best = sources.get(i);
                 min = best.source.getIndex();

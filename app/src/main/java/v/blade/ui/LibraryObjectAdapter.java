@@ -208,9 +208,13 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         }
         else if(current instanceof Playlist)
         {
-            String playlistTrackCount = ((Playlist) current).getSongs().size() + " " +
-                    viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
-            viewHolder.subtitleView.setText(playlistTrackCount);
+            if(((Playlist) current).getSongs() != null)
+            {
+                String playlistTrackCount = ((Playlist) current).getSongs().size() + " " +
+                        viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
+                viewHolder.subtitleView.setText(playlistTrackCount);
+            }
+            else viewHolder.subtitleView.setText("");
         }
 
         //If 'moreClickListener', put object as more view tag

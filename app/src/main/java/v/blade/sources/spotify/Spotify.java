@@ -3,6 +3,7 @@ package v.blade.sources.spotify;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,17 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -96,6 +101,7 @@ public class Spotify extends Source
     private String account_name; //i.e. username, retrieved by api
     private String account_login; //what the user uses to login (mail or username)
     private String account_password;
+    private String user_id;
 
     //API login
     private String ACCESS_TOKEN;
@@ -396,6 +402,7 @@ public class Spotify extends Source
         jsonObject.addProperty("cache_version", CACHE_VERSION);
         jsonObject.addProperty("account_login", account_login);
         jsonObject.addProperty("account_password", account_password);
+        jsonObject.addProperty("user_id", user_id);
 
         return jsonObject;
     }
@@ -421,6 +428,10 @@ public class Spotify extends Source
 
         JsonElement refreshTokenJson = jsonObject.get("refresh_token");
         if(refreshTokenJson != null) REFRESH_TOKEN = refreshTokenJson.getAsString();
+        else status = SourceStatus.STATUS_DOWN;
+
+        JsonElement userIdJson = jsonObject.get("user_id");
+        if(userIdJson != null) user_id = userIdJson.getAsString();
         else status = SourceStatus.STATUS_DOWN;
     }
 
@@ -460,6 +471,46 @@ public class Spotify extends Source
             }
 
             super.addSongToPlaylist(song, playlist, callback, failureCallback);
+        });
+    }
+
+    @Override
+    public void createPlaylist(String name, BladeApplication.Callback<Playlist> callback, Runnable failureCallback)
+    {
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            Map<String, Object> jsonParams = new ArrayMap<>();
+            jsonParams.put("name", name);
+            JSONObject jsonBody = new JSONObject(jsonParams);
+            System.out.println("json: " + jsonBody.toString());
+            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+            Call<SpotifyService.SimplifiedPlaylistObject> call = service.createPlaylist(AUTH_STRING, user_id, body);
+
+            try
+            {
+                Response<SpotifyService.SimplifiedPlaylistObject> response = call.execute();
+                SpotifyService.SimplifiedPlaylistObject r = response.body();
+                if(response.code() != 201 || r == null)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not create playlist " + name + " : " + response.code());
+                    failureCallback.run();
+                    return;
+                }
+
+                //Create playlist locally
+                Playlist playlist = Library.addPlaylist(name, new ArrayList<>(), null, this, r.id);
+
+                //Save library
+                Library.save();
+                saveSources();
+
+                //Run callback
+                callback.run(playlist);
+            }
+            catch(IOException e)
+            {
+                failureCallback.run();
+            }
         });
     }
 
@@ -676,10 +727,16 @@ public class Spotify extends Source
                     spotify.service = spotify.retrofit.create(SpotifyService.class);
                     spotify.status = SourceStatus.STATUS_READY;
 
-                    //obtain account name
+                    //obtain account name and id
                     SpotifyService.UserInformationObject user = spotify.service.getUser(spotify.AUTH_STRING).execute().body();
-                    String accountName = (user == null ? "null" : (user.display_name == null ? "null" : user.display_name));
+                    if(user == null)
+                    {
+                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not obtain user ID)", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String accountName = (user.display_name == null ? "null" : user.display_name);
                     spotify.account_name = accountName;
+                    spotify.user_id = user.id;
 
                     //Re-set status and account textboxes
                     requireActivity().runOnUiThread(() ->

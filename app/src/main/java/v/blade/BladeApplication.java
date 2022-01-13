@@ -13,6 +13,11 @@ import v.blade.sources.Source;
 
 public class BladeApplication extends Application
 {
+    public static abstract class Callback<T>
+    {
+        public abstract void run(T arg0);
+    }
+
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 4, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private static final ExecutorService executorService = threadPoolExecutor;
     public static Context appContext;

@@ -102,4 +102,10 @@ public class Local extends Source
     {
 
     }
+
+    @Override
+    public void createPlaylist(String name, BladeApplication.Callback<Playlist> callback, Runnable failureCallback)
+    {
+
+    }
 }
