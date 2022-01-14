@@ -61,7 +61,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         this.audioManager = (AudioManager) service.getSystemService(Context.AUDIO_SERVICE);
     }
 
-    protected void updatePlaybackState(boolean isPlaying)
+    public void updatePlaybackState(boolean isPlaying)
     {
         PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PREPARE
                 | (isPlaying ? PlaybackStateCompat.ACTION_PAUSE : PlaybackStateCompat.ACTION_PLAY)

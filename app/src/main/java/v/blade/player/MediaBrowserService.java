@@ -28,7 +28,7 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     private static MediaBrowserService instance;
 
     protected MediaSessionCompat mediaSession;
-    private MediaSessionCallback mediaSessionCallback;
+    public MediaSessionCallback mediaSessionCallback;
 
     protected List<Song> playlist;
     protected int index;
@@ -37,7 +37,7 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
 
     protected Source.Player current;
     private boolean isStarted = false;
-    protected PlayerNotification notification;
+    public PlayerNotification notification;
 
     protected void startIfNotStarted()
     {

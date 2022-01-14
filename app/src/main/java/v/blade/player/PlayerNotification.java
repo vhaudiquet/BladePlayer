@@ -66,7 +66,7 @@ public class PlayerNotification
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createChannel();
     }
 
-    protected void update()
+    public void update()
     {
         if(service.playlist == null) return;
         if(service.index >= service.playlist.size()) return;

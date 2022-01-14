@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Range;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.concurrent.RejectedExecutionException;
 
 import v.blade.BladeApplication;
 import v.blade.library.Song;
@@ -39,7 +40,7 @@ public class SpotifyPlayer extends Source.Player
     protected WeakReference<Session> playerSession;
     private int trackChanges;
     protected final Spotify current;
-    private boolean isPaused;
+    private volatile boolean isPaused;
 
     //TODO : this 'temp' fixes the 'multiple load() -> fatal error' bug ; find a better fix
     private volatile boolean isLoading = false;
@@ -137,22 +138,25 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onPlaybackEnded(@NotNull Player player)
             {
+                //TODO :  we must notifyPlaybackEnd() here, but only in some cases (not on track end but if queue fails...)
+                // it is complicated
+                System.out.println("BLADE-SPOTIFY: Playback ended");
+                //isPaused = true;
+                //player.pause();
+                //ContextCompat.getMainExecutor(MediaBrowserService.getInstance())
+                //        .execute(MediaBrowserService.getInstance()::notifyPlaybackEnd);
             }
 
             @Override
             public void onPlaybackPaused(@NotNull Player player, long trackTime)
             {
                 isPaused = true;
-
-                //TODO : we can be paused by a Spotify Connect event ; maybe notify mediasession about that
             }
 
             @Override
             public void onPlaybackResumed(@NotNull Player player, long trackTime)
             {
                 isPaused = false;
-
-                //TODO : we can be resumed by a Spotify Connect event ; maybe notify mediasession about that
             }
 
             @Override
@@ -164,7 +168,8 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onMetadataAvailable(@NotNull Player player, @NotNull MetadataWrapper metadata)
             {
-
+                ContextCompat.getMainExecutor(MediaBrowserService.getInstance()).execute(
+                        MediaBrowserService.getInstance().notification::update);
             }
 
             @Override
@@ -194,15 +199,26 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onStartedLoading(@NotNull Player player)
             {
-
+                isLoading = true;
             }
 
             @Override
             public void onFinishedLoading(@NotNull Player player)
             {
-
+                System.out.println("BLADE-SPOTIFY: Player finished loading");
+                isLoading = false;
             }
         });
+
+        try
+        {
+            spotifyPlayer.get().waitReady();
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println("BLADE-SPOTIFY: Could not wait for player readiness");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -219,6 +235,7 @@ public class SpotifyPlayer extends Source.Player
     {
         if(spotifyPlayer == null) return;
         if(spotifyPlayer.get() == null) init();
+        if(isPaused()) return;
 
         spotifyPlayer.get().pause();
     }
@@ -249,24 +266,32 @@ public class SpotifyPlayer extends Source.Player
 
         trackChanges = 0;
 
-        //Wait for the player to be ready ; i don't know if we need that, but we will take any
-        // waiting we can in order to tryfix 'spamclick' issue
-        /* removed : this causes a really weird behavior
-        try
+        System.out.println("BLADE-SPOTIFY: playSong(" + song.getName() + ")");
+        if(spotifyPlayer.get().isReady())
         {
-            spotifyPlayer.get().waitReady();
+            try
+            {
+                spotifyPlayer.get().load("spotify:track:" + current.id, true, false);
+            }
+            catch(IllegalStateException exception)
+            {
+                isLoading = false;
+                System.err.println("BLADE-SPOTIFY: Player should have been ready, but effectively was not");
+                MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
+            }
+            catch(RejectedExecutionException exception)
+            {
+                isLoading = false;
+                System.err.println("BLADE-SPOTIFY: Too much tasks, skipping");
+                MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
+            }
         }
-        catch(InterruptedException e)
+        else
         {
-            e.printStackTrace();
-        }*/
-
-        spotifyPlayer.get().load("spotify:track:" + current.id, true, false);
-
-        //TODO : find a better way to wait for metadata availability
-        //noinspection StatementWithEmptyBody
-        while(spotifyPlayer.get().currentMetadata() == null) ;
-        isLoading = false;
+            isLoading = false;
+            System.err.println("BLADE-SPOTIFY: Player was not ready");
+            MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
+        }
     }
 
     @Override
@@ -276,7 +301,7 @@ public class SpotifyPlayer extends Source.Player
         if(spotifyPlayer.get() == null) return;
 
         spotifyPlayer.get().seek((int) millis);
-        //TODO : seek does not seem to happen immediately, but there does not seem to be a way to wait for seek...
+        //TODO : seek does not seem to happen immediately, maybe use onTrackSeeked() instead
         // cf https://github.com/librespot-org/librespot-java/issues/448
         tempSeekPos = (int) millis;
     }
