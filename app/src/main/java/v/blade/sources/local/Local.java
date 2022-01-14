@@ -100,12 +100,12 @@ public class Local extends Source
     @Override
     public void addSongToPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
     {
-
+        failureCallback.run();
     }
 
     @Override
     public void createPlaylist(String name, BladeApplication.Callback<Playlist> callback, Runnable failureCallback)
     {
-
+        failureCallback.run();
     }
 }

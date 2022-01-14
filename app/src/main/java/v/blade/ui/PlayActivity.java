@@ -237,6 +237,7 @@ public class PlayActivity extends AppCompatActivity
                         //on connection, actualize UI
                         mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
                         mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
+                        mediaControllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState()); //Call again to make sure progressbar updates after max
                         mediaControllerCallback.onShuffleModeChanged(mediaController.getShuffleMode());
                         mediaControllerCallback.onRepeatModeChanged(mediaController.getRepeatMode());
 

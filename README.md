@@ -18,6 +18,24 @@ Blade is available on [Google Play], or [here on GitHub].
 
 ## Feature overview
 
+Blade Player is developed by me ([@vhaudiquet]) alone, so the project cannot be tested on many
+devices and scenarios ; if you find an issue, open one here.
+
+- The app will open on your library, categorized as Artists, Albums, Songs, and Playlists (available
+  in the navigation drawer).
+- It supports Android 'dark theme' (the screenshots above are done on a dark themed system).
+- It is completely free (there are no ads, no limited version)
+- It caches the library locally, so launching Blade requires virtually no data (only refreshing
+  tokens and status of sources servers)
+- The search feature allows you to search the local library instantly
+- The "explore" mode allows you to search and browse sources for new music (for example search all
+  Spotify and look for new releases)
+
+### Supported services (music sources)
+
+- Local (i.e. files on your phone)
+- Spotify
+
 ### About Spotify
 
 You will need a **Spotify Premium** account to play music from [Spotify], but you can use Blade
@@ -26,6 +44,9 @@ without a premium account (to play your Spotify playlists from other sources, fo
 Blade is using the official [Spotify Android Auth] library and [Retrofit] to access
 the [Spotify Web API], i.e. to obtain user library and playlists. In order to play music from
 Spotify, Blade uses the [librespot-java] library.
+
+For now, Blade will act as a Spotify Connect peripheral. **Please do not try to control Blade with
+Spotify Connect**. It won't work, and it will glitch the app.
 
 When connecting Blade and Spotify, i am for now obligated to ask directly for your username and
 password, 2 times : one for [librespot-java], which requires them directly (Spotify does not allow
@@ -38,6 +59,8 @@ Special thanks to the people at [librespot-org] and [librespot-java] ; without t
 would not have been possible.
 
 ## Contributing
+
+See [CONTRIBUTING.md]
 
 ## Older versions
 
@@ -60,3 +83,7 @@ If you want older (i.e. < 2.0) versions of Blade, you can check the [old reposit
 [librespot-java]:https://github.com/librespot-org/librespot-java
 
 [librespot-org]:https://github.com/librespot-org
+
+[@vhaudiquet]:https://github.com/vhaudiquet
+
+[CONTRIBUTING.md]:CONTRIBUTING.md
