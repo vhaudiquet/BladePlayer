@@ -1,4 +1,8 @@
 # Blade Player
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/vhaudiquet/BladePlayer?style=flat-square)
+![license](https://img.shields.io/github/license/vhaudiquet/BladePlayer?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/vhaudiquet/BladePlayer?style=flat-square)
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/vhaudiquet/BladePlayer/latest?style=flat-square)
 
 <!-- Logo -->
 
