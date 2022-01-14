@@ -543,13 +543,75 @@ public class Spotify extends Source
     @Override
     public void addToLibrary(Song song, Runnable callback, Runnable failureCallback)
     {
-        failureCallback.run();
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            //Get song source
+            SourceInformation current = null;
+            for(SourceInformation s : song.getSources())
+                if(s.source == this) current = s;
+
+            if(current == null)
+            {
+                failureCallback.run();
+                return;
+            }
+
+            Call<Void> call = service.saveTrack(AUTH_STRING, (String) current.id);
+
+            try
+            {
+                Response<Void> response = call.execute();
+                if(response.code() != 200)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not save song " + song.getName() + " : " + response.code());
+                    failureCallback.run();
+                    return;
+                }
+
+                super.addToLibrary(song, callback, failureCallback);
+            }
+            catch(IOException e)
+            {
+                failureCallback.run();
+            }
+        });
     }
 
     @Override
     public void removeFromLibrary(Song song, Runnable callback, Runnable failureCallback)
     {
-        failureCallback.run();
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            //Get song source
+            SourceInformation current = null;
+            for(SourceInformation s : song.getSources())
+                if(s.source == this) current = s;
+
+            if(current == null)
+            {
+                failureCallback.run();
+                return;
+            }
+
+            Call<Void> call = service.removeTrack(AUTH_STRING, (String) current.id);
+
+            try
+            {
+                Response<Void> response = call.execute();
+                if(response.code() != 200)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not remove song " + song.getName() + " : " + response.code());
+                    failureCallback.run();
+                    return;
+                }
+
+                super.removeFromLibrary(song, callback, failureCallback);
+            }
+            catch(IOException e)
+            {
+                failureCallback.run();
+            }
+        });
     }
 
     public static class SettingsFragment extends Fragment

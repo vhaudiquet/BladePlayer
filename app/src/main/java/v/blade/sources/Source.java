@@ -170,18 +170,25 @@ public abstract class Source
      */
     public void addToLibrary(Song song, Runnable callback, Runnable failureCallback)
     {
-        //Add song to library
-        String[] artists = new String[song.getArtists().length];
-        for(int i = 0; i < artists.length; i++) artists[i] = song.getArtists()[i].getName();
-        String[] albumArtists = new String[song.getAlbum().getArtists().length];
-        for(int i = 0; i < albumArtists.length; i++)
-            albumArtists[i] = song.getAlbum().getArtists()[i].getName();
+        //We have to modify song in place
+        Library.addSongFromHandle(song);
 
-        //TODO support artists images
-        Library.addSong(song.getName(), song.getAlbum().getName(), artists, song.getBestSource().source,
-                song.getBestSource().id, albumArtists, song.getAlbum().getImageStr(), song.getTrackNumber(),
-                new String[song.getArtists().length], new String[song.getAlbum().getArtists().length],
-                song.getAlbum().getImageBigStr());
+        //Mark song as 'not handled' for us
+        SourceInformation current = null;
+        for(SourceInformation si : song.getSources())
+        {
+            if(si.source == this)
+            {
+                current = si;
+                break;
+            }
+        }
+        if(current == null)
+        {
+            failureCallback.run();
+            return;
+        }
+        current.handled = false;
 
         //Re-generate lists
         Library.generateLists();
@@ -199,7 +206,33 @@ public abstract class Source
      */
     public void removeFromLibrary(Song song, Runnable callback, Runnable failureCallback)
     {
-        //TODO
+        Library.removeSong(song);
+
+        //Mark song as 'handled' for us
+        SourceInformation current = null;
+        for(SourceInformation si : song.getSources())
+        {
+            if(si.source == this)
+            {
+                current = si;
+                break;
+            }
+        }
+        if(current == null)
+        {
+            failureCallback.run();
+            return;
+        }
+        current.handled = true;
+
+        //Re-generate lists
+        Library.generateLists();
+
+        //Save library
+        Library.save();
+        saveSources();
+
+        //Run callback
         callback.run();
     }
 

@@ -8,6 +8,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -45,18 +47,28 @@ public class LibraryFragment extends Fragment
     //We keep a global instance of LibraryFragment to be able to update lists on Library update (launch, sync)
     public static LibraryFragment instance;
 
+    public enum CURRENT_TYPE
+    {
+        LIBRARY, // We are inside a library item
+        PLAYLIST, // We are inside a playlist
+        SEARCH // We are in a search result
+    }
+
     protected FragmentLibraryBinding binding;
     private List<? extends LibraryObject> current;
+    private CURRENT_TYPE currentType;
 
     private static class BackInformation
     {
         private final String title;
         private final List<? extends LibraryObject> list;
+        private final CURRENT_TYPE type;
 
-        private BackInformation(String title, List<? extends LibraryObject> list)
+        private BackInformation(String title, List<? extends LibraryObject> list, CURRENT_TYPE type)
         {
             this.title = title;
             this.list = list;
+            this.type = type;
         }
     }
 
@@ -69,7 +81,7 @@ public class LibraryFragment extends Fragment
         View root = binding.getRoot();
 
         binding.mainListview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateContent(getTitle(), null);
+        updateContent(getTitle(), null, CURRENT_TYPE.LIBRARY);
 
         instance = this;
 
@@ -85,7 +97,7 @@ public class LibraryFragment extends Fragment
      * Update content to list 'replacing', or to root directory
      * If we are updating because going back, we should not push to back : shouldPushToBack is false
      */
-    private void updateContent(String title, List<? extends LibraryObject> replacing, boolean shouldPushToBack)
+    private void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, boolean shouldPushToBack)
     {
         if(replacing == null)
         {
@@ -100,6 +112,7 @@ public class LibraryFragment extends Fragment
                 current = Library.getPlaylists();
             else return;
 
+            currentType = CURRENT_TYPE.LIBRARY;
             //Reset backstack
             backStack = new Stack<>();
         }
@@ -107,9 +120,10 @@ public class LibraryFragment extends Fragment
         {
             //Push previous state to backStack
             if(shouldPushToBack)
-                backStack.push(new BackInformation(getTitle(), current));
+                backStack.push(new BackInformation(getTitle(), current, currentType));
 
             current = replacing;
+            currentType = type;
         }
 
         LibraryObjectAdapter adapter = new LibraryObjectAdapter(current, this::onMoreClicked, this::onViewClicked);
@@ -118,14 +132,14 @@ public class LibraryFragment extends Fragment
             ((MainActivity) requireActivity()).binding.appBarMain.toolbar.setTitle(title);
     }
 
-    public void updateContent(String title, List<? extends LibraryObject> replacing)
+    public void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type)
     {
-        updateContent(title, replacing, true);
+        updateContent(title, replacing, type, true);
     }
 
     private void updateContent(BackInformation backInformation)
     {
-        updateContent(backInformation.title, backInformation.list, false);
+        updateContent(backInformation.title, backInformation.list, backInformation.type, false);
     }
 
     private void onViewClicked(View view)
@@ -138,11 +152,11 @@ public class LibraryFragment extends Fragment
     private void onElementClicked(LibraryObject element, int position)
     {
         if(element instanceof Artist)
-            updateContent(element.getName(), ((Artist) element).getAlbums());
+            updateContent(element.getName(), ((Artist) element).getAlbums(), CURRENT_TYPE.LIBRARY);
         else if(element instanceof Album)
-            updateContent(element.getName(), ((Album) element).getSongs());
+            updateContent(element.getName(), ((Album) element).getSongs(), CURRENT_TYPE.LIBRARY);
         else if(element instanceof Playlist)
-            updateContent(element.getName(), ((Playlist) element).getSongs());
+            updateContent(element.getName(), ((Playlist) element).getSongs(), CURRENT_TYPE.PLAYLIST);
         else if(element instanceof Song)
         {
             //noinspection unchecked
@@ -165,6 +179,7 @@ public class LibraryFragment extends Fragment
         if(element instanceof Song)
         {
             popupMenu.getMenu().getItem(3).setVisible(true);
+            popupMenu.getMenu().getItem(4).setVisible(true);
         }
         else if(element instanceof Playlist)
         {
@@ -230,6 +245,9 @@ public class LibraryFragment extends Fragment
                 case R.id.action_remove_from_library:
                     assert element instanceof Playlist;
                     openDeletePlaylistDialog((Playlist) element);
+                case R.id.action_manage_libraries:
+                    assert element instanceof Song;
+                    openManageLibrariesDialog((Song) element);
             }
             return false;
         });
@@ -253,7 +271,7 @@ public class LibraryFragment extends Fragment
 
     protected void onSearch(String query)
     {
-        updateContent(getString(R.string.search), Library.search(query));
+        updateContent(getString(R.string.search), Library.search(query), CURRENT_TYPE.SEARCH);
     }
 
     private void openAddToPlaylistDialog(Song toAdd)
@@ -467,6 +485,88 @@ public class LibraryFragment extends Fragment
 
     private void openManageLibrariesDialog(Song song)
     {
+        BaseAdapter adapter = new BaseAdapter()
+        {
+            class ViewHolder
+            {
+                ImageView imageView;
+                SwitchCompat switchView;
+            }
 
+            @Override
+            public int getCount()
+            {
+                return song.getSources().size();
+            }
+
+            @Override
+            public Source getItem(int position)
+            {
+                return song.getSources().get(position).source;
+            }
+
+            @Override
+            public long getItemId(int position)
+            {
+                return position;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                ViewHolder viewHolder;
+                if(convertView == null)
+                {
+                    convertView = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.item_switch, parent, false);
+                    viewHolder = new ViewHolder();
+                    viewHolder.imageView = convertView.findViewById(R.id.item_element_image);
+                    viewHolder.switchView = convertView.findViewById(R.id.item_element_switch);
+                    convertView.setTag(viewHolder);
+                }
+                else viewHolder = (ViewHolder) convertView.getTag();
+
+                Source current = getItem(position);
+                viewHolder.imageView.setImageResource(current.getImageResource());
+                viewHolder.switchView.setText(current.getName());
+
+                //Enabled :
+                //For each source, we are either 'handled' or 'in library'
+                viewHolder.switchView.setChecked(!song.getSources().get(position).handled);
+
+                //TODO : disable switch for sources that does not support adding ?
+
+                viewHolder.switchView.setOnClickListener(view ->
+                {
+                    //Check status and either add or remove
+                    if(song.getSources().get(position).handled)
+                    {
+                        song.getSources().get(position).source.addToLibrary(song, () ->
+                                        requireActivity().runOnUiThread(() ->
+                                                Toast.makeText(view.getContext(), getString(R.string.song_added_to_library, song.getName()), Toast.LENGTH_SHORT).show()),
+                                () -> requireActivity().runOnUiThread(() ->
+                                        Toast.makeText(view.getContext(), getString(R.string.song_added_to_library_error, song.getName()), Toast.LENGTH_SHORT).show()));
+                    }
+                    else
+                    {
+                        song.getSources().get(position).source.removeFromLibrary(song, () ->
+                                        requireActivity().runOnUiThread(() ->
+                                                Toast.makeText(view.getContext(), getString(R.string.song_removed_from_library, song.getName()), Toast.LENGTH_SHORT).show()),
+                                () -> requireActivity().runOnUiThread(() ->
+                                        Toast.makeText(view.getContext(), getString(R.string.song_removed_from_library_error, song.getName()), Toast.LENGTH_SHORT).show()));
+                    }
+                });
+
+                return convertView;
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.manage_libraries)
+                .setAdapter(adapter, ((dialog, which) ->
+                {
+                }));
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

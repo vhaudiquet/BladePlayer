@@ -133,7 +133,17 @@ public class Library
         }
 
         /* update song source information */
-        s.addSource(source, sourceId);
+        boolean alreadyContainsSource = false;
+        for(SourceInformation si : s.getSources())
+        {
+            if(si.source == source)
+            {
+                alreadyContainsSource = true;
+                break;
+            }
+        }
+        if(!alreadyContainsSource)
+            s.addSource(source, sourceId, false);
 
         return s;
     }
@@ -198,14 +208,104 @@ public class Library
         }
 
         /* update song source information */
-        s.addSource(source, sourceId);
+        boolean alreadyContainsSource = false;
+        for(SourceInformation si : s.getSources())
+        {
+            if(si.source == source)
+            {
+                alreadyContainsSource = true;
+                break;
+            }
+        }
+        if(!alreadyContainsSource)
+            s.addSource(source, sourceId, true);
 
         return s;
     }
 
+    public static void addSongFromHandle(Song song)
+    {
+        /* obtain song artists and album artists */
+        Artist[] sartists = new Artist[song.artists.length];
+        for(int i = 0; i < sartists.length; i++)
+        {
+            Artist current = library_artists.get(song.artists[i].name.toLowerCase());
+
+            if(current == null)
+            {
+                current = new Artist(song.artists[i].name, song.artists[i].imageStr);
+                library_artists.put(current.name.toLowerCase(), current);
+            }
+
+            sartists[i] = current;
+        }
+
+        Artist[] saartists = new Artist[song.album.artists.length];
+        for(int i = 0; i < saartists.length; i++)
+        {
+            Artist current = library_artists.get(song.album.artists[i].name.toLowerCase());
+
+            if(current == null)
+            {
+                current = new Artist(song.album.artists[i].name, song.album.artists[i].imageStr);
+                library_artists.put(current.name.toLowerCase(), current);
+            }
+
+            saartists[i] = current;
+        }
+
+        /* obtain song album */
+        Album salbum = library_albums.get(((song.album.artists == null || song.album.artists[0] == null) ? "null" : song.album.artists[0].name.toLowerCase()) + ":" + song.album.getName().toLowerCase());
+        if(salbum == null)
+        {
+            salbum = new Album(song.album.name, saartists, song.album.imageStr, song.album.imageBigStr);
+            library_albums.put(((song.album.artists == null || song.album.artists[0] == null) ? "null" : song.album.artists[0].name.toLowerCase()) + ":" + song.album.getName().toLowerCase(), salbum);
+            for(Artist a : saartists) a.addAlbum(salbum);
+        }
+        for(Artist a : sartists)
+            if(!a.albums.contains(salbum))
+                a.addAlbum(salbum); //NOTE: this adds albums to artists even if only a featuring
+
+        /* obtain song */
+        Song s = library_songs.get(song.artists[0].name.toLowerCase() + ":" + song.album.getName().toLowerCase() + ":" + song.getName().toLowerCase());
+        if(s == null)
+        {
+            library_songs.put(song.artists[0].name.toLowerCase() + ":" + song.album.getName().toLowerCase() + ":" + song.getName().toLowerCase(), song);
+            for(Artist a : sartists) a.track_count++;
+            salbum.addSong(song);
+        }
+    }
+
+    public static synchronized void removeSong(Song song)
+    {
+        //Handle artist
+        for(Artist a : song.getArtists())
+        {
+            a.track_count--;
+            if(a.track_count == 0)
+                library_artists.remove(a.getName().toLowerCase());
+        }
+
+        //Handle album
+        song.getAlbum().getSongs().remove(song);
+        if(song.getAlbum().getSongs().isEmpty())
+        {
+            for(Artist a : song.getAlbum().getArtists())
+            {
+                a.getAlbums().remove(song.getAlbum());
+                if(a.getAlbums().isEmpty())
+                    library_artists.remove(a.getName().toLowerCase());
+            }
+            library_albums.remove(song.getAlbum().getArtists()[0].getName().toLowerCase() + ":" + song.getAlbum().getName().toLowerCase());
+        }
+
+        //Handle song
+        library_songs.remove(song.getArtists()[0].getName().toLowerCase() + ":" + song.getAlbum().getName().toLowerCase() + ":" + song.getName().toLowerCase());
+    }
+
     public static synchronized Playlist addPlaylist(String title, List<Song> songList, String imageMiniatureUrl, Source source, Object id)
     {
-        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl, new SourceInformation(source, id));
+        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl, new SourceInformation(source, id, false));
         library_playlists.add(playlist);
         return playlist;
     }
@@ -248,7 +348,7 @@ public class Library
         //NotifyDatasetChanged for mainListView actualization
         if(LibraryFragment.instance != null)
             LibraryFragment.instance.requireActivity().runOnUiThread(() ->
-                    LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null));
+                    LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null, LibraryFragment.CURRENT_TYPE.LIBRARY));
 
         //TODO : maybe sort playlists ??
 
@@ -467,7 +567,7 @@ public class Library
         {
             JSONObject sourceJson = sourcesJson.getJSONObject(j);
             Source source = Source.SOURCES.get(sourceJson.getInt("source"));
-            song.addSource(source, sourceJson.get("id"));
+            song.addSource(source, sourceJson.get("id"), handled);
         }
 
         return song;

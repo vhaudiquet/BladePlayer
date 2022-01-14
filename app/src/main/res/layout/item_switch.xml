@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/item_element_image"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_sources_24px"
+        android:contentDescription="@string/sources" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:layout_marginStart="10dp"
+        android:id="@+id/item_element_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

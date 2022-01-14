@@ -9,6 +9,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -350,4 +351,10 @@ public interface SpotifyService
 
     @DELETE("playlists/{playlist_id}/followers")
     Call<Void> unfollowPlaylist(@Header("Authorization") String token, @Path("playlist_id") String playlist_id);
+
+    @PUT("me/tracks")
+    Call<Void> saveTrack(@Header("Authorization") String token, @Query("ids") String id);
+
+    @DELETE("me/tracks")
+    Call<Void> removeTrack(@Header("Authorization") String token, @Query("ids") String id);
 }

@@ -76,4 +76,8 @@
     <string name="playlist_removed">Removed playlist %1$s</string>
     <string name="delete_playlist">Delete playlist</string>
     <string name="playlist_could_not_remove">Could not remove playlist %1$s</string>
+    <string name="song_added_to_library">Song %1$s added to library</string>
+    <string name="song_added_to_library_error">Song %1$s could not be added to library</string>
+    <string name="song_removed_from_library">Song %1$s removed from library</string>
+    <string name="song_removed_from_library_error">Song %1$s could not be removed from library</string>
 </resources>

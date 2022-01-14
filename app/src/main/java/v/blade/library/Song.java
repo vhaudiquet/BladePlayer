@@ -24,14 +24,14 @@ public class Song extends LibraryObject
         this.sources = new ArrayList<>();
     }
 
-    protected void addSource(Source source, Object id)
+    protected void addSource(Source source, Object id, boolean handled)
     {
         if(source == null || id == null) return;
 
         //check if song contains same source
         for(SourceInformation si : sources) if(si.source == source) return;
 
-        sources.add(new SourceInformation(source, id));
+        sources.add(new SourceInformation(source, id, handled));
     }
 
     public Artist[] getArtists()
