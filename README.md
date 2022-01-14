@@ -7,9 +7,9 @@ services : files on your phone, [Spotify], and more.
 
 Blade is available on [Google Play], or [here on GitHub].
 
-<div style="text-align: center;">
-  <img src="https://valou3433.fr/blade0.png" style="max-width: 350;"/>
-  <img src="https://valou3433.fr/blade1.png" style="max-width: 350;"/>
+<div align="center" style="text-align: center;">
+  <img src="https://valou3433.fr/blade0.png" width="350" style="max-width: 350;"/>
+  <img src="https://valou3433.fr/blade1.png" width="350" style="max-width: 350;"/>
 </div>
 
 ## Feature overview
