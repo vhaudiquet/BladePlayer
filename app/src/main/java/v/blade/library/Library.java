@@ -210,6 +210,11 @@ public class Library
         return playlist;
     }
 
+    public static synchronized void removePlaylist(Playlist list)
+    {
+        library_playlists.remove(list);
+    }
+
     /**
      * Reset the playlist, to be used before a library synchronization
      */

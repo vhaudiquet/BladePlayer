@@ -27,4 +27,9 @@ public abstract class LibraryObject
     {
         this.imageRequest = request;
     }
+
+    public String getImageStr()
+    {
+        return imageStr;
+    }
 }

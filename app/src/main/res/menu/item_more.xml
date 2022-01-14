@@ -21,4 +21,8 @@
         android:id="@+id/action_remove_from_list"
         android:title="@string/remove_from_list"
         android:visible="false" /> <!-- visible only for songs in playlist -->
+    <item
+        android:id="@+id/action_remove_from_library"
+        android:title="@string/remove"
+        android:visible="false" /> <!-- visible only for playlists -->
 </menu>

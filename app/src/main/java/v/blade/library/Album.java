@@ -49,4 +49,9 @@ public class Album extends LibraryObject
     {
         return songList;
     }
+
+    public String getImageBigStr()
+    {
+        return imageBigStr;
+    }
 }

@@ -108,4 +108,22 @@ public class Local extends Source
     {
         failureCallback.run();
     }
+
+    @Override
+    public void removePlaylist(Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        failureCallback.run();
+    }
+
+    @Override
+    public void addToLibrary(Song song, Runnable callback, Runnable failureCallback)
+    {
+        failureCallback.run();
+    }
+
+    @Override
+    public void removeFromLibrary(Song song, Runnable callback, Runnable failureCallback)
+    {
+        failureCallback.run();
+    }
 }

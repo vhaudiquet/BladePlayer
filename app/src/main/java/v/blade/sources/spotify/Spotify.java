@@ -514,6 +514,44 @@ public class Spotify extends Source
         });
     }
 
+    @Override
+    public void removePlaylist(Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            Call<Void> call = service.unfollowPlaylist(AUTH_STRING, (String) playlist.getSource().id);
+
+            try
+            {
+                Response<Void> response = call.execute();
+                if(response.code() != 200)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not delete playlist " + playlist.getName() + " : " + response.code());
+                    failureCallback.run();
+                    return;
+                }
+
+                super.removePlaylist(playlist, callback, failureCallback);
+            }
+            catch(IOException e)
+            {
+                failureCallback.run();
+            }
+        });
+    }
+
+    @Override
+    public void addToLibrary(Song song, Runnable callback, Runnable failureCallback)
+    {
+        failureCallback.run();
+    }
+
+    @Override
+    public void removeFromLibrary(Song song, Runnable callback, Runnable failureCallback)
+    {
+        failureCallback.run();
+    }
+
     public static class SettingsFragment extends Fragment
     {
         private final Spotify spotify;

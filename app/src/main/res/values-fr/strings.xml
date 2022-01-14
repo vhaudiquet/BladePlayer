@@ -68,4 +68,10 @@
     <string name="new_playlist">Nouvelle playlist</string>
     <string name="name">Nom</string>
     <string name="could_not_create_playlist">La playlist %1$s n\'a pas pu être créée</string>
+    <string name="are_you_sure_delete_playlist">Êtes-vous sûr de vouloir supprimer la playlist %1$s ?</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="playlist_removed">Playlist %1$s supprimée</string>
+    <string name="delete_playlist">Supprimer la playlist</string>
+    <string name="playlist_could_not_remove">La playlist %1$s n\'a pas pu être supprimée</string>
 </resources>

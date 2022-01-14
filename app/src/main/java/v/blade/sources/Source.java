@@ -132,6 +132,9 @@ public abstract class Source
 
     public abstract void restoreFromJSON(JsonObject jsonObject);
 
+    /**
+     * This method can't be kept this way ; each source NEEDS to override it
+     */
     public void addSongToPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
     {
         //Add track to playlist locally
@@ -146,6 +149,59 @@ public abstract class Source
     }
 
     public abstract void createPlaylist(String name, BladeApplication.Callback<Playlist> callback, Runnable failureCallback);
+
+    /**
+     * This method can't be kept this way ; each source NEEDS to override it
+     */
+    public void removePlaylist(Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        Library.removePlaylist(playlist);
+
+        //Save library
+        Library.save();
+        saveSources();
+
+        //Run callback
+        callback.run();
+    }
+
+    /**
+     * This method can't be kept this way ; each source NEEDS to override it
+     */
+    public void addToLibrary(Song song, Runnable callback, Runnable failureCallback)
+    {
+        //Add song to library
+        String[] artists = new String[song.getArtists().length];
+        for(int i = 0; i < artists.length; i++) artists[i] = song.getArtists()[i].getName();
+        String[] albumArtists = new String[song.getAlbum().getArtists().length];
+        for(int i = 0; i < albumArtists.length; i++)
+            albumArtists[i] = song.getAlbum().getArtists()[i].getName();
+
+        //TODO support artists images
+        Library.addSong(song.getName(), song.getAlbum().getName(), artists, song.getBestSource().source,
+                song.getBestSource().id, albumArtists, song.getAlbum().getImageStr(), song.getTrackNumber(),
+                new String[song.getArtists().length], new String[song.getAlbum().getArtists().length],
+                song.getAlbum().getImageBigStr());
+
+        //Re-generate lists
+        Library.generateLists();
+
+        //Save library
+        Library.save();
+        saveSources();
+
+        //Run callback
+        callback.run();
+    }
+
+    /**
+     * This method can't be kept this way ; each source NEEDS to override it
+     */
+    public void removeFromLibrary(Song song, Runnable callback, Runnable failureCallback)
+    {
+        //TODO
+        callback.run();
+    }
 
     /**
      * Blade saves all sources informations/configurations in a cache sources json file

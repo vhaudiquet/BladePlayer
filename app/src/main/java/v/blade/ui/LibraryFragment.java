@@ -166,6 +166,10 @@ public class LibraryFragment extends Fragment
         {
             popupMenu.getMenu().getItem(3).setVisible(true);
         }
+        else if(element instanceof Playlist)
+        {
+            popupMenu.getMenu().getItem(6).setVisible(true);
+        }
 
         //Set actions
         popupMenu.setOnMenuItemClickListener(item ->
@@ -223,6 +227,9 @@ public class LibraryFragment extends Fragment
                 case R.id.action_add_to_list:
                     assert element instanceof Song;
                     openAddToPlaylistDialog((Song) element);
+                case R.id.action_remove_from_library:
+                    assert element instanceof Playlist;
+                    openDeletePlaylistDialog((Playlist) element);
             }
             return false;
         });
@@ -435,6 +442,26 @@ public class LibraryFragment extends Fragment
 
             dialog.dismiss();
         });
+        dialog.show();
+    }
+
+    private void openDeletePlaylistDialog(Playlist playlist)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_playlist)
+                .setMessage(getString(R.string.are_you_sure_delete_playlist, playlist.getName()))
+                .setPositiveButton(R.string.yes, (dialog, which) ->
+                {
+                    playlist.getSource().source.removePlaylist(playlist, () ->
+                                    requireActivity().runOnUiThread(() ->
+                                            Toast.makeText(requireContext(), getString(R.string.playlist_removed, playlist.getName()), Toast.LENGTH_SHORT).show()),
+                            () -> requireActivity().runOnUiThread(() ->
+                                    Toast.makeText(requireContext(), getString(R.string.playlist_could_not_remove, playlist.getName()), Toast.LENGTH_SHORT).show()));
+
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 

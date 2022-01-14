@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -346,4 +347,7 @@ public interface SpotifyService
 
     @POST("users/{user_id}/playlists")
     Call<SimplifiedPlaylistObject> createPlaylist(@Header("Authorization") String token, @Path("user_id") String user_id, @Body RequestBody params);
+
+    @DELETE("playlists/{playlist_id}/followers")
+    Call<Void> unfollowPlaylist(@Header("Authorization") String token, @Path("playlist_id") String playlist_id);
 }

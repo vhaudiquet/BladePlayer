@@ -70,4 +70,10 @@
     <string name="name">Name</string>
     <string name="ok" translatable="false">OK</string>
     <string name="could_not_create_playlist">Could not create playlist %1$s</string>
+    <string name="are_you_sure_delete_playlist">Are you sure that you want to delete playlist %1$s ?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="playlist_removed">Removed playlist %1$s</string>
+    <string name="delete_playlist">Delete playlist</string>
+    <string name="playlist_could_not_remove">Could not remove playlist %1$s</string>
 </resources>
