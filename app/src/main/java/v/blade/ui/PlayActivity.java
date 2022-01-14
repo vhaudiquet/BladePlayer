@@ -119,32 +119,6 @@ public class PlayActivity extends AppCompatActivity
             }
         });
 
-        //Setup task that will update seekBar/position every second
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                runOnUiThread(() ->
-                {
-                    if(getMediaController() != null
-                            && getMediaController().getPlaybackState().getState() == PlaybackState.STATE_PLAYING
-                            && binding.playSeekbar.getMax() != 0)
-                    {
-                        int progress = binding.playSeekbar.getProgress() + 1000;
-
-                        int positionMins = (progress / 60000) % 60000;
-                        int positionSecs = progress % 60000 / 1000;
-                        String positionString = String.format(Locale.getDefault(), "%02d:%02d", positionMins, positionSecs);
-                        binding.playTime.setText(positionString);
-                        binding.playSeekbar.setProgress(progress);
-                    }
-                });
-            }
-        }, 0, 1000);
-        //TODO : fix start progress (activity launch will set to 0...)
-
         mediaBrowser = new MediaBrowserCompat(this, new ComponentName(this, MediaBrowserService.class),
                 new MediaBrowserCompat.ConnectionCallback()
                 {
@@ -265,6 +239,31 @@ public class PlayActivity extends AppCompatActivity
                         mediaControllerCallback.onMetadataChanged(mediaController.getMetadata());
                         mediaControllerCallback.onShuffleModeChanged(mediaController.getShuffleMode());
                         mediaControllerCallback.onRepeatModeChanged(mediaController.getRepeatMode());
+
+                        //Setup task that will update seekBar/position every second
+                        Timer timer = new Timer();
+                        timer.schedule(new TimerTask()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                runOnUiThread(() ->
+                                {
+                                    if(getMediaController() != null
+                                            && getMediaController().getPlaybackState().getState() == PlaybackState.STATE_PLAYING
+                                            && binding.playSeekbar.getMax() != 0)
+                                    {
+                                        int progress = (int) mediaController.getPlaybackState().getPosition();
+
+                                        int positionMins = (progress / 60000) % 60000;
+                                        int positionSecs = progress % 60000 / 1000;
+                                        String positionString = String.format(Locale.getDefault(), "%02d:%02d", positionMins, positionSecs);
+                                        binding.playTime.setText(positionString);
+                                        binding.playSeekbar.setProgress(progress);
+                                    }
+                                });
+                            }
+                        }, 0, 1000);
 
                         //Register a callback so that UI stays in sync
                         mediaController.registerCallback(mediaControllerCallback);
