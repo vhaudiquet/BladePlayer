@@ -39,7 +39,7 @@
     <string name="remove">Supprimer</string>
     <string name="version">Version</string>
     <string name="about_desc">Blade Player est un lecteur de musique pour Android (par @vhaudiquet) permettant de lire des sons depuis de multiples services.</string>
-    <string name="about_license">License : ???</string>
+    <string name="about_license">License : Apache 2.0</string>
     <string name="about_logo">Logo : @zularizal</string>
     <string name="about_sources">Sources : github.com/vhaudiquet/BladePlayer</string>
     <string name="about_libraries_used">Bibliothèques utilisées :</string>

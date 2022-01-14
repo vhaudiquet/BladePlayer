@@ -39,7 +39,7 @@
     <string name="remove">Remove</string>
     <string name="version">Version</string>
     <string name="about_desc">Blade Player is an Android music player (by @vhaudiquet) made to play songs from multiple services.</string>
-    <string name="about_license">License : ???</string>
+    <string name="about_license">License : Apache 2.0</string>
     <string name="about_logo">Logo : @zularizal</string>
     <string name="about_sources">Sources : github.com/vhaudiquet/BladePlayer</string>
     <string name="about_libraries_used">Libraries used :</string>
