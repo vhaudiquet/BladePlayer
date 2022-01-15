@@ -3,6 +3,7 @@ package v.blade.library;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -118,6 +119,17 @@ public class Library
             library_albums.put(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase(), salbum);
             for(Artist a : saartists) a.addAlbum(salbum);
         }
+        else
+        {
+            //Add image if null
+            if(salbum.getImageRequest() == null && albumImageURL != null && !albumImageURL.equals(""))
+            {
+                salbum.imageStr = albumMiniatureURL;
+                salbum.imageRequest = Picasso.get().load(albumMiniatureURL);
+                salbum.imageBigStr = albumImageURL;
+                salbum.imageBig = Picasso.get().load(albumImageURL);
+            }
+        }
         for(Artist a : sartists)
             if(!a.albums.contains(salbum))
                 a.addAlbum(salbum); //NOTE: this adds albums to artists even if only a featuring
@@ -190,6 +202,17 @@ public class Library
         if(salbum == null)
             //noinspection ConstantConditions
             salbum = handled_albums.get(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase());
+        else
+        {
+            //Add image if null
+            if(salbum.getImageRequest() == null && albumImageURL != null && !albumImageURL.equals(""))
+            {
+                salbum.imageStr = albumMiniatureURL;
+                salbum.imageRequest = Picasso.get().load(albumMiniatureURL);
+                salbum.imageBigStr = albumImageURL;
+                salbum.imageBig = Picasso.get().load(albumImageURL);
+            }
+        }
         if(salbum == null)
         {
             salbum = new Album(album, saartists, albumMiniatureURL, albumImageURL);

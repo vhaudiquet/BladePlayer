@@ -106,19 +106,18 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             {
                 Toast.makeText(service, service.getString(R.string.song_no_source_error), Toast.LENGTH_LONG).show();
 
-                System.out.println("Song with no ready source : " + song.getName() + " ; sources are :");
+                System.out.println("BLADE: Song with no ready source : " + song.getName() + " ; sources are :");
                 for(SourceInformation si : song.getSources())
-                    System.out.println(si.source.getName() + " (id " + si.id + "), source index " + si.source.getIndex() + ", status " + si.source.getStatus());
+                    System.out.println("BLADE: " + si.source.getName() + " (id " + si.id + "), source index " + si.source.getIndex() + ", status " + si.source.getStatus());
 
                 return;
             }
 
             //Start service if not started (i.e. this is the first time the user clicks)
             service.startIfNotStarted();
-            service.mediaSession.setActive(true);
             updatePlaybackState(true);
-            service.notification.update();
 
+            System.out.println("BLADE: onPlay(" + service.playlist.get(service.index).getName() + ") from " + bestSource.source.getName());
             service.current = bestSource.source.getPlayer();
             BladeApplication.obtainExecutorService().execute(() ->
             {

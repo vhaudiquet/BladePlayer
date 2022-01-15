@@ -49,6 +49,9 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         else
             startService(new Intent(this, MediaBrowserService.class));
 
+        mediaSession.setActive(true);
+        notification.update();
+
         isStarted = true;
     }
 
