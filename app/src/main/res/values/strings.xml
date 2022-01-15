@@ -83,4 +83,5 @@
     <string name="are_you_sure_remove_from_list">Are you sure that you want to remove %1$s from playlist %2$s ?</string>
     <string name="song_removed_from_list">%1$s removed from playlist %2$s</string>
     <string name="song_removed_from_list_error">%1$s could not be removed from playlist %2$s</string>
+    <string name="spotify_player_panic">Spotify player error, something must be wrong (internet/settings ?)</string>
 </resources>

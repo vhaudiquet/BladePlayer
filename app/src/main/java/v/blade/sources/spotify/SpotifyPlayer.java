@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
@@ -20,6 +21,7 @@ import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 import v.blade.BladeApplication;
+import v.blade.R;
 import v.blade.library.Song;
 import v.blade.player.MediaBrowserService;
 import v.blade.sources.Source;
@@ -47,6 +49,8 @@ public class SpotifyPlayer extends Source.Player
 
     //TODO : remove that, temp bugfix librespot seek
     private int tempSeekPos = -1;
+
+    private int errorRetryCount = 0;
 
     public SpotifyPlayer(Spotify source)
     {
@@ -141,7 +145,7 @@ public class SpotifyPlayer extends Source.Player
                 //TODO :  we must notifyPlaybackEnd() here, but only in some cases (not on track end but if queue fails...)
                 // it is complicated
                 System.out.println("BLADE-SPOTIFY: Playback ended");
-                //isPaused = true;
+                isPaused = false;
                 //player.pause();
                 //ContextCompat.getMainExecutor(MediaBrowserService.getInstance())
                 //        .execute(MediaBrowserService.getInstance()::notifyPlaybackEnd);
@@ -181,7 +185,7 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onInactiveSession(@NotNull Player player, boolean timeout)
             {
-
+                isLoading = false;
             }
 
             @Override
@@ -193,7 +197,37 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onPanicState(@NotNull Player player)
             {
+                System.out.println("BLADE-SPOTIFY: Player panic");
+                errorRetryCount++;
+                isLoading = false;
+                isPaused = false;
+                if(errorRetryCount == 3)
+                {
+                    ContextCompat.getMainExecutor(MediaBrowserService.getInstance()).execute(() ->
+                    {
+                        MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
+                        Toast.makeText(MediaBrowserService.getInstance(), R.string.spotify_player_panic, Toast.LENGTH_SHORT).show();
+                        errorRetryCount = 0;
+                    });
+                }
+                else
+                {
+                    BladeApplication.obtainExecutorService().execute(() ->
+                    {
+                        try
+                        {
+                            Thread.sleep(200);
+                        }
+                        catch(InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
 
+
+                        ContextCompat.getMainExecutor(MediaBrowserService.getInstance()).execute(() ->
+                                MediaBrowserService.getInstance().mediaSessionCallback.onPlay());
+                    });
+                }
             }
 
             @Override
@@ -205,6 +239,7 @@ public class SpotifyPlayer extends Source.Player
             @Override
             public void onFinishedLoading(@NotNull Player player)
             {
+                errorRetryCount = 0;
                 System.out.println("BLADE-SPOTIFY: Player finished loading");
                 isLoading = false;
             }

@@ -81,4 +81,5 @@
     <string name="are_you_sure_remove_from_list">Êtes-vous sûr de vouloir supprimer %1$s de la playlist %2$s ?</string>
     <string name="song_removed_from_list">%1$s a été supprimé de la playlist %2$s</string>
     <string name="song_removed_from_list_error">%1$s n\'a pas pu être supprimé de la playlist %2$s</string>
+    <string name="spotify_player_panic">Erreur du lecteur Spotify, vérifiez la connexion et les paramètres</string>
 </resources>
