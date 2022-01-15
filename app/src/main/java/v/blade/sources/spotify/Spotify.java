@@ -66,6 +66,8 @@ public class Spotify extends Source
     public static final int IMAGE_RESOURCE = R.drawable.ic_spotify;
     private static final int CACHE_VERSION = 1;
 
+    private static final int SPOTIFY_IMAGE_LEVEL = 10;
+
     //Spotify AUTH : We are using 'Authorization Code Flow' with 'PKCE extension'
     private static final String BASE_API_URL = "https://api.spotify.com/v1/";
     private static final String AUTH_TYPE = "Bearer ";
@@ -249,7 +251,7 @@ public class Spotify extends Source
 
                     Library.addSong(track.name, track.album.name, artists, this, track.id, aartists,
                             track.album.images[track.album.images.length - 2].url, track.track_number,
-                            artistsImages, aartistsImages, track.album.images[0].url);
+                            artistsImages, aartistsImages, track.album.images[0].url, SPOTIFY_IMAGE_LEVEL);
                 }
 
                 tracksLeft = trackPaging.total - 50 * (tracksIndex + 1);
@@ -298,7 +300,7 @@ public class Spotify extends Source
 
                         Library.addSong(track.name, album.name, artists, this, track.id, aartists,
                                 album.images[album.images.length - 2].url, track.track_number,
-                                artistsImages, aartistsImages, album.images[0].url);
+                                artistsImages, aartistsImages, album.images[0].url, SPOTIFY_IMAGE_LEVEL);
                     }
                 }
 
@@ -362,7 +364,7 @@ public class Spotify extends Source
 
                             Song song = Library.addSongHandle(track.name, track.album.name, artists, this, track.id, aartists,
                                     track.album.images[track.album.images.length - 2].url, track.track_number,
-                                    artistsImages, aartistsImages, track.album.images[0].url);
+                                    artistsImages, aartistsImages, track.album.images[0].url, SPOTIFY_IMAGE_LEVEL);
                             songList.add(song);
                         }
 

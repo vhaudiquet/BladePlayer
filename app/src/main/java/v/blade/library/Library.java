@@ -3,7 +3,6 @@ package v.blade.library;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,7 +77,7 @@ public class Library
 
     public static synchronized Song addSong(String title, String album, String[] artists, Source source, Object sourceId,
                                             String[] albumArtists, String albumMiniatureURL, int track_number, String[] artistMiniaturesUrl,
-                                            String[] albumArtistsMiniatureUrl, String albumImageURL)
+                                            String[] albumArtistsMiniatureUrl, String albumImageURL, int albumImageLevel)
     {
         /* obtain song artists and album artists */
         Artist[] sartists = new Artist[artists.length];
@@ -114,21 +113,15 @@ public class Library
         Album salbum = library_albums.get(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase());
         if(salbum == null)
         {
-            salbum = new Album(album, saartists, albumMiniatureURL, albumImageURL);
+            salbum = new Album(album, saartists, albumMiniatureURL, albumImageURL, albumImageLevel);
             //noinspection ConstantConditions
             library_albums.put(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase(), salbum);
             for(Artist a : saartists) a.addAlbum(salbum);
         }
         else
         {
-            //Add image if null
-            if(salbum.getImageRequest() == null && albumImageURL != null && !albumImageURL.equals(""))
-            {
-                salbum.imageStr = albumMiniatureURL;
-                salbum.imageRequest = Picasso.get().load(albumMiniatureURL);
-                salbum.imageBigStr = albumImageURL;
-                salbum.imageBig = Picasso.get().load(albumImageURL);
-            }
+            //Add image if image level inferior
+            salbum.setImage(albumMiniatureURL, albumImageURL, albumImageLevel);
         }
         for(Artist a : sartists)
             if(!a.albums.contains(salbum))
@@ -162,7 +155,7 @@ public class Library
 
     public static synchronized Song addSongHandle(String title, String album, String[] artists, Source source, Object sourceId,
                                                   String[] albumArtists, String albumMiniatureURL, int track_number, String[] artistMiniaturesUrl,
-                                                  String[] albumArtistsMiniatureUrl, String albumImageURL)
+                                                  String[] albumArtistsMiniatureUrl, String albumImageURL, int albumImageLevel)
     {
         /* obtain song artists and album artists */
         Artist[] sartists = new Artist[artists.length];
@@ -204,18 +197,12 @@ public class Library
             salbum = handled_albums.get(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase());
         else
         {
-            //Add image if null
-            if(salbum.getImageRequest() == null && albumImageURL != null && !albumImageURL.equals(""))
-            {
-                salbum.imageStr = albumMiniatureURL;
-                salbum.imageRequest = Picasso.get().load(albumMiniatureURL);
-                salbum.imageBigStr = albumImageURL;
-                salbum.imageBig = Picasso.get().load(albumImageURL);
-            }
+            //Add image if image level inferior
+            salbum.setImage(albumMiniatureURL, albumImageURL, albumImageLevel);
         }
         if(salbum == null)
         {
-            salbum = new Album(album, saartists, albumMiniatureURL, albumImageURL);
+            salbum = new Album(album, saartists, albumMiniatureURL, albumImageURL, albumImageLevel);
             //noinspection ConstantConditions
             handled_albums.put(((albumArtists == null || albumArtists[0] == null) ? "null" : albumArtists[0].toLowerCase()) + ":" + album.toLowerCase(), salbum);
         }
@@ -281,7 +268,7 @@ public class Library
         Album salbum = library_albums.get(((song.album.artists == null || song.album.artists[0] == null) ? "null" : song.album.artists[0].name.toLowerCase()) + ":" + song.album.getName().toLowerCase());
         if(salbum == null)
         {
-            salbum = new Album(song.album.name, saartists, song.album.imageStr, song.album.imageBigStr);
+            salbum = new Album(song.album.name, saartists, song.album.imageStr, song.album.imageBigStr, song.album.imageLevel);
             library_albums.put(((song.album.artists == null || song.album.artists[0] == null) ? "null" : song.album.artists[0].name.toLowerCase()) + ":" + song.album.getName().toLowerCase(), salbum);
             for(Artist a : saartists) a.addAlbum(salbum);
         }
@@ -579,11 +566,11 @@ public class Library
         if(handled)
             song = addSongHandle(s.getString("name"), s.getString("album"), artists, source0,
                     source0Json.get("id"), aartists, art, s.getInt("track_number"),
-                    artistsImages, aartistsImages, bigArt);
+                    artistsImages, aartistsImages, bigArt, 1);
         else
             song = addSong(s.getString("name"), s.getString("album"), artists, source0,
                     source0Json.get("id"), aartists, art, s.getInt("track_number"),
-                    artistsImages, aartistsImages, bigArt);
+                    artistsImages, aartistsImages, bigArt, 1);
 
         //Add all other sources to song
         for(int j = 1; j < sourcesJson.length(); j++)

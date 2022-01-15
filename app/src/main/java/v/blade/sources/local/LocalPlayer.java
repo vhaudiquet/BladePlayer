@@ -72,7 +72,7 @@ public class LocalPlayer extends Source.Player
             mediaPlayer.prepare();
             play();
         }
-        catch(IOException | IllegalStateException e)
+        catch(IOException | RuntimeException e)
         {
             e.printStackTrace();
         }

@@ -31,9 +31,11 @@ import v.blade.sources.Source;
 
 public class Local extends Source
 {
-    public static int NAME_RESOURCE = R.string.local;
-    public static int DESCRIPTION_RESOURCE = R.string.local_desc;
-    public static int IMAGE_RESOURCE = R.drawable.ic_local;
+    public static final int NAME_RESOURCE = R.string.local;
+    public static final int DESCRIPTION_RESOURCE = R.string.local_desc;
+    public static final int IMAGE_RESOURCE = R.drawable.ic_local;
+
+    private static final int LOCAL_IMAGE_LEVEL = 1;
 
     public Local()
     {
@@ -70,6 +72,7 @@ public class Local extends Source
             int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
             int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
             int trackNumberColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TRACK);
+            int albumIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ID);
 
             do
             {
@@ -87,7 +90,12 @@ public class Local extends Source
                 String album = musicCursor.getString(albumColumn);
                 long id = musicCursor.getLong(idColumn);
                 int track_number = musicCursor.getInt(trackNumberColumn);
-                Library.addSong(title, album, artists, this, id, artists, null, track_number, new String[artists.length], new String[artists.length], null);
+
+                //Load album art if it exists
+                long albumId = musicCursor.getLong(albumIdColumn);
+                String pathUri = "content://media/external/audio/albumart/" + albumId;
+
+                Library.addSong(title, album, artists, this, id, artists, pathUri, track_number, new String[artists.length], new String[artists.length], pathUri, LOCAL_IMAGE_LEVEL);
             }
             while(musicCursor.moveToNext());
 

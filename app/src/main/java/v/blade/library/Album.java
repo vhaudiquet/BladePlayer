@@ -6,22 +6,22 @@ import com.squareup.picasso.RequestCreator;
 import java.util.ArrayList;
 import java.util.List;
 
+import v.blade.R;
+
 public class Album extends LibraryObject
 {
     Artist[] artists;
     List<Song> songList;
     String imageBigStr;
     RequestCreator imageBig;
+    int imageLevel;
 
-    public Album(String name, Artist[] artists, String imageMiniature, String imageBig)
+    public Album(String name, Artist[] artists, String imageMiniature, String imageBig, int imageLevel)
     {
         this.name = name;
         this.songList = new ArrayList<>();
         this.artists = artists;
-        this.imageBigStr = imageBig;
-        this.imageRequest = (imageMiniature == null || imageMiniature.equals("")) ? null : Picasso.get().load(imageMiniature);
-        this.imageBig = (imageBig == null || imageBig.equals("")) ? null : Picasso.get().load(imageBig);
-        this.imageStr = imageMiniature;
+        setImage(imageMiniature, imageBig, imageLevel);
     }
 
     protected void addSong(Song s)
@@ -53,5 +53,16 @@ public class Album extends LibraryObject
     public String getImageBigStr()
     {
         return imageBigStr;
+    }
+
+    public void setImage(String imageMiniature, String imageBig, int imageLevel)
+    {
+        if(this.imageLevel > imageLevel) return;
+
+        this.imageStr = imageMiniature;
+        this.imageBigStr = imageBig;
+        this.imageLevel = imageLevel;
+        this.imageBig = (imageBig == null || imageBig.equals("")) ? null : Picasso.get().load(imageBig).placeholder(R.drawable.ic_album);
+        this.imageRequest = (imageMiniature == null || imageMiniature.equals("")) ? null : Picasso.get().load(imageMiniature).placeholder(R.drawable.ic_album);
     }
 }
