@@ -78,4 +78,7 @@
     <string name="song_added_to_library_error">%1$s n\'a pas pu être ajouté à la bibliothèque</string>
     <string name="song_removed_from_library">%1$s a été supprimé de la bibliothèque</string>
     <string name="song_removed_from_library_error">%1$s n\'a pas pu être supprimé de la bibliothèque</string>
+    <string name="are_you_sure_remove_from_list">Êtes-vous sûr de vouloir supprimer %1$s de la playlist %2$s ?</string>
+    <string name="song_removed_from_list">%1$s a été supprimé de la playlist %2$s</string>
+    <string name="song_removed_from_list_error">%1$s n\'a pas pu être supprimé de la playlist %2$s</string>
 </resources>

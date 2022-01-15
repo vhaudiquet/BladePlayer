@@ -80,4 +80,7 @@
     <string name="song_added_to_library_error">Song %1$s could not be added to library</string>
     <string name="song_removed_from_library">Song %1$s removed from library</string>
     <string name="song_removed_from_library_error">Song %1$s could not be removed from library</string>
+    <string name="are_you_sure_remove_from_list">Are you sure that you want to remove %1$s from playlist %2$s ?</string>
+    <string name="song_removed_from_list">%1$s removed from playlist %2$s</string>
+    <string name="song_removed_from_list_error">%1$s could not be removed from playlist %2$s</string>
 </resources>

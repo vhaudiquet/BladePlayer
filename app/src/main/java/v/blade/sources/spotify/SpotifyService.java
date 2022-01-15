@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -357,4 +358,7 @@ public interface SpotifyService
 
     @DELETE("me/tracks")
     Call<Void> removeTrack(@Header("Authorization") String token, @Query("ids") String id);
+
+    @HTTP(method = "DELETE", path = "playlists/{playlist_id}/tracks", hasBody = true)
+    Call<PlaylistAddResponse> removePlaylistItem(@Header("Authorization") String token, @Path("playlist_id") String playlist_id, @Body RequestBody params);
 }

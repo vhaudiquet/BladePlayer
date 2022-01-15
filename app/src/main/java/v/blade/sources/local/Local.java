@@ -126,4 +126,10 @@ public class Local extends Source
     {
         failureCallback.run();
     }
+
+    @Override
+    public void removeFromPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        failureCallback.run();
+    }
 }

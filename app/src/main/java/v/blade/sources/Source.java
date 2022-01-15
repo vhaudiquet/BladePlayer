@@ -237,6 +237,21 @@ public abstract class Source
     }
 
     /**
+     * This method can't be kept this way ; each source NEEDS to override it
+     */
+    public void removeFromPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        playlist.getSongs().remove(song);
+
+        //Save library
+        Library.save();
+        saveSources();
+
+        //Run callback
+        callback.run();
+    }
+
+    /**
      * Blade saves all sources informations/configurations in a cache sources json file
      */
     public static synchronized void saveSources()

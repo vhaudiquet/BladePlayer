@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="v.blade">
     <!-- Start foreground service : for notifications -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Read external storage : needed for Local source -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Network, internet : needed for online sources -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Read external storage : needed for Local source -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- Network, internet : needed for online sources -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 

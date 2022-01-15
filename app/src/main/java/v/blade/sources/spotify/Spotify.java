@@ -20,6 +20,8 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -608,6 +610,53 @@ public class Spotify extends Source
                 super.removeFromLibrary(song, callback, failureCallback);
             }
             catch(IOException e)
+            {
+                failureCallback.run();
+            }
+        });
+    }
+
+    @Override
+    public void removeFromPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
+    {
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            //Get song source
+            SourceInformation current = null;
+            for(SourceInformation s : song.getSources())
+                if(s.source == this) current = s;
+
+            if(current == null)
+            {
+                failureCallback.run();
+                return;
+            }
+
+            try
+            {
+                //Generate request body
+                JSONObject track = new JSONObject();
+                track.put("uri", "spotify:track:" + current.id);
+                JSONArray array = new JSONArray();
+                array.put(track);
+                Map<String, Object> jsonParams = new ArrayMap<>();
+                jsonParams.put("tracks", array);
+                JSONObject jsonBody = new JSONObject(jsonParams);
+                System.out.println("json: " + jsonBody.toString());
+                RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+                Call<SpotifyService.PlaylistAddResponse> call = service.removePlaylistItem(AUTH_STRING, (String) playlist.getSource().id, body);
+
+                Response<SpotifyService.PlaylistAddResponse> response = call.execute();
+                if(response.code() != 200)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not remove " + song.getName() + " from playlist " + playlist.getName() + " : " + response.code());
+                    failureCallback.run();
+                    return;
+                }
+
+                super.removeFromPlaylist(song, playlist, callback, failureCallback);
+            }
+            catch(IOException | JSONException e)
             {
                 failureCallback.run();
             }

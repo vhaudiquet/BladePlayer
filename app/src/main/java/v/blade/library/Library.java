@@ -348,7 +348,7 @@ public class Library
         //NotifyDatasetChanged for mainListView actualization
         if(LibraryFragment.instance != null)
             LibraryFragment.instance.requireActivity().runOnUiThread(() ->
-                    LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null, LibraryFragment.CURRENT_TYPE.LIBRARY));
+                    LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null, LibraryFragment.CURRENT_TYPE.LIBRARY, null));
 
         //TODO : maybe sort playlists ??
 

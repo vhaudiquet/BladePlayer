@@ -57,18 +57,21 @@ public class LibraryFragment extends Fragment
     protected FragmentLibraryBinding binding;
     private List<? extends LibraryObject> current;
     private CURRENT_TYPE currentType;
+    private LibraryObject currentObject;
 
     private static class BackInformation
     {
         private final String title;
         private final List<? extends LibraryObject> list;
         private final CURRENT_TYPE type;
+        private final LibraryObject object;
 
-        private BackInformation(String title, List<? extends LibraryObject> list, CURRENT_TYPE type)
+        private BackInformation(String title, List<? extends LibraryObject> list, CURRENT_TYPE type, LibraryObject object)
         {
             this.title = title;
             this.list = list;
             this.type = type;
+            this.object = object;
         }
     }
 
@@ -80,8 +83,10 @@ public class LibraryFragment extends Fragment
         binding = FragmentLibraryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.mainListview.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateContent(getTitle(), null, CURRENT_TYPE.LIBRARY);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
+        binding.mainListview.setLayoutManager(linearLayoutManager);
+        updateContent(getTitle(), null, CURRENT_TYPE.LIBRARY, null);
 
         instance = this;
 
@@ -97,7 +102,7 @@ public class LibraryFragment extends Fragment
      * Update content to list 'replacing', or to root directory
      * If we are updating because going back, we should not push to back : shouldPushToBack is false
      */
-    private void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, boolean shouldPushToBack)
+    private void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, LibraryObject object, boolean shouldPushToBack)
     {
         if(replacing == null)
         {
@@ -113,6 +118,7 @@ public class LibraryFragment extends Fragment
             else return;
 
             currentType = CURRENT_TYPE.LIBRARY;
+            currentObject = null;
             //Reset backstack
             backStack = new Stack<>();
         }
@@ -120,10 +126,11 @@ public class LibraryFragment extends Fragment
         {
             //Push previous state to backStack
             if(shouldPushToBack)
-                backStack.push(new BackInformation(getTitle(), current, currentType));
+                backStack.push(new BackInformation(getTitle(), current, currentType, currentObject));
 
             current = replacing;
             currentType = type;
+            currentObject = object;
         }
 
         LibraryObjectAdapter adapter = new LibraryObjectAdapter(current, this::onMoreClicked, this::onViewClicked);
@@ -132,14 +139,14 @@ public class LibraryFragment extends Fragment
             ((MainActivity) requireActivity()).binding.appBarMain.toolbar.setTitle(title);
     }
 
-    public void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type)
+    public void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, LibraryObject currentObject)
     {
-        updateContent(title, replacing, type, true);
+        updateContent(title, replacing, type, currentObject, true);
     }
 
     private void updateContent(BackInformation backInformation)
     {
-        updateContent(backInformation.title, backInformation.list, backInformation.type, false);
+        updateContent(backInformation.title, backInformation.list, backInformation.type, backInformation.object, false);
     }
 
     private void onViewClicked(View view)
@@ -152,11 +159,11 @@ public class LibraryFragment extends Fragment
     private void onElementClicked(LibraryObject element, int position)
     {
         if(element instanceof Artist)
-            updateContent(element.getName(), ((Artist) element).getAlbums(), CURRENT_TYPE.LIBRARY);
+            updateContent(element.getName(), ((Artist) element).getAlbums(), CURRENT_TYPE.LIBRARY, element);
         else if(element instanceof Album)
-            updateContent(element.getName(), ((Album) element).getSongs(), CURRENT_TYPE.LIBRARY);
+            updateContent(element.getName(), ((Album) element).getSongs(), CURRENT_TYPE.LIBRARY, element);
         else if(element instanceof Playlist)
-            updateContent(element.getName(), ((Playlist) element).getSongs(), CURRENT_TYPE.PLAYLIST);
+            updateContent(element.getName(), ((Playlist) element).getSongs(), CURRENT_TYPE.PLAYLIST, element);
         else if(element instanceof Song)
         {
             //noinspection unchecked
@@ -180,6 +187,8 @@ public class LibraryFragment extends Fragment
         {
             popupMenu.getMenu().getItem(3).setVisible(true);
             popupMenu.getMenu().getItem(4).setVisible(true);
+            if(currentType == CURRENT_TYPE.PLAYLIST)
+                popupMenu.getMenu().getItem(5).setVisible(true);
         }
         else if(element instanceof Playlist)
         {
@@ -248,6 +257,9 @@ public class LibraryFragment extends Fragment
                 case R.id.action_manage_libraries:
                     assert element instanceof Song;
                     openManageLibrariesDialog((Song) element);
+                case R.id.action_remove_from_list:
+                    assert element instanceof Song;
+                    openRemoveFromPlaylistDialog((Song) element, (Playlist) currentObject);
             }
             return false;
         });
@@ -271,7 +283,7 @@ public class LibraryFragment extends Fragment
 
     protected void onSearch(String query)
     {
-        updateContent(getString(R.string.search), Library.search(query), CURRENT_TYPE.SEARCH);
+        updateContent(getString(R.string.search), Library.search(query), CURRENT_TYPE.SEARCH, null);
     }
 
     private void openAddToPlaylistDialog(Song toAdd)
@@ -566,6 +578,26 @@ public class LibraryFragment extends Fragment
                 .setAdapter(adapter, ((dialog, which) ->
                 {
                 }));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void openRemoveFromPlaylistDialog(Song song, Playlist playlist)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.remove_from_list)
+                .setMessage(getString(R.string.are_you_sure_remove_from_list, song.getName(), playlist.getName()))
+                .setPositiveButton(R.string.yes, (dialog, which) ->
+                {
+                    playlist.getSource().source.removeFromPlaylist(song, playlist, () ->
+                                    requireActivity().runOnUiThread(() ->
+                                            Toast.makeText(requireContext(), getString(R.string.song_removed_from_list, song.getName(), playlist.getName()), Toast.LENGTH_SHORT).show()),
+                            () -> requireActivity().runOnUiThread(() ->
+                                    Toast.makeText(requireContext(), getString(R.string.song_removed_from_list_error, song.getName(), playlist.getName()), Toast.LENGTH_SHORT).show()));
+
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
     }
