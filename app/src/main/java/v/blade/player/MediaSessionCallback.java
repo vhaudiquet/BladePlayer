@@ -105,6 +105,11 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             if(bestSource == null)
             {
                 Toast.makeText(service, service.getString(R.string.song_no_source_error), Toast.LENGTH_LONG).show();
+
+                System.out.println("Song with no ready source : " + song.getName() + " ; sources are :");
+                for(SourceInformation si : song.getSources())
+                    System.out.println(si.source.getName() + " (id " + si.id + "), source index " + si.source.getIndex() + ", status " + si.source.getStatus());
+
                 return;
             }
 

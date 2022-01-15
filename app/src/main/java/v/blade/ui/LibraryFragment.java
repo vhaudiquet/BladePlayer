@@ -297,7 +297,7 @@ public class LibraryFragment extends Fragment
 
         //Create the "new playlist" option
         Playlist dummyNew = new Playlist(getString(R.string.new_playlist), null, null, null);
-        dummyNew.setImageRequest(Picasso.get().load(R.drawable.ic_playlist));
+        dummyNew.setImageRequest(Picasso.get().load(R.drawable.ic_playlist_add));
         playlists.add(dummyNew);
 
         for(Playlist playlist : Library.getPlaylists())

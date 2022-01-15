@@ -5,6 +5,9 @@
     <!-- Start foreground service : for notifications -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- Read external storage : needed for Local source -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- Network, internet : needed for online sources -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -20,6 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BladePlayer"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="n">
         <activity
             android:name=".ui.SettingsActivity"

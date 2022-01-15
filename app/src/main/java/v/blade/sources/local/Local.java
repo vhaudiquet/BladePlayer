@@ -1,10 +1,21 @@
 package v.blade.sources.local;
 
+import android.Manifest;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContentResolverCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
@@ -12,6 +23,7 @@ import com.google.gson.JsonObject;
 
 import v.blade.BladeApplication;
 import v.blade.R;
+import v.blade.databinding.SettingsFragmentLocalBinding;
 import v.blade.library.Library;
 import v.blade.library.Playlist;
 import v.blade.library.Song;
@@ -27,6 +39,15 @@ public class Local extends Source
     {
         super();
         this.name = BladeApplication.appContext.getString(NAME_RESOURCE);
+        this.player = new LocalPlayer(this);
+    }
+
+    @Override
+    public void initSource()
+    {
+        if(!checkPermission()) return;
+
+        super.initSource();
     }
 
     @Override
@@ -66,7 +87,7 @@ public class Local extends Source
                 String album = musicCursor.getString(albumColumn);
                 long id = musicCursor.getLong(idColumn);
                 int track_number = musicCursor.getInt(trackNumberColumn);
-                Library.addSong(title, album, artists, this, id, artists, null, track_number, null, null, null);
+                Library.addSong(title, album, artists, this, id, artists, null, track_number, new String[artists.length], new String[artists.length], null);
             }
             while(musicCursor.moveToNext());
 
@@ -77,7 +98,7 @@ public class Local extends Source
     @Override
     public Fragment getSettingsFragment()
     {
-        return null;
+        return new SettingsFragment(this);
     }
 
     @Override
@@ -131,5 +152,89 @@ public class Local extends Source
     public void removeFromPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
     {
         failureCallback.run();
+    }
+
+    private boolean checkPermission()
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
+            {
+                return ContextCompat.checkSelfPermission(BladeApplication.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            }
+            else
+            {
+                //Android 11 : Scoped Storage and stuff
+                //We only request READ_EXTERNAL_STORAGE, and will only use the MediaStore API i guess
+                return ContextCompat.checkSelfPermission(BladeApplication.appContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            }
+        }
+        return true;
+    }
+
+    public static class SettingsFragment extends Fragment
+    {
+        private static final int EXT_PERM_REQUEST_CODE = 0x42;
+
+        private final Local local;
+
+        private SettingsFragmentLocalBinding binding;
+
+        private SettingsFragment(Local local)
+        {
+            super(R.layout.settings_fragment_local);
+            this.local = local;
+        }
+
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            binding = SettingsFragmentLocalBinding.inflate(inflater, container, false);
+
+            binding.settingsLocalGrantPermission.setOnClickListener(view ->
+            {
+                if(checkAndAskPermission())
+                {
+                    Toast.makeText(requireContext(), getString(R.string.permission_already_granted), Toast.LENGTH_SHORT).show();
+                    local.status = SourceStatus.STATUS_READY;
+                }
+                else if(local.checkPermission())
+                {
+                    Toast.makeText(requireContext(), getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
+                    local.status = SourceStatus.STATUS_READY;
+                }
+            });
+
+            return binding.getRoot();
+        }
+
+        private boolean checkAndAskPermission()
+        {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q)
+                {
+                    if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                    {
+                        // Request permission
+                        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXT_PERM_REQUEST_CODE);
+                        return false;
+                    }
+                }
+                else
+                {
+                    //Android 11 : Scoped Storage and stuff
+                    //We only request READ_EXTERNAL_STORAGE, and will only use the MediaStore API i guess
+                    if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                    {
+                        // Request permission
+                        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, EXT_PERM_REQUEST_CODE);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
     }
 }

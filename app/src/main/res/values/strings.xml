@@ -84,4 +84,7 @@
     <string name="song_removed_from_list">%1$s removed from playlist %2$s</string>
     <string name="song_removed_from_list_error">%1$s could not be removed from playlist %2$s</string>
     <string name="spotify_player_panic">Spotify player error, something must be wrong (internet/settings ?)</string>
+    <string name="grant_storage_permission">Grant permission to access storage</string>
+    <string name="permission_already_granted">Permission already granted</string>
+    <string name="permission_granted">Permission granted !</string>
 </resources>

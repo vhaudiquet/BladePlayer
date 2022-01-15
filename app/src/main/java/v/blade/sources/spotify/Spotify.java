@@ -676,6 +676,7 @@ public class Spotify extends Source
             this.spotify = spotify;
         }
 
+        @Override
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             binding = SettingsFragmentSpotifyBinding.inflate(inflater, container, false);

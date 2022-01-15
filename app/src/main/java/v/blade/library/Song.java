@@ -55,7 +55,7 @@ public class Song extends LibraryObject
         if(sources.size() == 0) return null;
 
         SourceInformation best = null;
-        int min = sources.size();
+        int min = Source.SOURCES.size();
         for(int i = 0; i < sources.size(); i++)
         {
             if(sources.get(i).source.getIndex() < min

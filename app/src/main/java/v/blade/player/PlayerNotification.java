@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
 import v.blade.R;
@@ -95,10 +96,10 @@ public class PlayerNotification
         else
         {
             //We can wait image loading to update notification
-            song.getBigImageRequest().into(new Target()
+            RequestCreator bigImage = song.getBigImageRequest();
+            Target target = new Target()
             {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
+                void updateEverything(Bitmap bitmap)
                 {
                     //Update mediaSession metadata
                     service.mediaSession.setMetadata(new MediaMetadataCompat.Builder()
@@ -135,15 +136,24 @@ public class PlayerNotification
                 }
 
                 @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from)
+                {
+                    updateEverything(bitmap);
+                }
+
+                @Override
                 public void onBitmapFailed(Exception e, Drawable errorDrawable)
                 {
+                    updateEverything(null);
                 }
 
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable)
                 {
                 }
-            });
+            };
+            if(bigImage != null) bigImage.into(target);
+            else target.onBitmapFailed(null, null);
         }
     }
 

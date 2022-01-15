@@ -2,11 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="v.blade">
 
-    <!-- Allows storing screenshots on external storage, where it can be accessed by ADB -->
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
-
     <!-- Allows changing locales -->
     <uses-permission
         android:name="android.permission.CHANGE_CONFIGURATION"

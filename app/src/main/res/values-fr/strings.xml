@@ -82,4 +82,7 @@
     <string name="song_removed_from_list">%1$s a été supprimé de la playlist %2$s</string>
     <string name="song_removed_from_list_error">%1$s n\'a pas pu être supprimé de la playlist %2$s</string>
     <string name="spotify_player_panic">Erreur du lecteur Spotify, vérifiez la connexion et les paramètres</string>
+    <string name="grant_storage_permission">Donner la permission d\'accéder au stockage</string>
+    <string name="permission_already_granted">Permission déjà obtenue</string>
+    <string name="permission_granted">Permission obtenue !</string>
 </resources>
