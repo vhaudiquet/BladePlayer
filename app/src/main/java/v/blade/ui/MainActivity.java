@@ -4,11 +4,13 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.session.MediaController;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -86,6 +88,23 @@ public class MainActivity extends AppCompatActivity
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        //Bind MediaBrowserService to activity
+        Intent serviceIntent = new Intent(this, MediaBrowserService.class);
+        bindService(serviceIntent, new ServiceConnection()
+        {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service)
+            {
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name)
+            {
+
+            }
+        }, 0);
 
         mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MediaBrowserService.class),
