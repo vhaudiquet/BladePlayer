@@ -23,6 +23,8 @@ devices and scenarios ; if you find an issue, open one here.
 
 - The app will open on your library, categorized as Artists, Albums, Songs, and Playlists (available
   in the navigation drawer).
+- It allows you to manage libraries for songs (add/remove from source library) and playlists (
+  add/remove from playlist, create/remove playlists)
 - It supports Android 'dark theme' (the screenshots above are done on a dark themed system).
 - It is completely free (there are no ads, no limited version)
 - It caches the library locally, so launching Blade requires virtually no data (only refreshing
@@ -30,6 +32,12 @@ devices and scenarios ; if you find an issue, open one here.
 - The search feature allows you to search the local library instantly
 - The "explore" mode allows you to search and browse sources for new music (for example search all
   Spotify and look for new releases)
+
+<div align="center" style="text-align: center;">
+  <img src="https://valou3433.fr/bladef0.png" width="200" style="max-width: 350;"/>
+  <img src="https://valou3433.fr/bladef1.png" width="200" style="max-width: 350;"/>
+  <img src="https://valou3433.fr/bladef2.png" width="200" style="max-width: 350;"/>
+</div>
 
 ### Supported services (music sources)
 

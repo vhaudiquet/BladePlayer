@@ -251,15 +251,19 @@ public class LibraryFragment extends Fragment
                 case R.id.action_add_to_list:
                     assert element instanceof Song;
                     openAddToPlaylistDialog((Song) element);
+                    return true;
                 case R.id.action_remove_from_library:
                     assert element instanceof Playlist;
                     openDeletePlaylistDialog((Playlist) element);
+                    return true;
                 case R.id.action_manage_libraries:
                     assert element instanceof Song;
                     openManageLibrariesDialog((Song) element);
+                    return true;
                 case R.id.action_remove_from_list:
                     assert element instanceof Song;
                     openRemoveFromPlaylistDialog((Song) element, (Playlist) currentObject);
+                    return true;
             }
             return false;
         });
