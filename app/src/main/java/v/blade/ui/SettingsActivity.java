@@ -237,8 +237,9 @@ public class SettingsActivity extends AppCompatActivity implements
                         viewHolder.subtitleView.setText(current.getField("DESCRIPTION_RESOURCE").getInt(null));
                         viewHolder.imageView.setImageResource(current.getField("IMAGE_RESOURCE").getInt(null));
                     }
-                    catch(IllegalAccessException | NoSuchFieldException ignored)
+                    catch(IllegalAccessException | NoSuchFieldException e)
                     {
+                        e.printStackTrace();
                     }
                 }
 

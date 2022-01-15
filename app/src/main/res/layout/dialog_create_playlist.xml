@@ -16,7 +16,7 @@
         android:layout_margin="10dp"
         android:hint="@string/name"
         android:imeOptions="actionDone"
-        android:autofillHints="name"
+        android:autofillHints=""
         android:inputType="text"
         android:id="@+id/playlist_name" />
 

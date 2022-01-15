@@ -41,6 +41,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import v.blade.BladeApplication;
+import v.blade.BuildConfig;
 import v.blade.R;
 import v.blade.databinding.SettingsFragmentSpotifyBinding;
 import v.blade.library.Library;
@@ -71,9 +72,9 @@ public class Spotify extends Source
     //Spotify AUTH : We are using 'Authorization Code Flow' with 'PKCE extension'
     private static final String BASE_API_URL = "https://api.spotify.com/v1/";
     private static final String AUTH_TYPE = "Bearer ";
-    private static final String CLIENT_ID = "048adc76814146e7bb049d89813bd6e0";
+    private static final String CLIENT_ID = BuildConfig.SPOTIFY_CLIENT_ID;
     //This should not be exposed, but i have no other choice, as the Spotify app does not seem to support PKCE
-    private static final String CLIENT_SECRET = "854982b95dc04100a2009ebb8a8df758";
+    private static final String CLIENT_SECRET = BuildConfig.SPOTIFY_CLIENT_SECRET;
     protected static final String[] SCOPES = {"app-remote-control", "streaming", "playlist-modify-public", "playlist-modify-private", "playlist-read-private", "playlist-read-collaborative", "user-follow-modify", "user-follow-read", "user-library-modify", "user-library-read", "user-read-email", "user-read-private",
             "user-read-recently-played", "user-top-read", "user-read-playback-position", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing"};
     private static final int SPOTIFY_REQUEST_CODE = 0x11;
@@ -147,14 +148,11 @@ public class Spotify extends Source
         okhttp3.Call call = client.newCall(request);
         BladeApplication.obtainExecutorService().execute(() ->
         {
-            //Prepare a looper so that we can toast
-            Looper.prepare();
-
             //First init the player
             boolean login = ((SpotifyPlayer) player).login(account_login, account_password);
             if(!login)
             {
-                Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not login)", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not login)", Toast.LENGTH_SHORT).show();
                 System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not login)");
                 status = SourceStatus.STATUS_NEED_INIT;
                 return;
@@ -169,7 +167,7 @@ public class Spotify extends Source
                 {
                     //noinspection ConstantConditions
                     String responseBody = response.body() == null ? "Unknown error" : response.body().string();
-                    Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
                     System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")");
                     status = SourceStatus.STATUS_NEED_INIT;
                     return;
@@ -181,7 +179,7 @@ public class Spotify extends Source
                 SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
                 if(sr == null)
                 {
-                    Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
                     System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (Could not parse JSON Token)");
                     status = SourceStatus.STATUS_NEED_INIT;
                     return;
@@ -202,7 +200,7 @@ public class Spotify extends Source
             catch(IOException e)
             {
                 status = SourceStatus.STATUS_NEED_INIT;
-                Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (IOException trying to obtain token)", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (IOException trying to obtain token)", Toast.LENGTH_SHORT).show();
                 System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (IOException trying to obtain token)");
             }
         });
@@ -822,6 +820,7 @@ public class Spotify extends Source
 
             if(response.getError() != null && !response.getError().isEmpty())
             {
+                System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (" + response.getError() + ")");
                 Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + response.getError() + ")", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -864,6 +863,7 @@ public class Spotify extends Source
                     SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
                     if(sr == null)
                     {
+                        System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (Could not parse JSON Token)");
                         Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -874,37 +874,49 @@ public class Spotify extends Source
                     spotify.TOKEN_EXPIRES_IN = sr.expires_in;
                     spotify.AUTH_STRING = AUTH_TYPE + spotify.ACCESS_TOKEN;
 
-                    //init and set status
+                    //init
                     spotify.retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).addConverterFactory(GsonConverterFactory.create()).build();
                     spotify.service = spotify.retrofit.create(SpotifyService.class);
-                    spotify.status = SourceStatus.STATUS_READY;
 
                     //obtain account name and id
-                    SpotifyService.UserInformationObject user = spotify.service.getUser(spotify.AUTH_STRING).execute().body();
+                    System.out.println("BLADE-SPOTIFY: AUTH_STRING=" + spotify.AUTH_STRING);
+                    Response<SpotifyService.UserInformationObject> userResponse = spotify.service.getUser(spotify.AUTH_STRING).execute();
+                    SpotifyService.UserInformationObject user = userResponse.body();
                     if(user == null)
                     {
+                        //noinspection ConstantConditions
+                        System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (Could not obtain user ID : " + userResponse.code() + " : " + userResponse.errorBody().string() + ")");
                         Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not obtain user ID)", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    String accountName = (user.display_name == null ? "null" : user.display_name);
-                    spotify.account_name = accountName;
+                    if(user.display_name == null || user.id == null)
+                    {
+                        System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (Could user ID null : " + userResponse.code() + ")");
+                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (User ID is null ???)", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    spotify.account_name = user.display_name;
                     spotify.user_id = user.id;
 
                     //Re-set status and account textboxes
+                    spotify.status = SourceStatus.STATUS_READY;
                     requireActivity().runOnUiThread(() ->
                     {
                         binding.settingsSpotifyStatus.setText(R.string.source_ready_desc);
-                        binding.settingsSpotifyAccount.setText(accountName);
+                        binding.settingsSpotifyAccount.setText(user.display_name);
                         binding.settingsSpotifyAccount.setTextColor(getResources().getColor(R.color.okGreen));
                     });
 
                     //Re-Save all sources
                     //this is 'scheduleSave' after library Sync
-                    Toast.makeText(BladeApplication.appContext, R.string.please_sync_to_apply, Toast.LENGTH_LONG).show();
+                    Toast.makeText(requireContext(), R.string.please_sync_to_apply, Toast.LENGTH_LONG).show();
+                    System.out.println("BLADE-SPOTIFY: Added source Spotify");
                 }
                 catch(IOException e)
                 {
-                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (IOException trying to obtain tokens)", Toast.LENGTH_SHORT).show();
+                    System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (IOException trying to obtain tokens)");
+                    Toast.makeText(requireContext(), getString(R.string.auth_error) + " (IOException trying to obtain tokens)", Toast.LENGTH_SHORT).show();
                 }
             });
         }

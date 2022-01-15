@@ -6,8 +6,6 @@ import com.squareup.picasso.RequestCreator;
 import java.util.ArrayList;
 import java.util.List;
 
-import v.blade.R;
-
 public class Album extends LibraryObject
 {
     Artist[] artists;
@@ -62,7 +60,7 @@ public class Album extends LibraryObject
         this.imageStr = imageMiniature;
         this.imageBigStr = imageBig;
         this.imageLevel = imageLevel;
-        this.imageBig = (imageBig == null || imageBig.equals("")) ? null : Picasso.get().load(imageBig).placeholder(R.drawable.ic_album);
-        this.imageRequest = (imageMiniature == null || imageMiniature.equals("")) ? null : Picasso.get().load(imageMiniature).placeholder(R.drawable.ic_album);
+        this.imageBig = (imageBig == null || imageBig.equals("")) ? null : Picasso.get().load(imageBig);
+        this.imageRequest = (imageMiniature == null || imageMiniature.equals("")) ? null : Picasso.get().load(imageMiniature);
     }
 }

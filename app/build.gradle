@@ -27,13 +27,21 @@ android {
     }
 
     buildTypes {
-        debug {
-        }
         release {
+            buildConfigField 'String', 'SPOTIFY_CLIENT_ID', '\"2f95bc7168584e7aa67697418a684bae\"'
+            buildConfigField 'String', 'SPOTIFY_CLIENT_SECRET', '\"3166d3b40ff74582b03cb23d6701c297\"'
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            /* Note : these are MY Spotify debug app settings, you should change that if you want debug builds to work with Spotify
+            * Later, if more people work on the project, those 2 variables should be passed via command-line for debug builds */
+            buildConfigField 'String', 'SPOTIFY_CLIENT_ID', '\"048adc76814146e7bb049d89813bd6e0\"'
+            buildConfigField 'String', 'SPOTIFY_CLIENT_SECRET', '\"854982b95dc04100a2009ebb8a8df758\"'
+            debuggable true
         }
     }
     compileOptions {

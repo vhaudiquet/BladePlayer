@@ -9,6 +9,14 @@
 # them using reflection : we need their class to stay
 # the same
 -keep public class * extends v.blade.sources.Source
+-keepclassmembers public class * extends v.blade.sources.Source
+{
+    public static final int NAME_RESOURCE;
+    public static final int DESCRIPTION_RESOURCE;
+    public static final int IMAGE_RESOURCE;
+}
+-keep class v.blade.sources.spotify.Spotify$SpotifyTokenResponse {*;}
+-keep class v.blade.sources.spotify.SpotifyService$* {*;}
 
 # The spotify librespot player needs an 'output class'
 # for it's audio output ; we need to keep that
