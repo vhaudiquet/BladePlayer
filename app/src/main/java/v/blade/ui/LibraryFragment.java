@@ -561,7 +561,10 @@ public class LibraryFragment extends Fragment
                                         requireActivity().runOnUiThread(() ->
                                                 Toast.makeText(view.getContext(), getString(R.string.song_added_to_library, song.getName()), Toast.LENGTH_SHORT).show()),
                                 () -> requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(view.getContext(), getString(R.string.song_added_to_library_error, song.getName()), Toast.LENGTH_SHORT).show()));
+                                {
+                                    Toast.makeText(view.getContext(), getString(R.string.song_added_to_library_error, song.getName()), Toast.LENGTH_SHORT).show();
+                                    viewHolder.switchView.setChecked(false);
+                                }));
                     }
                     else
                     {
@@ -569,7 +572,10 @@ public class LibraryFragment extends Fragment
                                         requireActivity().runOnUiThread(() ->
                                                 Toast.makeText(view.getContext(), getString(R.string.song_removed_from_library, song.getName()), Toast.LENGTH_SHORT).show()),
                                 () -> requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(view.getContext(), getString(R.string.song_removed_from_library_error, song.getName()), Toast.LENGTH_SHORT).show()));
+                                {
+                                    Toast.makeText(view.getContext(), getString(R.string.song_removed_from_library_error, song.getName()), Toast.LENGTH_SHORT).show();
+                                    viewHolder.switchView.setChecked(true);
+                                }));
                     }
                 });
 

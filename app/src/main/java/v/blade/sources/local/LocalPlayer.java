@@ -72,7 +72,7 @@ public class LocalPlayer extends Source.Player
             mediaPlayer.prepare();
             play();
         }
-        catch(IOException e)
+        catch(IOException | IllegalStateException e)
         {
             e.printStackTrace();
         }
@@ -93,7 +93,14 @@ public class LocalPlayer extends Source.Player
     @Override
     public long getDuration()
     {
-        return mediaPlayer.getDuration();
+        try
+        {
+            return mediaPlayer.getDuration();
+        }
+        catch(IllegalStateException e)
+        {
+            return 0;
+        }
     }
 
     @Override
