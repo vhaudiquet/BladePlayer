@@ -37,7 +37,7 @@ public class Dialogs
         ArrayList<Playlist> playlists = new ArrayList<>();
 
         //Create the "new playlist" option
-        Playlist dummyNew = new Playlist(context.getString(R.string.new_playlist), null, null, null);
+        Playlist dummyNew = new Playlist(context.getString(R.string.new_playlist), null, null, null, null);
         dummyNew.setImageRequest(Picasso.get().load(R.drawable.ic_playlist_add));
         playlists.add(dummyNew);
 

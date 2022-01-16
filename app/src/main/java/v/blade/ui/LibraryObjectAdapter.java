@@ -210,9 +210,12 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         {
             if(((Playlist) current).getSongs() != null)
             {
-                String playlistTrackCount = ((Playlist) current).getSongs().size() + " " +
+                String subtitle = ((Playlist) current).getSongs().size() + " " +
                         viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
-                viewHolder.subtitleView.setText(playlistTrackCount);
+                if(((Playlist) current).getSubtitle() != null && !((Playlist) current).getSubtitle().equals(""))
+                    subtitle += (" \u00B7 " + ((Playlist) current).getSubtitle());
+
+                viewHolder.subtitleView.setText(subtitle);
             }
             else viewHolder.subtitleView.setText("");
         }

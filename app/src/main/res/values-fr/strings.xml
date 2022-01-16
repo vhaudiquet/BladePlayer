@@ -85,4 +85,5 @@
     <string name="grant_storage_permission">Donner la permission d\'accéder au stockage</string>
     <string name="permission_already_granted">Permission déjà obtenue</string>
     <string name="permission_granted">Permission obtenue !</string>
+    <string name="collaborative">Collaborative</string>
 </resources>

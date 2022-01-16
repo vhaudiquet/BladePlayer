@@ -10,14 +10,16 @@ public class Playlist extends LibraryObject
 {
     final List<Song> songs;
     private final SourceInformation sourceInformation;
+    private final String playlistSubtitle;
 
-    public Playlist(String name, List<Song> songList, String image, SourceInformation sourceInformation)
+    public Playlist(String name, List<Song> songList, String image, String subtitle, SourceInformation sourceInformation)
     {
         this.name = name;
         this.imageStr = image;
         this.imageRequest = (image == null || image.equals("")) ? null : Picasso.get().load(image);
         this.songs = songList;
         this.sourceInformation = sourceInformation;
+        this.playlistSubtitle = subtitle;
     }
 
     public SourceInformation getSource()
@@ -28,5 +30,10 @@ public class Playlist extends LibraryObject
     public List<Song> getSongs()
     {
         return songs;
+    }
+
+    public String getSubtitle()
+    {
+        return playlistSubtitle;
     }
 }

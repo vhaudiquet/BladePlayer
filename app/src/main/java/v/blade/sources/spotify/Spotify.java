@@ -438,6 +438,8 @@ public class Spotify extends Source
                     Library.addPlaylist(playlist.name, songList,
                             playlist.images.length == 0 ? null :
                                     (playlist.images[0] == null ? null : playlist.images[0].url),
+                            (playlist.collaborative ? (BladeApplication.appContext.getString(R.string.collaborative) + " - ") : "") +
+                                    (playlist.owner.id.equals(user_id) ? "" : playlist.owner.display_name),
                             this, playlist.id);
                 }
 
@@ -580,7 +582,7 @@ public class Spotify extends Source
                 }
 
                 //Create playlist locally
-                Playlist playlist = Library.addPlaylist(name, new ArrayList<>(), null, this, r.id);
+                Playlist playlist = Library.addPlaylist(name, new ArrayList<>(), null, "", this, r.id);
 
                 //Save library
                 Library.save();

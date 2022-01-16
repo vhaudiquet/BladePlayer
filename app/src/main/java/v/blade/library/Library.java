@@ -313,9 +313,9 @@ public class Library
         library_songs.remove(song.getArtists()[0].getName().toLowerCase() + ":" + song.getAlbum().getName().toLowerCase() + ":" + song.getName().toLowerCase());
     }
 
-    public static synchronized Playlist addPlaylist(String title, List<Song> songList, String imageMiniatureUrl, Source source, Object id)
+    public static synchronized Playlist addPlaylist(String title, List<Song> songList, String imageMiniatureUrl, String subtitle, Source source, Object id)
     {
-        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl, new SourceInformation(source, id, false));
+        Playlist playlist = new Playlist(title, songList, imageMiniatureUrl, subtitle, new SourceInformation(source, id, false));
         library_playlists.add(playlist);
         return playlist;
     }
@@ -355,12 +355,13 @@ public class Library
         songs_list = new ArrayList<>(library_songs.values());
         Collections.sort(songs_list, (song, t1) -> song.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
 
+        //sort playlists alphabetically
+        Collections.sort(library_playlists, (playlist, t1) -> playlist.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
+
         //NotifyDatasetChanged for mainListView actualization
         if(LibraryFragment.instance != null)
             LibraryFragment.instance.requireActivity().runOnUiThread(() ->
                     LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null, LibraryFragment.CURRENT_TYPE.LIBRARY, null));
-
-        //TODO : maybe sort playlists ??
 
         for(Album album : albums_list)
             Collections.sort(album.songList, (o1, o2) -> o1.track_number - o2.track_number);
@@ -394,6 +395,7 @@ public class Library
 
             playlistJson.addProperty("name", playlist.getName());
             playlistJson.addProperty("art", playlist.imageStr);
+            playlistJson.addProperty("subtitle", playlist.getSubtitle());
 
             JsonArray playlistSongs = new JsonArray();
             for(Song s : playlist.getSongs()) playlistSongs.add(songJson(s, gson));
@@ -510,8 +512,17 @@ public class Library
                 {
                     art = null;
                 }
+                String subtitle;
+                try
+                {
+                    subtitle = p.getString("subtitle");
+                }
+                catch(JSONException noSubtitle)
+                {
+                    subtitle = "";
+                }
 
-                addPlaylist(p.getString("name"), songList, art,
+                addPlaylist(p.getString("name"), songList, art, subtitle,
                         Source.SOURCES.get(p.getInt("source")),
                         p.get("id"));
             }
