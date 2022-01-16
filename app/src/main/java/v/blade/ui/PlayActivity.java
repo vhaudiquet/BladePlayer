@@ -1,5 +1,6 @@
 package v.blade.ui;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -15,6 +16,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
@@ -31,6 +33,7 @@ import java.util.TimerTask;
 
 import v.blade.R;
 import v.blade.databinding.ActivityPlayBinding;
+import v.blade.library.Song;
 import v.blade.player.MediaBrowserService;
 
 public class PlayActivity extends AppCompatActivity
@@ -40,6 +43,8 @@ public class PlayActivity extends AppCompatActivity
     private MediaControllerCompat.Callback mediaControllerCallback;
     private boolean showingPlaylist = false;
 
+    //TODO : maybe fix that ? switch on something else ?
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -63,6 +68,30 @@ public class PlayActivity extends AppCompatActivity
             }
 
             showingPlaylist = !showingPlaylist;
+        });
+
+        //Set more button action
+        binding.playMore.setOnClickListener(view ->
+        {
+            PopupMenu popupMenu = new PopupMenu(this, view);
+            popupMenu.inflate(R.menu.currentplay_more);
+
+            popupMenu.setOnMenuItemClickListener(item ->
+            {
+                Song current = MediaBrowserService.getInstance().getPlaylist().get(MediaBrowserService.getInstance().getIndex());
+
+                switch(item.getItemId())
+                {
+                    case R.id.action_add_to_list:
+                        Dialogs.openAddToPlaylistDialog(this, current);
+                        return true;
+                    case R.id.action_manage_libraries:
+                        Dialogs.openManageLibrariesDialog(this, current);
+                        return true;
+                }
+                return false;
+            });
+            popupMenu.show();
         });
 
         //Set play button action
