@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -23,14 +23,28 @@ jobs:
       - name: Restore Blade keystore (for app signing)
         run: |
           echo "${{ secrets.BLADE_KEYSTORE }}" > blade-keystore.b64
-          base64 -d blade-keystore.b64 --output blade-keystore.jks
+          base64 -d blade-keystore.b64 > blade-keystore.jks
 
       - name: Restore debug keystore (for debug configurations)
         run: |
           echo "${{ secrets.DEBUG_KEYSTORE }}" > debug.b64
-          base64 -d debug.b64 --output ~/.android/debug.keystore
+          base64 -d debug.b64 > ~/.android/debug.keystore
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build -PreleaseStorePassword=${{ secrets.RELEASE_STORE_PASSWORD }} -PreleaseKeyPassword=${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      - name: Run (Android) instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            ./gradlew installDebug
+            ./gradlew installDebugAndroidTest
+            adb shell am instrument -w -m -e spotify_user ${{ secrets.SPOTIFY_USER }} -e spotify_password ${{ secrets.SPOTIFY_PASSWORD }} -e debug false v.blade.test/androidx.test.runner.AndroidJUnitRunner > log
+            cat log
+            "if grep -q "FAILURES" log; then\n false\n fi"
