@@ -206,6 +206,62 @@ public class Spotify extends Source
         });
     }
 
+    private void refreshAccessTokenSync()
+    {
+        //build retrofit client
+        retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        service = retrofit.create(SpotifyService.class);
+
+        //refresh access token
+        System.out.println("BLADE-SPOTIFY: Refresh token " + REFRESH_TOKEN);
+        OkHttpClient client = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder()
+                .add("grant_type", "refresh_token")
+                .add("refresh_token", REFRESH_TOKEN)
+                .add("client_id", CLIENT_ID)
+                .add("client_secret", CLIENT_SECRET)
+                .build();
+        Request request = new Request.Builder().url("https://accounts.spotify.com/api/token")
+                .post(requestBody).build();
+        okhttp3.Call call = client.newCall(request);
+        try
+        {
+            okhttp3.Response response = call.execute();
+            if(!response.isSuccessful() || response.code() != 200 || response.body() == null)
+            {
+                //noinspection ConstantConditions
+                String responseBody = response.body() == null ? "Unknown error" : response.body().string();
+                System.err.println("BLADE-SPOTIFY: Could not refresh token" + " (" + response.code() + " : " + responseBody + ")");
+                return;
+            }
+
+            Gson gson = new Gson();
+            //noinspection ConstantConditions
+            String rstring = response.body().string();
+            SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
+            if(sr == null)
+            {
+                System.err.println("BLADE-SPOTIFY: Could not refresh token" + " (Could not parse JSON Token)");
+                return;
+            }
+
+            ACCESS_TOKEN = sr.access_token;
+            TOKEN_EXPIRES_IN = sr.expires_in;
+
+            if(sr.refresh_token != null && !sr.refresh_token.equals(""))
+                REFRESH_TOKEN = sr.refresh_token;
+
+            AUTH_STRING = AUTH_TYPE + ACCESS_TOKEN;
+
+            Source.saveSources();
+        }
+        catch(IOException e)
+        {
+            status = SourceStatus.STATUS_NEED_INIT;
+            System.err.println("BLADE-SPOTIFY: Could not refresh access token (IOException trying to obtain token)");
+        }
+    }
+
     @Override
     public void synchronizeLibrary()
     {
@@ -220,6 +276,14 @@ public class Spotify extends Source
                         service.getUserSavedTracks(AUTH_STRING, 50, tracksIndex * 50);
                 Response<SpotifyService.PagingObject<SpotifyService.SavedTrackObject>> response =
                         userTracks.execute();
+
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    synchronizeLibrary();
+                    return;
+                }
 
                 if(response.code() != 200 || response.body() == null) break;
                 SpotifyService.PagingObject<SpotifyService.SavedTrackObject> trackPaging = response.body();
@@ -459,6 +523,14 @@ public class Spotify extends Source
             {
                 Response<SpotifyService.PlaylistAddResponse> response = call.execute();
 
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    addSongToPlaylist(song, playlist, callback, failureCallback);
+                    return;
+                }
+
                 if(response.code() != 201)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not add " + song.getName() + " to playlist " + playlist.getName() + " : " + response.code());
@@ -492,6 +564,14 @@ public class Spotify extends Source
             {
                 Response<SpotifyService.SimplifiedPlaylistObject> response = call.execute();
                 SpotifyService.SimplifiedPlaylistObject r = response.body();
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    createPlaylist(name, callback, failureCallback);
+                    return;
+                }
+
                 if(response.code() != 201 || r == null)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not create playlist " + name + " : " + response.code());
@@ -526,6 +606,13 @@ public class Spotify extends Source
             try
             {
                 Response<Void> response = call.execute();
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    removePlaylist(playlist, callback, failureCallback);
+                    return;
+                }
                 if(response.code() != 200)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not delete playlist " + playlist.getName() + " : " + response.code());
@@ -563,6 +650,13 @@ public class Spotify extends Source
             try
             {
                 Response<Void> response = call.execute();
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    addToLibrary(song, callback, failureCallback);
+                    return;
+                }
                 if(response.code() != 200)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not save song " + song.getName() + " : " + response.code());
@@ -600,6 +694,13 @@ public class Spotify extends Source
             try
             {
                 Response<Void> response = call.execute();
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    removeFromLibrary(song, callback, failureCallback);
+                    return;
+                }
                 if(response.code() != 200)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not remove song " + song.getName() + " : " + response.code());
@@ -647,6 +748,13 @@ public class Spotify extends Source
                 Call<SpotifyService.PlaylistAddResponse> call = service.removePlaylistItem(AUTH_STRING, (String) playlist.getSource().id, body);
 
                 Response<SpotifyService.PlaylistAddResponse> response = call.execute();
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    removeFromPlaylist(song, playlist, callback, failureCallback);
+                    return;
+                }
                 if(response.code() != 200)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not remove " + song.getName() + " from playlist " + playlist.getName() + " : " + response.code());
