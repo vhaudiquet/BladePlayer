@@ -29,9 +29,12 @@ devices and scenarios ; if you find an issue, open one here.
 - It is completely free (there are no ads, no limited version)
 - It caches the library locally, so launching Blade requires virtually no data (only refreshing
   tokens and status of sources servers)
+- **(TODO)** It has a 'data saving' mode that allows you to listen to music while consuming very low
+  mobile data (by not loading album arts)
 - The search feature allows you to search the local library instantly
-- The "explore" mode allows you to search and browse sources for new music (for example search all
-  Spotify and look for new releases)
+- **(TODO)** The "explore" mode allows you to search and browse sources for new music (for example
+  search all Spotify and look for new releases)
+- It has a layout that can adapt for tablet users (landscape layout)
 
 <div align="center" style="text-align: center;">
   <img src="https://valou3433.fr/bladef0.png" width="200" style="max-width: 350;"/>
@@ -65,6 +68,16 @@ goes to [Spotify] servers.
 
 Special thanks to the people at [librespot-org] and [librespot-java] ; without them, Spotify support
 would not have been possible.
+
+## Future updates
+
+New features and bug fixes or improvements are coming. Here is a list of what i want to implement :
+
+- SPOTIFY: Use Android Native Decoders, and/or libtremolo if native decoder not present
+- UI: Show albums in an 'album view' instead of a list
+- Add new services : SoundCloud, YouTube Music, Amazon Music, Tidal, WebDAV/FTP Servers...
+- UI/CORE: Add a way to explore web sources for new content (cf. 'explore' mode above)
+- CORE: 'Blade' playlists, that can contain song from all sources
 
 ## Contributing
 
