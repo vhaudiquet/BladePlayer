@@ -61,6 +61,7 @@ public class Local extends Source
     @Override
     public void synchronizeLibrary()
     {
+        //Obtain library
         ContentResolver contentResolver = BladeApplication.appContext.getContentResolver();
         Cursor musicCursor = ContentResolverCompat.query(contentResolver,
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
@@ -101,6 +102,9 @@ public class Local extends Source
 
             musicCursor.close();
         }
+
+        //Obtain playlists
+
     }
 
     @Override
