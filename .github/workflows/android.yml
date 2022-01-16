@@ -28,6 +28,7 @@ jobs:
       - name: Restore debug keystore (for debug configurations)
         run: |
           echo "${{ secrets.DEBUG_KEYSTORE }}" > debug.b64
+          mkdir ~/.android
           base64 -d debug.b64 > ~/.android/debug.keystore
 
       - name: Grant execute permission for gradlew
