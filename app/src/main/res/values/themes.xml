@@ -14,6 +14,8 @@
 
         <!-- Window background : color shown during loading -->
         <item name="android:windowBackground">@color/bladeGreyLighter</item>
+
+        <item name="colorControlActivated">@color/bladeGreyLight</item>
     </style>
 
     <style name="Theme.BladePlayer.NoActionBar">

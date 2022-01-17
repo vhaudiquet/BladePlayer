@@ -359,7 +359,7 @@ public class Library
         Collections.sort(library_playlists, (playlist, t1) -> playlist.getName().toLowerCase().compareTo(t1.getName().toLowerCase()));
 
         //NotifyDatasetChanged for mainListView actualization
-        if(LibraryFragment.instance != null)
+        if(LibraryFragment.instance != null && LibraryFragment.instance.getActivity() != null)
             LibraryFragment.instance.requireActivity().runOnUiThread(() ->
                     LibraryFragment.instance.updateContent(LibraryFragment.instance.getTitle(), null, LibraryFragment.CURRENT_TYPE.LIBRARY, null));
 
