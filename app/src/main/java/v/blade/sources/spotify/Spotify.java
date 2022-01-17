@@ -145,6 +145,7 @@ public class Spotify extends Source
         okhttp3.Call call = client.newCall(request);
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            System.out.println("BLADE-SPOTIFY: Player is logging in...");
             //First init the player
             boolean login = ((SpotifyPlayer) player).login(account_login, account_password);
             if(!login)
@@ -154,11 +155,14 @@ public class Spotify extends Source
                 status = SourceStatus.STATUS_NEED_INIT;
                 return;
             }
+            System.out.println("BLADE-SPOTIFY: Player logged in, initializing...");
             player.init();
 
             //Then init
             try
             {
+                System.out.println("BLADE-SPOTIFY: Initializing API, refreshing token...");
+
                 okhttp3.Response response = call.execute();
                 if(!response.isSuccessful() || response.code() != 200 || response.body() == null)
                 {
@@ -193,6 +197,7 @@ public class Spotify extends Source
                 status = SourceStatus.STATUS_READY;
 
                 Source.saveSources();
+                System.out.println("BLADE-SPOTIFY: Spotify initialized");
             }
             catch(IOException e)
             {

@@ -245,16 +245,6 @@ public class SpotifyPlayer extends Source.Player
                 isLoading = false;
             }
         });
-
-        try
-        {
-            spotifyPlayer.get().waitReady();
-        }
-        catch(InterruptedException e)
-        {
-            System.out.println("BLADE-SPOTIFY: Could not wait for player readiness");
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -326,7 +316,14 @@ public class SpotifyPlayer extends Source.Player
         {
             isLoading = false;
             System.err.println("BLADE-SPOTIFY: Player was not ready");
+            ContextCompat.getMainExecutor(MediaBrowserService.getInstance()).execute(() ->
+                    Toast.makeText(MediaBrowserService.getInstance(),
+                            MediaBrowserService.getInstance().getString(R.string.player_not_ready,
+                                    MediaBrowserService.getInstance().getString(Spotify.NAME_RESOURCE)), Toast.LENGTH_SHORT).show());
             MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
+
+            //ready ; does that 'try to make ready' the player ?
+            spotifyPlayer.get().ready();
         }
     }
 

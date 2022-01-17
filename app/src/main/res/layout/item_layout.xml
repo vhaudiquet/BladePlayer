@@ -13,23 +13,27 @@
 
     <TextView
         android:id="@+id/item_element_title"
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textSize="18sp"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@id/item_element_image"
+        android:layout_toStartOf="@id/item_element_more"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:singleLine="true" />
 
     <TextView
         android:id="@+id/item_element_subtitle"
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         android:layout_below="@id/item_element_title"
         android:layout_toEndOf="@id/item_element_image"
+        android:layout_toStartOf="@id/item_element_more"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:singleLine="true" />
 
     <ImageView

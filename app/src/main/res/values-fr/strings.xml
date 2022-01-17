@@ -86,4 +86,5 @@
     <string name="permission_already_granted">Permission déjà obtenue</string>
     <string name="permission_granted">Permission obtenue !</string>
     <string name="collaborative">Collaborative</string>
+    <string name="player_not_ready">Le lecteur %1$s n\'est pas prêt</string>
 </resources>
