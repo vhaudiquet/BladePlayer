@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -68,9 +69,9 @@ public class SpotifyPlayer extends Source.Player
                 //NOTE : this seems to fix https://github.com/librespot-org/librespot-java/issues/447,
                 // but it is a bad fix ; TODO find a better fix catching the interrupted timeout exception ?
                 .setConnectionTimeout(-1)
-
                 .setStoreCredentials(false)
-                .setCacheEnabled(false) //TODO : why do we disable cache ? what cache does this exactly controls ? song cache ? we may want that...
+                .setCacheEnabled(true) //TODO : what cache does this exactly controls ? song cache ?
+                .setCacheDir(new File(BladeApplication.appContext.getCacheDir().getAbsolutePath() + "/spotify-librespot-cache"))
                 .build();
 
         String deviceName = null;

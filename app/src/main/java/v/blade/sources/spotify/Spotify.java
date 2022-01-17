@@ -2,7 +2,6 @@ package v.blade.sources.spotify;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -822,87 +819,76 @@ public class Spotify extends Source
 
             //Set 'sign in' button action : call spotify auth
             binding.settingsSpotifySignIn.setOnClickListener(v ->
-            {
-                //Try to login player
-                String userName = binding.settingsSpotifyUser.getText().toString();
-                String userPass = binding.settingsSpotifyPassword.getText().toString();
+                    BladeApplication.obtainExecutorService().execute(() ->
+                    {
+                        //Try to login player
+                        String userName = binding.settingsSpotifyUser.getText().toString();
+                        String userPass = binding.settingsSpotifyPassword.getText().toString();
 
-                Future<Boolean> future = BladeApplication.obtainExecutorService().submit(() ->
-                        ((SpotifyPlayer) spotify.getPlayer()).login(userName, userPass));
+                        boolean login = ((SpotifyPlayer) spotify.getPlayer()).login(userName, userPass);
+                        if(!login)
+                        {
+                            requireActivity().runOnUiThread(() ->
+                                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not log in)", Toast.LENGTH_SHORT).show());
+                            return;
+                        }
 
-                boolean login;
-                try
-                {
-                    login = future.get();
-                }
-                catch(ExecutionException | InterruptedException e)
-                {
-                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not log in, interrupted, maybe try again)", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                    return;
-                }
+                        spotify.getPlayer().init();
+                        spotify.account_login = userName;
+                        spotify.account_password = userPass;
 
-                if(!login)
-                {
-                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not log in)", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                    /* PKCE: not supported by Spotify app
+                    //Generate random code for PKCE
+                    int codeLen = Random.Default.nextInt(43, 128);
 
-                spotify.getPlayer().init();
-                spotify.account_login = userName;
-                spotify.account_password = userPass;
+                    byte leftLimit = 97; // letter 'a'
+                    byte rightLimit = 122; // letter 'z'
+                    byte[] randomCode = new byte[codeLen];
+                    for(int i = 0; i < codeLen; i++)
+                        randomCode[i] = (byte) Random.Default.nextInt(leftLimit, rightLimit + 1);
 
-                /* PKCE: not supported by Spotify app
-                //Generate random code for PKCE
-                int codeLen = Random.Default.nextInt(43, 128);
+                    codeVerifier = new String(randomCode, StandardCharsets.US_ASCII);
+                    MessageDigest digest;
+                    try
+                    {
+                        digest = MessageDigest.getInstance("SHA-256");
+                    }
+                    catch(NoSuchAlgorithmException e)
+                    {
+                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (Cannot calculate SHA256 Hash)", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                byte leftLimit = 97; // letter 'a'
-                byte rightLimit = 122; // letter 'z'
-                byte[] randomCode = new byte[codeLen];
-                for(int i = 0; i < codeLen; i++)
-                    randomCode[i] = (byte) Random.Default.nextInt(leftLimit, rightLimit + 1);
+                    digest.reset();
+                    byte[] code = digest.digest(randomCode);
 
-                codeVerifier = new String(randomCode, StandardCharsets.US_ASCII);
-                MessageDigest digest;
-                try
-                {
-                    digest = MessageDigest.getInstance("SHA-256");
-                }
-                catch(NoSuchAlgorithmException e)
-                {
-                    Toast.makeText(getContext(), getString(R.string.auth_error) + " (Cannot calculate SHA256 Hash)", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                    String base64code = Base64.encodeToString(code, Base64.URL_SAFE);
+                    //Remove trailing '=', '\n', ...
+                    int index;
+                    for(index = base64code.length() - 1; index >= 0; index--)
+                    {
+                        if(base64code.charAt(index) != '='
+                                && base64code.charAt(index) != '\n'
+                                && base64code.charAt(index) != '\r'
+                                && base64code.charAt(index) != ' ') break;
+                    }
+                    base64code = base64code.substring(0, index + 1);*/
 
-                digest.reset();
-                byte[] code = digest.digest(randomCode);
-
-                String base64code = Base64.encodeToString(code, Base64.URL_SAFE);
-                //Remove trailing '=', '\n', ...
-                int index;
-                for(index = base64code.length() - 1; index >= 0; index--)
-                {
-                    if(base64code.charAt(index) != '='
-                            && base64code.charAt(index) != '\n'
-                            && base64code.charAt(index) != '\r'
-                            && base64code.charAt(index) != ' ') break;
-                }
-                base64code = base64code.substring(0, index + 1);*/
-
-                AuthorizationRequest request = new AuthorizationRequest.Builder(CLIENT_ID,
-                        AuthorizationResponse.Type.CODE, REDIRECT_URI)
-                        .setShowDialog(false).setScopes(SCOPES)
-                        //.setCustomParam("code_challenge_method", "S256")
-                        //.setCustomParam("code_challenge", base64code)
-                        .build();
-                AuthorizationClient.openLoginActivity(requireActivity(), SPOTIFY_REQUEST_CODE, request);
-            });
+                        AuthorizationRequest request = new AuthorizationRequest.Builder(CLIENT_ID,
+                                AuthorizationResponse.Type.CODE, REDIRECT_URI)
+                                .setShowDialog(false).setScopes(SCOPES)
+                                //.setCustomParam("code_challenge_method", "S256")
+                                //.setCustomParam("code_challenge", base64code)
+                                .build();
+                        AuthorizationClient.openLoginActivity(requireActivity(), SPOTIFY_REQUEST_CODE, request);
+                    }));
 
             binding.settingsSpotifyInit.setOnClickListener(view ->
             {
+                spotify.status = SourceStatus.STATUS_NEED_INIT;
                 spotify.initSource();
                 //TODO update current interface on callback
-                Source.saveSources();
+                //Source.saveSources(); //This should not be needed ? as spotify init saves
             });
 
             binding.settingsSpotifyRemove.setOnClickListener(view ->
@@ -931,7 +917,8 @@ public class Spotify extends Source
             if(response.getError() != null && !response.getError().isEmpty())
             {
                 System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (" + response.getError() + ")");
-                Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + response.getError() + ")", Toast.LENGTH_SHORT).show();
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + response.getError() + ")", Toast.LENGTH_SHORT).show());
                 return;
             }
 
@@ -953,9 +940,6 @@ public class Spotify extends Source
 
             BladeApplication.obtainExecutorService().execute(() ->
             {
-                //Prepare a looper so that we can Toast on error
-                Looper.prepare();
-
                 try
                 {
                     okhttp3.Response postResponse = call.execute();
@@ -963,7 +947,8 @@ public class Spotify extends Source
                     {
                         //noinspection ConstantConditions
                         String responseBody = (postResponse.body() == null ? "Unknown error" : postResponse.body().string());
-                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + postResponse.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + postResponse.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show());
                         System.err.println("BLADE-SPOTIFY: Spotify AUTH token error : " + postResponse.code() + " : " + responseBody);
                         return;
                     }
@@ -974,7 +959,8 @@ public class Spotify extends Source
                     if(sr == null)
                     {
                         System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (Could not parse JSON Token)");
-                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show();
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not parse JSON Token)", Toast.LENGTH_SHORT).show());
                         return;
                     }
 
@@ -996,13 +982,15 @@ public class Spotify extends Source
                     {
                         //noinspection ConstantConditions
                         System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (Could not obtain user ID : " + userResponse.code() + " : " + userResponse.errorBody().string() + ")");
-                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not obtain user ID)", Toast.LENGTH_SHORT).show();
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(getContext(), getString(R.string.auth_error) + " (Could not obtain user ID)", Toast.LENGTH_SHORT).show());
                         return;
                     }
                     if(user.display_name == null || user.id == null)
                     {
                         System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (Could user ID null : " + userResponse.code() + ")");
-                        Toast.makeText(getContext(), getString(R.string.auth_error) + " (User ID is null ???)", Toast.LENGTH_SHORT).show();
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(getContext(), getString(R.string.auth_error) + " (User ID is null ???)", Toast.LENGTH_SHORT).show());
                         return;
                     }
 
@@ -1020,13 +1008,15 @@ public class Spotify extends Source
 
                     //Re-Save all sources
                     //this is 'scheduleSave' after library Sync
-                    Toast.makeText(requireContext(), R.string.please_sync_to_apply, Toast.LENGTH_LONG).show();
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), R.string.please_sync_to_apply, Toast.LENGTH_LONG).show());
                     System.out.println("BLADE-SPOTIFY: Added source Spotify");
                 }
                 catch(IOException e)
                 {
                     System.out.println("BLADE-SPOTIFY: " + getString(R.string.auth_error) + " (IOException trying to obtain tokens)");
-                    Toast.makeText(requireContext(), getString(R.string.auth_error) + " (IOException trying to obtain tokens)", Toast.LENGTH_SHORT).show();
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), getString(R.string.auth_error) + " (IOException trying to obtain tokens)", Toast.LENGTH_SHORT).show());
                 }
             });
         }

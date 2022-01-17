@@ -37,9 +37,13 @@ devices and scenarios ; if you find an issue, open one here.
 - It has a layout that can adapt for tablet users (landscape layout)
 
 <div align="center" style="text-align: center;">
-  <img src="https://valou3433.fr/bladef0.png" width="200" style="max-width: 350;"/>
-  <img src="https://valou3433.fr/bladef1.png" width="200" style="max-width: 350;"/>
-  <img src="https://valou3433.fr/bladef2.png" width="200" style="max-width: 350;"/>
+  <img src="https://valou3433.fr/bladef0.png" width="200" style="max-width: 200;"/>
+  <img src="https://valou3433.fr/bladef1.png" width="200" style="max-width: 200;"/>
+  <img src="https://valou3433.fr/bladef2.png" width="200" style="max-width: 200;"/>
+</div>
+
+<div align="center" style="text-align: center;">
+  <img src="https://valou3433.fr/bladelandscape.png" width="600" style="max-width: 600;"/>
 </div>
 
 ### Supported services (music sources)
