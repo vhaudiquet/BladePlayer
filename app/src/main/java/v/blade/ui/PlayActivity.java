@@ -372,7 +372,7 @@ public class PlayActivity extends AppCompatActivity
 
                         int dest = current;
                         if(current == from) dest = to;
-                        else if(to > current && from < current) dest = current - 1;
+                        else if(to >= current && from < current) dest = current - 1;
                         else if(to <= current && from > current) dest = current + 1;
 
                         //Re-order playlist and update index
