@@ -45,7 +45,7 @@ public class SpotifyPlayer extends Source.Player
     protected final Spotify current;
     private volatile boolean isPaused;
 
-    //TODO : this 'temp' fixes the 'multiple load() -> fatal error' bug ; find a better fix
+    //TODO : this 'temp' fixes the 'multiple load() -> fatal error' bug ; find a better fix ?
     private volatile boolean isLoading = false;
 
     //TODO : remove that, temp bugfix librespot seek
@@ -302,12 +302,14 @@ public class SpotifyPlayer extends Source.Player
             catch(IllegalStateException exception)
             {
                 isLoading = false;
+                isPaused = false;
                 System.err.println("BLADE-SPOTIFY: Player should have been ready, but effectively was not");
                 MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
             }
             catch(RejectedExecutionException exception)
             {
                 isLoading = false;
+                isPaused = false;
                 System.err.println("BLADE-SPOTIFY: Too much tasks, skipping");
                 MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
             }
@@ -315,6 +317,7 @@ public class SpotifyPlayer extends Source.Player
         else
         {
             isLoading = false;
+            isPaused = false;
             System.err.println("BLADE-SPOTIFY: Player was not ready");
             ContextCompat.getMainExecutor(MediaBrowserService.getInstance()).execute(() ->
                     Toast.makeText(MediaBrowserService.getInstance(),
@@ -323,7 +326,7 @@ public class SpotifyPlayer extends Source.Player
             MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
 
             //ready ; does that 'try to make ready' the player ?
-            spotifyPlayer.get().ready();
+            BladeApplication.obtainExecutorService().execute(spotifyPlayer.get()::ready);
         }
     }
 
