@@ -352,4 +352,14 @@ public class Dialogs
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    protected static void openFirstLaunchDialog(Activity context)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setTitle(R.string.welcome_to_blade)
+                .setMessage(R.string.welcome_message)
+                .setPositiveButton(R.string.ok, ((dialog, which) -> dialog.dismiss()));
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }

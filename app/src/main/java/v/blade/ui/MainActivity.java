@@ -32,6 +32,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 
+import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.databinding.ActivityMainBinding;
 import v.blade.player.MediaBrowserService;
@@ -51,6 +52,13 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        //First launch dialog
+        if(BladeApplication.shouldDisplayFirstLaunchDialog)
+        {
+            BladeApplication.shouldDisplayFirstLaunchDialog = false;
+            Dialogs.openFirstLaunchDialog(this);
+        }
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

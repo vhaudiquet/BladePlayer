@@ -35,6 +35,7 @@ public class BladeApplication extends Application
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 4, 1L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private static final ExecutorService executorService = threadPoolExecutor;
     public static Context appContext;
+    public static boolean shouldDisplayFirstLaunchDialog = false;
 
     @Override
     protected void attachBaseContext(Context base)
@@ -51,6 +52,9 @@ public class BladeApplication extends Application
             Source.initSources();
 
             Library.loadFromCache();
+
+            if(Source.SOURCES.size() == 0)
+                shouldDisplayFirstLaunchDialog = true;
         });
     }
 

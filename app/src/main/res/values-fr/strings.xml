@@ -87,4 +87,6 @@
     <string name="permission_granted">Permission obtenue !</string>
     <string name="collaborative">Collaborative</string>
     <string name="player_not_ready">Le lecteur %1$s n\'est pas prêt</string>
+    <string name="welcome_to_blade">Bienvenue sur Blade Player !</string>
+    <string name="welcome_message">On dirait que vous n\'avez pas configuré de \'source\' de musique (service où Blade ira chercher votre musique). Rendez-vous dans les paramètres (icône en haut à droite), \'Sources\', ajoutez une source en utilisant le bouton +, et tapez sur cette source pour la configurer. Quand c\'est terminé, revenez en arrière, et appuyez sur l\'icône \'sync\' à gauche de l\'icône des paramètres, puis attendez la synchronisation. C\'est bon, écoutez votre musique !</string>
 </resources>
