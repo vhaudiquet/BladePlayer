@@ -91,4 +91,7 @@
     <string name="player_not_ready">%1$s player was not ready</string>
     <string name="welcome_to_blade">Welcome to Blade player !</string>
     <string name="welcome_message">It seems like you did not configure any \'source\' of music (service from which Blade will get your music). Please go to settings (using the top right icon), \'Sources\', add a source using the + button, and click on it to configure it. When you\'re done, go back, hit the \'sync\' icon next to settings, and wait for synchronization. You\'re all set, listen to your music !</string>
+    <string name="dark_theme">Dark theme</string>
+    <string name="light_theme">Light theme</string>
+    <string name="system_default">System default</string>
 </resources>

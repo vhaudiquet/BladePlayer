@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="dark_theme_choice">
+        <item>@string/light_theme</item>
+        <item>@string/dark_theme</item>
+        <item>@string/system_default</item>
+    </string-array>
+    <string-array name="dark_theme_choice_values">
+        <item>light_theme</item>
+        <item>dark_theme</item>
+        <item>system_default</item>
+    </string-array>
+</resources>

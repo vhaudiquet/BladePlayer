@@ -17,6 +17,9 @@ package v.blade;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -41,6 +44,21 @@ public class BladeApplication extends Application
     protected void attachBaseContext(Context base)
     {
         super.attachBaseContext(base);
+
+        //Restore theme from preferences
+        String dark_theme = PreferenceManager.getDefaultSharedPreferences(base).getString("dark_theme", "system_default");
+        switch(dark_theme)
+        {
+            case "system_default":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "dark_theme":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "light_theme":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+        }
 
         //Provide static access to application context (eg. for 'Local' source, needing ContentProvider)
         appContext = base;

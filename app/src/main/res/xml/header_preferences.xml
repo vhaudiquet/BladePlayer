@@ -1,10 +1,20 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
         app:fragment="v.blade.ui.SettingsActivity$SourcesFragment"
         app:icon="@drawable/ic_sources_24px"
         app:key="sources"
         app:title="@string/sources" />
+
+    <ListPreference
+        app:key="dark_theme"
+        android:icon="@drawable/ic_dark_theme"
+        android:dialogTitle="@string/dark_theme"
+        android:entries="@array/dark_theme_choice"
+        android:entryValues="@array/dark_theme_choice_values"
+        android:defaultValue="system_default"
+        android:title="@string/dark_theme" />
 
     <Preference
         app:fragment="v.blade.ui.SettingsActivity$AboutFragment"
