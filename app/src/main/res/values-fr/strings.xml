@@ -92,4 +92,7 @@
     <string name="dark_theme">Thème sombre</string>
     <string name="light_theme">Thème clair</string>
     <string name="system_default">Paramètre du système</string>
+    <string name="explore">Explorer</string>
+    <string name="explore_sources">Explorer les sources</string>
+    <string name="cant_search_here">Il n\'est pas possible de rechercher ici</string>
 </resources>

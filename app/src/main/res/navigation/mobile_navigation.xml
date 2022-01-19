@@ -25,4 +25,9 @@
         android:name="v.blade.ui.LibraryFragment"
         android:label="@string/playlists"
         tools:layout="@layout/fragment_library" />
+    <fragment
+        android:id="@+id/nav_explore_sources"
+        android:name="v.blade.ui.ExploreFragment"
+        android:label="@string/explore"
+        tools:layout="@layout/fragment_explore" />
 </navigation>

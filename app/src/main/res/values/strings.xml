@@ -94,4 +94,7 @@
     <string name="dark_theme">Dark theme</string>
     <string name="light_theme">Light theme</string>
     <string name="system_default">System default</string>
+    <string name="explore">Explore</string>
+    <string name="explore_sources">Explore sources</string>
+    <string name="cant_search_here">There is nothing to search here</string>
 </resources>

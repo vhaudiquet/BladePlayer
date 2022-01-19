@@ -317,6 +317,13 @@ public interface SpotifyService
         String snapshot_id;
     }
 
+    class SearchResult
+    {
+        PagingObject<SimplifiedTrackObject> tracks;
+        PagingObject<SimplifiedArtistObject> artists;
+        PagingObject<SimplifiedAlbumObject> albums;
+    }
+
     /**
      * max limit is 50
      */
@@ -361,4 +368,11 @@ public interface SpotifyService
 
     @HTTP(method = "DELETE", path = "playlists/{playlist_id}/tracks", hasBody = true)
     Call<PlaylistAddResponse> removePlaylistItem(@Header("Authorization") String token, @Path("playlist_id") String playlist_id, @Body RequestBody params);
+
+    /**
+     * @param retType should be "track,artist,album"
+     * @param limit   max limit is 50
+     */
+    @GET("search")
+    Call<SearchResult> search(@Header("Authorization") String token, @Query("q") String query, @Query("type") String retType, @Query("limit") int limit);
 }

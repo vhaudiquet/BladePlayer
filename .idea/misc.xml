@@ -31,6 +31,7 @@
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/app_bar_main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/content_main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/dialog_create_playlist.xml" value="0.1762917933130699" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/fragment_explore.xml" value="0.271875" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/fragment_library.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/item_layout.xml" value="0.22" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/item_simple_layout.xml" value="0.3625" />
@@ -39,6 +40,7 @@
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/settings_fragment_about.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/settings_fragment_local.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/layout/settings_fragment_spotify.xml" value="0.29347826086956524" />
+        <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/menu/activity_main_drawer.xml" value="0.271875" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/menu/currentplay_more.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/menu/main.xml" value="0.3625" />
         <entry key="..\:/Users/Valentin/Documents/prjs/BladePlayer/app/src/main/res/xml/header_preferences.xml" value="0.3625" />

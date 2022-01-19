@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_artists, R.id.nav_albums, R.id.nav_songs, R.id.nav_playlists)
+                R.id.nav_artists, R.id.nav_albums, R.id.nav_songs, R.id.nav_playlists, R.id.nav_explore_sources)
                 .setOpenableLayout(drawer)
                 .build();
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
@@ -283,9 +284,9 @@ public class MainActivity extends AppCompatActivity
             {
                 Fragment child = navHostFragment.getChildFragmentManager().getFragments().get(0);
                 if(child instanceof LibraryFragment)
-                {
                     ((LibraryFragment) child).onSearch(query);
-                }
+                else
+                    Toast.makeText(this, getString(R.string.cant_search_here), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -309,6 +310,11 @@ public class MainActivity extends AppCompatActivity
             {
                 ((LibraryFragment) child).onBackPressed();
                 //We handle backPresses directly in LibraryFragment, so we want to intercept the main back processing
+                return;
+            }
+            else if(child instanceof ExploreFragment)
+            {
+                ((ExploreFragment) child).onBackPressed();
                 return;
             }
         }

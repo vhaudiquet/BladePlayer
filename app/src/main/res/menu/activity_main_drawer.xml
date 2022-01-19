@@ -24,5 +24,13 @@
                     android:title="@string/playlists" />
             </menu>
         </item>
+        <item android:title="@string/explore">
+            <menu>
+                <item
+                    android:id="@+id/nav_explore_sources"
+                    android:icon="@drawable/ic_explore"
+                    android:title="@string/explore_sources" />
+            </menu>
+        </item>
     </group>
 </menu>
