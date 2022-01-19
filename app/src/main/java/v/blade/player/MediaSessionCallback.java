@@ -92,7 +92,9 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         {
             updatePlaybackState(true);
             service.notification.update();
-            service.current.play();
+
+            BladeApplication.obtainExecutorService().execute(() ->
+                    service.current.play());
         }
         else
         {
