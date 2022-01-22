@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
+import android.os.Process;
 import android.provider.Settings;
 import android.widget.Toast;
 
@@ -215,6 +216,8 @@ public class SpotifyPlayer extends Source.Player
                 {
                     BladeApplication.obtainExecutorService().execute(() ->
                     {
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
                         try
                         {
                             Thread.sleep(200);
@@ -326,7 +329,11 @@ public class SpotifyPlayer extends Source.Player
             MediaBrowserService.getInstance().mediaSessionCallback.updatePlaybackState(false);
 
             //ready ; does that 'try to make ready' the player ?
-            BladeApplication.obtainExecutorService().execute(spotifyPlayer.get()::ready);
+            BladeApplication.obtainExecutorService().execute(() ->
+            {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                spotifyPlayer.get().ready();
+            });
         }
     }
 

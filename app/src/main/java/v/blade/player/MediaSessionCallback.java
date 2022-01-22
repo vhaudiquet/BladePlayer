@@ -2,6 +2,7 @@ package v.blade.player;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Process;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.widget.Toast;
@@ -94,7 +95,12 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             service.notification.update();
 
             BladeApplication.obtainExecutorService().execute(() ->
-                    service.current.play());
+            {
+                //Give thread audio priority
+                Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+
+                service.current.play();
+            });
         }
         else
         {
@@ -123,6 +129,9 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             service.current = bestSource.source.getPlayer();
             BladeApplication.obtainExecutorService().execute(() ->
             {
+                //Give thread Audio Priority
+                Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+
                 service.current.playSong(song);
                 ContextCompat.getMainExecutor(service).execute(() ->
                         service.notification.update());

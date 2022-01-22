@@ -2,6 +2,7 @@ package v.blade.sources.spotify;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Process;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,6 +146,8 @@ public class Spotify extends Source
         okhttp3.Call call = client.newCall(request);
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+
             System.out.println("BLADE-SPOTIFY: Player is logging in...");
             //First init the player
             boolean login = ((SpotifyPlayer) player).login(account_login, account_password);
@@ -510,6 +513,8 @@ public class Spotify extends Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             String id = null;
             for(SourceInformation s : song.getSources())
             {
@@ -557,6 +562,8 @@ public class Spotify extends Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             Map<String, Object> jsonParams = new ArrayMap<>();
             jsonParams.put("name", name);
             JSONObject jsonBody = new JSONObject(jsonParams);
@@ -605,6 +612,8 @@ public class Spotify extends Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             Call<Void> call = service.unfollowPlaylist(AUTH_STRING, (String) playlist.getSource().id);
 
             try
@@ -638,6 +647,8 @@ public class Spotify extends Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             //Get song source
             SourceInformation current = null;
             for(SourceInformation s : song.getSources())
@@ -682,6 +693,8 @@ public class Spotify extends Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             //Get song source
             SourceInformation current = null;
             for(SourceInformation s : song.getSources())
@@ -726,6 +739,8 @@ public class Spotify extends Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             //Get song source
             SourceInformation current = null;
             for(SourceInformation s : song.getSources())
@@ -826,6 +841,8 @@ public class Spotify extends Source
             binding.settingsSpotifySignIn.setOnClickListener(v ->
                     BladeApplication.obtainExecutorService().execute(() ->
                     {
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+
                         //Try to login player
                         String userName = binding.settingsSpotifyUser.getText().toString();
                         String userPass = binding.settingsSpotifyPassword.getText().toString();
@@ -945,6 +962,8 @@ public class Spotify extends Source
 
             BladeApplication.obtainExecutorService().execute(() ->
             {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+
                 try
                 {
                     okhttp3.Response postResponse = call.execute();

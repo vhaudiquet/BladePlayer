@@ -1,5 +1,7 @@
 package v.blade.sources;
 
+import android.os.Process;
+
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
@@ -258,6 +260,8 @@ public abstract class Source
     {
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             //Generate JSON Array of sources
             JsonArray sourceArray = new JsonArray();
             for(Source s : SOURCES)
@@ -336,12 +340,18 @@ public abstract class Source
         {
             if(s.status != SourceStatus.STATUS_READY) continue;
 
-            futures.add(BladeApplication.obtainExecutorService().submit(s::synchronizeLibrary));
+            futures.add(BladeApplication.obtainExecutorService().submit(() ->
+            {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                s.synchronizeLibrary();
+            }));
         }
 
         //Save library and sources after synchronization
         BladeApplication.obtainExecutorService().execute(() ->
         {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             //TODO : This is active waiting ; we could actually do passive waiting using a callback
             // on synchronizeLibrary (using a lambda instead, synchronizeLibrary and call callback, checking
             // if alldone...) ; the problem on that is that we need to wait for the for loop end to start all threads
