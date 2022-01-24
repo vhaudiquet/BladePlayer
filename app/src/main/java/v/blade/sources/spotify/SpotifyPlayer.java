@@ -19,6 +19,10 @@ import org.jetbrains.annotations.Range;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Formatter;
 import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -81,6 +85,24 @@ public class SpotifyPlayer extends Source.Player
         if(deviceName == null)
             deviceName = Build.MANUFACTURER + " " + Build.MODEL;
 
+        //Generate a 40-char string 'device id' from 'BLADE' + deviceName, hexadecimal SHA1
+        String deviceId = null;
+        try
+        {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] sha = md.digest(("BLADE" + deviceName).getBytes(StandardCharsets.UTF_8));
+            Formatter formatter = new Formatter();
+            for(byte b : sha)
+            {
+                formatter.format("%02x", b);
+            }
+            deviceId = formatter.toString();
+        }
+        catch(NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+
         //TODO : we are storing plain passwords locally
         // this is not a critical security issue, as technically since a certain android version,
         // only Blade can access Blade file directory. However, we could store 'blobs', it
@@ -89,7 +111,7 @@ public class SpotifyPlayer extends Source.Player
         sessionBuilder.userPass(username, password)
                 .setPreferredLocale(Locale.getDefault().getLanguage())
                 .setDeviceType(Connect.DeviceType.SMARTPHONE)
-                .setDeviceId(null).setDeviceName("Blade (" + deviceName + ")");
+                .setDeviceId(deviceId).setDeviceName("Blade (" + deviceName + ")");
 
         try
         {
