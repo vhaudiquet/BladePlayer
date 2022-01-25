@@ -68,10 +68,12 @@
         <entry key="app/src/main/res/layout/activity_play.xml" value="0.22" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/fragment_explore.xml" value="0.1082427536231884" />
         <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/fragment_library.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/item_layout.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/item_simple_layout.xml" value="0.15942028985507245" />
         <entry key="app/src/main/res/layout/nav_header_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/settings_activity.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/settings_fragment_about.xml" value="0.1" />
