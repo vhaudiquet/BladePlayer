@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -187,6 +188,12 @@ public class PlayActivity extends AppCompatActivity
                             public void onPlaybackStateChanged(PlaybackStateCompat state)
                             {
                                 super.onPlaybackStateChanged(state);
+
+                                if(state == null)
+                                {
+                                    Toast.makeText(PlayActivity.this, "NullSTATE", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
 
                                 if(state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED)
                                 {

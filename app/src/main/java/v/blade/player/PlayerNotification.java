@@ -18,6 +18,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 import androidx.media.session.MediaButtonReceiver;
 
@@ -130,7 +131,7 @@ public class PlayerNotification
                     }
                     else
                     {
-                        service.stopForeground(false);
+                        ServiceCompat.stopForeground(service, ServiceCompat.STOP_FOREGROUND_DETACH);
                         isServiceForeground = false;
                     }
                 }

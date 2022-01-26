@@ -115,10 +115,10 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         if(intent != null && intent.getAction() != null && intent.getAction().equals("stop"))
         {
             //Set playback state to stopped to notify UI
-            PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
-                    .setActions(PlaybackStateCompat.ACTION_PREPARE);
-            mediaSession.setPlaybackState(stateBuilder.build());
+            //PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+            //        .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
+            //        .setActions(PlaybackStateCompat.ACTION_PREPARE);
+            //mediaSession.setPlaybackState(stateBuilder.build());
 
             //Stop service
             isStarted = false;
