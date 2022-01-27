@@ -19,46 +19,9 @@ import retrofit2.http.Query;
  */
 public interface SpotifyService
 {
-    class AlbumObject
-    {
-        String album_type;
-        ArtistObject[] artists;
-        String[] available_markets;
-        CopyrightObject[] copyrights;
-        ExternalIdObject externalId;
-        ExternalUrlObject external_urls;
-        String[] genres;
-        String href;
-        String id;
-        ImageObject[] images;
-        String label;
-        String name;
-        int popularity;
-        String release_date;
-        String release_date_precision;
-        AlbumRestrictionObject restrictions;
-        PagingObject<SimplifiedTrackObject> tracks;
-        String type;
-        String uri;
-    }
-
     class AlbumRestrictionObject
     {
         String reason;
-    }
-
-    class ArtistObject
-    {
-        ExternalUrlObject external_urls;
-        FollowersObject followers;
-        String[] genres;
-        String href;
-        String id;
-        ImageObject[] images;
-        String name;
-        int popularity;
-        String type;
-        String uri;
     }
 
     class CopyrightObject
@@ -205,6 +168,16 @@ public interface SpotifyService
         String type;
         String uri;
     }
+    class AlbumObject extends SimplifiedAlbumObject
+    {
+        //ArtistObject[] artists;
+        CopyrightObject[] copyrights;
+        ExternalIdObject external_ids;
+        String[] genres;
+        String label;
+        int popularity;
+        PagingObject<SimplifiedTrackObject> tracks;
+    }
 
     class SimplifiedArtistObject
     {
@@ -215,6 +188,14 @@ public interface SpotifyService
         String type;
         String uri;
     }
+    class ArtistObject extends SimplifiedArtistObject
+    {
+        FollowersObject followers;
+        String[] genres;
+        ImageObject[] images;
+        int popularity;
+    }
+
 
     class SimplifiedPlaylistObject
     {
@@ -254,29 +235,13 @@ public interface SpotifyService
         String type;
         String uri;
     }
-
-    class TrackObject
+    class TrackObject extends SimplifiedTrackObject
     {
         SimplifiedAlbumObject album;
-        ArtistObject[] artists;
-        String[] available_markets;
-        int disc_number;
-        int duration_ms;
-        boolean explicit;
+        //ArtistObject[] artists;
         ExternalIdObject external_ids;
-        ExternalUrlObject external_urls;
-        String href;
-        String id;
-        boolean is_local;
-        boolean is_playable;
         //linked_from
-        String name;
         int popularity;
-        String preview_url;
-        TrackRestrictionObject restrictions;
-        int track_number;
-        String type;
-        String uri;
     }
 
     class TrackRestrictionObject
@@ -321,7 +286,7 @@ public interface SpotifyService
     {
         PagingObject<TrackObject> tracks;
         PagingObject<ArtistObject> artists;
-        PagingObject<AlbumObject> albums;
+        PagingObject<SimplifiedAlbumObject> albums;
     }
 
     /**
@@ -375,4 +340,10 @@ public interface SpotifyService
      */
     @GET("search")
     Call<SearchResult> search(@Header("Authorization") String token, @Query("q") String query, @Query("type") String retType, @Query("limit") int limit);
+
+    /**
+     * @param limit max limit is 50
+     */
+    @GET("albums/{id}/tracks")
+    Call<PagingObject<SimplifiedTrackObject>> getAlbumTracks(@Header("Authorization") String token, @Path("id") String id, @Query("limit") int limit);
 }

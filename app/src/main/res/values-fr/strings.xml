@@ -95,4 +95,6 @@
     <string name="explore">Explorer</string>
     <string name="explore_sources">Explorer les sources</string>
     <string name="cant_search_here">Il n\'est pas possible de rechercher ici</string>
+    <string name="could_not_search_for">Impossible de chercher %1$s</string>
+    <string name="could_not_browse_album">Impossible de trouver les titres de l\'album %1$s</string>
 </resources>

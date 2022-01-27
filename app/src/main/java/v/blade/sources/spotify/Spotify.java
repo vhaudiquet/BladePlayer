@@ -67,7 +67,7 @@ public class Spotify extends Source
     public static final int IMAGE_RESOURCE = R.drawable.ic_spotify;
     private static final int CACHE_VERSION = 1;
 
-    private static final int SPOTIFY_IMAGE_LEVEL = 10;
+    protected static final int SPOTIFY_IMAGE_LEVEL = 10;
 
     //Spotify AUTH : We are using 'Authorization Code Flow' with 'PKCE extension'
     private static final String BASE_API_URL = "https://api.spotify.com/v1/";
@@ -112,10 +112,10 @@ public class Spotify extends Source
     private String ACCESS_TOKEN;
     private String REFRESH_TOKEN;
     private int TOKEN_EXPIRES_IN;
-    private String AUTH_STRING;
+    protected String AUTH_STRING;
 
     private Retrofit retrofit;
-    private SpotifyService service;
+    protected SpotifyService service;
 
     @Override
     public int getImageResource()
@@ -213,7 +213,7 @@ public class Spotify extends Source
         });
     }
 
-    private void refreshAccessTokenSync()
+    protected void refreshAccessTokenSync()
     {
         //build retrofit client
         retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).addConverterFactory(GsonConverterFactory.create()).build();
@@ -541,7 +541,7 @@ public class Spotify extends Source
                 if(response.code() != 200 || r == null)
                 {
                     System.err.println("BLADE-SPOTIFY: Could not search");
-                    view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), "", Toast.LENGTH_SHORT).show());
+                    view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), view.getString(R.string.could_not_search_for, query), Toast.LENGTH_SHORT).show());
                     return;
                 }
 
@@ -550,7 +550,7 @@ public class Spotify extends Source
             }
             catch(IOException e)
             {
-                view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), "", Toast.LENGTH_SHORT).show());
+                view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), view.getString(R.string.could_not_search_for, query), Toast.LENGTH_SHORT).show());
             }
         });
     }

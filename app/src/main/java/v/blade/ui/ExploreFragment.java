@@ -35,7 +35,7 @@ public class ExploreFragment extends Fragment
     }
     public FragmentExploreBinding binding;
     private Stack<BackInformation> backStack;
-    private Source current;
+    public Source current;
 
     private class SourceAdapter extends RecyclerView.Adapter<SourceAdapter.ViewHolder>
     {
@@ -109,6 +109,7 @@ public class ExploreFragment extends Fragment
         return binding.getRoot();
     }
 
+    boolean lastSearched = false;
     protected void onSearch(String query)
     {
         if(current == null)
@@ -116,8 +117,15 @@ public class ExploreFragment extends Fragment
             Toast.makeText(requireContext(), getString(R.string.cant_search_here), Toast.LENGTH_SHORT).show();
             return;
         }
+        else if(lastSearched)
+        {
+            //TODO : this temp fixes '2 intent receiving' ; find a better way
+            lastSearched = false;
+            return;
+        }
 
         current.exploreSearch(query, this);
+        lastSearched = true;
     }
 
     public void updateContent(RecyclerView.Adapter<?> adapter, String title, boolean shouldSaveBackInformation)
