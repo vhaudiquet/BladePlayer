@@ -346,4 +346,10 @@ public interface SpotifyService
      */
     @GET("albums/{id}/tracks")
     Call<PagingObject<SimplifiedTrackObject>> getAlbumTracks(@Header("Authorization") String token, @Path("id") String id, @Query("limit") int limit);
+
+    /**
+     * @param limit max limit is 50
+     */
+    @GET("artists/{id}/albums")
+    Call<PagingObject<SimplifiedAlbumObject>> getArtistAlbums(@Header("Authorization") String token, @Path("id") String id, @Query("limit") int limit);
 }

@@ -205,7 +205,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                             SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> r = response.body();
                             if(response.code() != 200 || r == null)
                             {
-                                System.err.println("BLADE-SPOTIFY: Could not browse album");
+                                System.err.println("BLADE-SPOTIFY: Could not browse album " + currentAlbum.name);
                                 exploreFragment.requireActivity().runOnUiThread(() ->
                                         Toast.makeText(exploreFragment.requireContext(),
                                                 exploreFragment.getString(R.string.could_not_browse_album, currentAlbum.name),
@@ -250,9 +250,51 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
 
             //OnClick action : browse artist
             holder.itemView.setOnClickListener(v ->
-            {
+                    BladeApplication.obtainExecutorService().execute(() ->
+                    {
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
 
-            });
+                        Spotify spotify = (Spotify) exploreFragment.current;
+                        Call<SpotifyService.PagingObject<SpotifyService.SimplifiedAlbumObject>> call =
+                                spotify.service.getArtistAlbums(spotify.AUTH_STRING, currentArtist.id, 50);
+
+                        try
+                        {
+                            Response<SpotifyService.PagingObject<SpotifyService.SimplifiedAlbumObject>> response =
+                                    call.execute();
+
+                            if(response.code() == 401)
+                            {
+                                //Expired token
+                                spotify.refreshAccessTokenSync();
+                                holder.itemView.callOnClick();
+                                return;
+                            }
+
+                            SpotifyService.PagingObject<SpotifyService.SimplifiedAlbumObject> r = response.body();
+                            if(response.code() != 200 || r == null)
+                            {
+                                System.err.println("BLADE-SPOTIFY: Could not browse artist " + currentArtist.name);
+                                exploreFragment.requireActivity().runOnUiThread(() ->
+                                        Toast.makeText(exploreFragment.requireContext(),
+                                                exploreFragment.getString(R.string.could_not_browse_artist, currentArtist.name),
+                                                Toast.LENGTH_SHORT).show());
+                                return;
+                            }
+
+                            SpotifyExploreAdapter adapter = new SpotifyExploreAdapter(exploreFragment);
+                            adapter.currentAlbums = r;
+                            exploreFragment.requireActivity().runOnUiThread(() ->
+                                    exploreFragment.updateContent(adapter, currentArtist.name, true));
+                        }
+                        catch(IOException e)
+                        {
+                            exploreFragment.requireActivity().runOnUiThread(() ->
+                                    Toast.makeText(exploreFragment.requireContext(),
+                                            exploreFragment.getString(R.string.could_not_browse_artist, currentArtist.name),
+                                            Toast.LENGTH_SHORT).show());
+                        }
+                    }));
         }
     }
 

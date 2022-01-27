@@ -89,4 +89,5 @@
     <string name="cant_search_here">Eine Suche ist hier nicht möglich</string>
     <string name="could_not_search_for">Suche nach %1$s nicht möglich</string>
     <string name="could_not_browse_album">Das Album %1$s konnte nicht durchsucht werden</string>
+    <string name="could_not_browse_artist">"Interpret %1$s konnte nicht gesucht werden  "</string>
 </resources>

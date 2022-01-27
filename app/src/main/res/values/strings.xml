@@ -99,4 +99,5 @@
     <string name="cant_search_here">There is nothing to search here</string>
     <string name="could_not_search_for">Could not search for %1$s</string>
     <string name="could_not_browse_album">Could not browse album %1$s</string>
+    <string name="could_not_browse_artist">Could not browse artist %1$s</string>
 </resources>
