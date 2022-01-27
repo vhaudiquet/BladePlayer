@@ -511,9 +511,53 @@ public class Spotify extends Source
     }
 
     @Override
-    public RecyclerView.Adapter<?> getExploreAdapter(ExploreFragment view)
+    public void explore(ExploreFragment view)
     {
-        return new SpotifyExploreAdapter(view);
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+            Call<SpotifyService.FeaturedPlaylistsResult> call =
+                service.getFeaturedPlaylists(AUTH_STRING);
+            try
+            {
+                Response<SpotifyService.FeaturedPlaylistsResult> response =
+                        call.execute();
+
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    explore(view);
+                    return;
+                }
+
+                SpotifyService.FeaturedPlaylistsResult r = response.body();
+                if(response.code() != 200 || r == null || r.playlists == null)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not explore");
+                    view.requireActivity().runOnUiThread(() ->
+                            Toast.makeText(view.requireContext(),
+                                    view.getString(R.string.could_not_show_explore),
+                                    Toast.LENGTH_SHORT).show());
+                    view.current = null;
+                    return;
+                }
+
+                SpotifyExploreAdapter adapter = new SpotifyExploreAdapter(view);
+                adapter.currentPlaylists = r.playlists;
+                view.requireActivity().runOnUiThread(() ->
+                        view.updateContent(adapter, getName(), true));
+            }
+            catch(IOException e)
+            {
+                view.requireActivity().runOnUiThread(() ->
+                        Toast.makeText(view.requireContext(),
+                                view.getString(R.string.could_not_show_explore),
+                                Toast.LENGTH_SHORT).show());
+                view.current = null;
+            }
+        });
     }
 
     @Override
@@ -540,7 +584,7 @@ public class Spotify extends Source
                 SpotifyService.SearchResult r = response.body();
                 if(response.code() != 200 || r == null)
                 {
-                    System.err.println("BLADE-SPOTIFY: Could not search");
+                    System.err.println("BLADE-SPOTIFY: Could not search " + query);
                     view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), view.getString(R.string.could_not_search_for, query), Toast.LENGTH_SHORT).show());
                     return;
                 }

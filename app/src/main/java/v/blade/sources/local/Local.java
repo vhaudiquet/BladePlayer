@@ -133,11 +133,10 @@ public class Local extends Source
     }
 
     @Override
-    public RecyclerView.Adapter<?> getExploreAdapter(ExploreFragment view)
+    public void explore(ExploreFragment view)
     {
-        return null;
-    }
 
+    }
     @Override
     public void exploreSearch(String query, ExploreFragment view)
     {

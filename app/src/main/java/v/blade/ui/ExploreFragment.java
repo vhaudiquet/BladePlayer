@@ -67,8 +67,7 @@ public class ExploreFragment extends Fragment
                 Source current = Source.SOURCES.get(pos);
 
                 ExploreFragment.this.current = current;
-
-                updateContent(current.getExploreAdapter(ExploreFragment.this), current.getName(), true);
+                current.explore(ExploreFragment.this);
             });
 
             return viewHolder;

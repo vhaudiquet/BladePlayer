@@ -289,6 +289,12 @@ public interface SpotifyService
         PagingObject<SimplifiedAlbumObject> albums;
     }
 
+    class FeaturedPlaylistsResult
+    {
+        PagingObject<SimplifiedPlaylistObject> playlists;
+        String message;
+    }
+
     /**
      * max limit is 50
      */
@@ -352,4 +358,7 @@ public interface SpotifyService
      */
     @GET("artists/{id}/albums")
     Call<PagingObject<SimplifiedAlbumObject>> getArtistAlbums(@Header("Authorization") String token, @Path("id") String id, @Query("limit") int limit);
+
+    @GET("browse/featured-playlists")
+    Call<FeaturedPlaylistsResult> getFeaturedPlaylists(@Header("Authorization") String token);
 }

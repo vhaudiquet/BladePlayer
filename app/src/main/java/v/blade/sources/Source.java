@@ -136,7 +136,7 @@ public abstract class Source
 
     public abstract void restoreFromJSON(JsonObject jsonObject);
 
-    public abstract RecyclerView.Adapter<?> getExploreAdapter(ExploreFragment view);
+    public abstract void explore(ExploreFragment view);
     public abstract void exploreSearch(String query, ExploreFragment view);
 
     /**

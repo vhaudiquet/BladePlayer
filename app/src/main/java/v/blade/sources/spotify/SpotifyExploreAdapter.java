@@ -23,6 +23,7 @@ import retrofit2.Response;
 import v.blade.BladeApplication;
 import v.blade.R;
 import v.blade.library.Library;
+import v.blade.library.Playlist;
 import v.blade.library.Song;
 import v.blade.player.MediaBrowserService;
 import v.blade.ui.ExploreFragment;
@@ -35,7 +36,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
 
     private SpotifyService.SimplifiedAlbumObject currentAlbum;
 
-    private SpotifyService.PagingObject<SpotifyService.PlaylistObject> currentPlaylists;
+    protected SpotifyService.PagingObject<SpotifyService.SimplifiedPlaylistObject> currentPlaylists;
 
     private final ExploreFragment exploreFragment;
     public SpotifyExploreAdapter(ExploreFragment recyclerView)
@@ -86,6 +87,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
         int currentTracksLen = currentTracks == null ? 0 : currentTracks.items.length;
         int currentAlbumsLen = currentAlbums == null ? 0 : currentAlbums.items.length;
         int currentArtistsLen = currentArtists == null ? 0 : currentArtists.items.length;
+        int currentPlaylistsLen = currentPlaylists == null ? 0 : currentPlaylists.items.length;
 
         //Songs
         if(currentTracksLen > position)
@@ -295,6 +297,29 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                                             Toast.LENGTH_SHORT).show());
                         }
                     }));
+        }
+        //Playlists
+        else if(currentTracksLen + currentAlbumsLen + currentArtistsLen + currentPlaylistsLen > position)
+        {
+            if(position == currentTracksLen + currentAlbumsLen)
+            {
+                holder.labelView.setVisibility(View.VISIBLE);
+                holder.labelView.setText(R.string.playlists);
+            }
+            else
+                holder.labelView.setVisibility(View.GONE);
+
+            SpotifyService.SimplifiedPlaylistObject currentPlaylist = currentPlaylists.items[position - currentTracksLen - currentAlbumsLen - currentArtistsLen];
+
+            holder.titleView.setText(currentPlaylist.name);
+
+            String subtitle = currentPlaylist.tracks.total + " " + exploreFragment.getString(R.string.songs).toLowerCase();
+            holder.subtitleView.setText(subtitle);
+
+            if(currentPlaylist.images.length > 0)
+                Picasso.get().load(currentPlaylist.images[0].url).into(holder.imageView);
+            else
+                holder.imageView.setImageResource(R.drawable.ic_playlist);
         }
     }
 

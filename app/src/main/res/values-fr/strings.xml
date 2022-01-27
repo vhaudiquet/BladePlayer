@@ -98,4 +98,5 @@
     <string name="could_not_search_for">Impossible de chercher %1$s</string>
     <string name="could_not_browse_album">Impossible de trouver les titres de l\'album %1$s</string>
     <string name="could_not_browse_artist">Impossible de trouver les albums de l\'artiste %1$s</string>
+    <string name="could_not_show_explore">Impossible d\'afficher l\'onglet d\'exploration</string>
 </resources>
