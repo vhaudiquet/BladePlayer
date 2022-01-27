@@ -91,4 +91,5 @@
     <string name="could_not_browse_album">Das Album %1$s konnte nicht durchsucht werden</string>
     <string name="could_not_browse_artist">"Interpret %1$s konnte nicht gesucht werden  "</string>
     <string name="could_not_show_explore">Die Registerkarte \"Erkunden\" konnte nicht angezeigt werden</string>
+    <string name="could_not_browse_playlist">"Playlist %1$s konnte nicht durchsucht werden  "</string>
 </resources>
