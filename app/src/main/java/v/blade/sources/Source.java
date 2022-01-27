@@ -3,6 +3,7 @@ package v.blade.sources;
 import android.os.Process;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,7 @@ import v.blade.BuildConfig;
 import v.blade.library.Library;
 import v.blade.library.Playlist;
 import v.blade.library.Song;
+import v.blade.ui.ExploreFragment;
 
 public abstract class Source
 {
@@ -133,6 +135,9 @@ public abstract class Source
     public abstract JsonObject saveToJSON();
 
     public abstract void restoreFromJSON(JsonObject jsonObject);
+
+    public abstract RecyclerView.Adapter<?> getExploreAdapter(ExploreFragment view);
+    public abstract void exploreSearch(String query, ExploreFragment view);
 
     /**
      * This method can't be kept this way ; each source NEEDS to override it
@@ -305,7 +310,7 @@ public abstract class Source
 
             //noinspection ConstantConditions
             if(BuildConfig.BUILD_TYPE.equals("debug"))
-                System.out.println("BLADE: Restoring sources from: " + j.toString());
+                System.out.println("BLADE: Restoring sources from: " + j);
 
             //obtain from JSON
             GsonBuilder gsonBuilder = new GsonBuilder();

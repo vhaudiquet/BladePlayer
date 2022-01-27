@@ -319,9 +319,9 @@ public interface SpotifyService
 
     class SearchResult
     {
-        PagingObject<SimplifiedTrackObject> tracks;
-        PagingObject<SimplifiedArtistObject> artists;
-        PagingObject<SimplifiedAlbumObject> albums;
+        PagingObject<TrackObject> tracks;
+        PagingObject<ArtistObject> artists;
+        PagingObject<AlbumObject> albums;
     }
 
     /**

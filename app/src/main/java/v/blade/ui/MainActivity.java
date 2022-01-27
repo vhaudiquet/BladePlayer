@@ -285,6 +285,8 @@ public class MainActivity extends AppCompatActivity
                 Fragment child = navHostFragment.getChildFragmentManager().getFragments().get(0);
                 if(child instanceof LibraryFragment)
                     ((LibraryFragment) child).onSearch(query);
+                else if(child instanceof ExploreFragment)
+                    ((ExploreFragment) child).onSearch(query);
                 else
                     Toast.makeText(this, getString(R.string.cant_search_here), Toast.LENGTH_SHORT).show();
             }

@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContentResolverCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -28,6 +29,7 @@ import v.blade.library.Library;
 import v.blade.library.Playlist;
 import v.blade.library.Song;
 import v.blade.sources.Source;
+import v.blade.ui.ExploreFragment;
 
 public class Local extends Source
 {
@@ -126,6 +128,18 @@ public class Local extends Source
 
     @Override
     public void restoreFromJSON(JsonObject jsonObject)
+    {
+
+    }
+
+    @Override
+    public RecyclerView.Adapter<?> getExploreAdapter(ExploreFragment view)
+    {
+        return null;
+    }
+
+    @Override
+    public void exploreSearch(String query, ExploreFragment view)
     {
 
     }

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -47,6 +48,7 @@ import v.blade.library.Playlist;
 import v.blade.library.Song;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
+import v.blade.ui.ExploreFragment;
 
 /*
  * Spotify strategy :
@@ -509,6 +511,51 @@ public class Spotify extends Source
     }
 
     @Override
+    public RecyclerView.Adapter<?> getExploreAdapter(ExploreFragment view)
+    {
+        return new SpotifyExploreAdapter(view);
+    }
+
+    @Override
+    public void exploreSearch(String query, ExploreFragment view)
+    {
+        BladeApplication.obtainExecutorService().execute(() ->
+        {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+            //NOTE : for now we limit to 10 search results ; it seems ok (we could go to 50 but it is a lot...)
+            Call<SpotifyService.SearchResult> call = service.search(AUTH_STRING, query, "track,artist,album", 10);
+            try
+            {
+                Response<SpotifyService.SearchResult> response = call.execute();
+
+                if(response.code() == 401)
+                {
+                    //Expired token
+                    refreshAccessTokenSync();
+                    exploreSearch(query, view);
+                    return;
+                }
+
+                SpotifyService.SearchResult r = response.body();
+                if(response.code() != 200 || r == null)
+                {
+                    System.err.println("BLADE-SPOTIFY: Could not search");
+                    view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), "", Toast.LENGTH_SHORT).show());
+                    return;
+                }
+
+                view.requireActivity().runOnUiThread(() ->
+                    view.updateContent(new SpotifyExploreAdapter(r, view), query, true));
+            }
+            catch(IOException e)
+            {
+                view.requireActivity().runOnUiThread(() -> Toast.makeText(view.requireContext(), "", Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    @Override
     public void addSongToPlaylist(Song song, Playlist playlist, Runnable callback, Runnable failureCallback)
     {
         BladeApplication.obtainExecutorService().execute(() ->
@@ -567,7 +614,7 @@ public class Spotify extends Source
             Map<String, Object> jsonParams = new ArrayMap<>();
             jsonParams.put("name", name);
             JSONObject jsonBody = new JSONObject(jsonParams);
-            System.out.println("json: " + jsonBody.toString());
+            System.out.println("json: " + jsonBody);
             RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
             Call<SpotifyService.SimplifiedPlaylistObject> call = service.createPlaylist(AUTH_STRING, user_id, body);
 
@@ -762,7 +809,7 @@ public class Spotify extends Source
                 Map<String, Object> jsonParams = new ArrayMap<>();
                 jsonParams.put("tracks", array);
                 JSONObject jsonBody = new JSONObject(jsonParams);
-                System.out.println("json: " + jsonBody.toString());
+                System.out.println("json: " + jsonBody);
                 RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
                 Call<SpotifyService.PlaylistAddResponse> call = service.removePlaylistItem(AUTH_STRING, (String) playlist.getSource().id, body);
 

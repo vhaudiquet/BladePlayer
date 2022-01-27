@@ -6,23 +6,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Stack;
+
 import v.blade.R;
 import v.blade.databinding.FragmentExploreBinding;
+import v.blade.library.Library;
 import v.blade.sources.Source;
 
 public class ExploreFragment extends Fragment
 {
-    private FragmentExploreBinding binding;
-
-    private static class SourceAdapter extends RecyclerView.Adapter<SourceAdapter.ViewHolder>
+    private static class BackInformation
     {
-        static class ViewHolder extends RecyclerView.ViewHolder
+        final RecyclerView.Adapter<?> adapter;
+        final String title;
+
+        BackInformation(String title, RecyclerView.Adapter<?> adapter)
+        {
+            this.adapter = adapter;
+            this.title = title;
+        }
+    }
+    public FragmentExploreBinding binding;
+    private Stack<BackInformation> backStack;
+    private Source current;
+
+    private class SourceAdapter extends RecyclerView.Adapter<SourceAdapter.ViewHolder>
+    {
+        class ViewHolder extends RecyclerView.ViewHolder
         {
             ImageView elementImage;
             TextView elementTitle;
@@ -46,7 +63,12 @@ public class ExploreFragment extends Fragment
 
             view.setOnClickListener(v ->
             {
+                int pos = binding.exploreSourcesListview.getChildAdapterPosition(v);
+                Source current = Source.SOURCES.get(pos);
 
+                ExploreFragment.this.current = current;
+
+                updateContent(current.getExploreAdapter(ExploreFragment.this), current.getName(), true);
             });
 
             return viewHolder;
@@ -67,6 +89,11 @@ public class ExploreFragment extends Fragment
         }
     }
 
+    public String getTitle()
+    {
+        return ((MainActivity) requireActivity()).binding == null ? "" : ((MainActivity) requireActivity()).binding.appBarMain.toolbar.getTitle().toString();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -75,11 +102,50 @@ public class ExploreFragment extends Fragment
 
         binding.exploreSourcesListview.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.exploreSourcesListview.setAdapter(new SourceAdapter());
+
+        current = null;
+        backStack = new Stack<>();
+
         return binding.getRoot();
+    }
+
+    protected void onSearch(String query)
+    {
+        if(current == null)
+        {
+            Toast.makeText(requireContext(), getString(R.string.cant_search_here), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        current.exploreSearch(query, this);
+    }
+
+    public void updateContent(RecyclerView.Adapter<?> adapter, String title, boolean shouldSaveBackInformation)
+    {
+        if(shouldSaveBackInformation)
+            backStack.push(new BackInformation(getTitle(), binding.exploreSourcesListview.getAdapter()));
+
+        binding.exploreSourcesListview.setAdapter(adapter);
+        if(((MainActivity) requireActivity()).binding != null)
+            ((MainActivity) requireActivity()).binding.appBarMain.toolbar.setTitle(title);
+    }
+
+    private void updateContent(BackInformation backInformation)
+    {
+        updateContent(backInformation.adapter, backInformation.title, false);
     }
 
     public void onBackPressed()
     {
-        requireActivity().finish();
+        if(backStack.empty())
+        {
+            requireActivity().finish();
+            return;
+        }
+
+        updateContent(backStack.pop());
+
+        //if we went back to root, current is null
+        if(backStack.empty()) current = null;
     }
 }

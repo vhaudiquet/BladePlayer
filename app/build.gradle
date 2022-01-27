@@ -52,8 +52,9 @@ android {
         viewBinding true
     }
     packagingOptions {
-        exclude 'log4j2.xml'
-        exclude 'META-INF/DEPENDENCIES'
+        resources {
+            excludes += ['log4j2.xml', 'META-INF/DEPENDENCIES']
+        }
     }
 }
 
@@ -64,9 +65,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.navigation:navigation-fragment:2.4.0'
+    implementation 'androidx.navigation:navigation-ui:2.4.0'
+    implementation 'androidx.preference:preference:1.2.0'
     implementation 'androidx.media:media:1.4.3'
 
     /* Image loading : Picasso */
