@@ -28,7 +28,7 @@
 
     <string name="source_down_desc">Down - Please check configuration</string>
     <string name="source_need_init_desc">Need initialization - Either force or check config</string>
-    <string name="source_connecting_desc">Connecting… - Please wait</string>
+    <string name="source_connecting_desc">Connecting…</string>
     <string name="source_ready_desc">Ready</string>
 
     <string name="sign_in">Sign in</string>

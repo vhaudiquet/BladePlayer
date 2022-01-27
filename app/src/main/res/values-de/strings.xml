@@ -81,4 +81,10 @@
     <string name="welcome_to_blade">Wilkommen zu Blade player!</string>
     <string name="collaborative">Kollaborativ</string>
     <string name="welcome_message">Es sieht so aus, als hätten Sie keine \"Musikquelle\" konfiguriert (Dienst, von dem Blade Ihre Musik bezieht). Bitte öffnen Sie die Einstellungen (über das Symbol oben rechts), wählen Sie \"Quellen\", fügen Sie eine Quelle über die Schaltfläche \"+\" hinzu und klicken Sie darauf, um sie zu konfigurieren. Wenn Sie fertig sind, gehen Sie zurück, klicken Sie auf das Symbol \"Synchronisieren\" neben den Einstellungen und warten bis die Synchronisierung abgeschlossen ist. In dem Fall sind Sie fertig und können Ihre Musik anhören!</string>
+    <string name="dark_theme">Dunkles thema</string>
+    <string name="light_theme">Lichtthema</string>
+    <string name="system_default">Systemfehler</string>
+    <string name="explore">Erforschen</string>
+    <string name="explore_sources">Quellen erkunden</string>
+    <string name="cant_search_here">Eine Suche ist hier nicht möglich</string>
 </resources>
