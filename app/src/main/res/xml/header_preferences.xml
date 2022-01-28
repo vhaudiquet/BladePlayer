@@ -10,11 +10,11 @@
     <ListPreference
         app:key="dark_theme"
         android:icon="@drawable/ic_dark_theme"
-        android:dialogTitle="@string/dark_theme"
+        android:dialogTitle="@string/theme"
         android:entries="@array/dark_theme_choice"
         android:entryValues="@array/dark_theme_choice_values"
         android:defaultValue="system_default"
-        android:title="@string/dark_theme" />
+        android:title="@string/theme" />
 
     <Preference
         app:fragment="v.blade.ui.SettingsActivity$AboutFragment"
