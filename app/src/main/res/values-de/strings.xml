@@ -33,7 +33,7 @@
     <string name="about_desc">Blade Player ist ein Android-Musikplayer (von @vhaudiquet), mit dem man Lieder von mehreren Diensten abspielen kann.</string>
     <string name="about_license">Lizenz: Apache 2.0</string>
     <string name="about_logo">Logo: @zularizal</string>
-    <string name="about_sources">Es sieht so aus, als hätten Sie keine \"Musikquelle\" konfiguriert (Dienst, von dem Blade Ihre Musik bezieht). Bitte gehen Sie zu den Einstellungen (über das Symbol oben rechts), \"Quellen\", fügen Sie eine Quelle über die Schaltfläche \"+\" hinzu und klicken Sie darauf, um sie zu konfigurieren. Wenn Sie fertig sind, gehen Sie zurück, klicken Sie auf das Symbol \"Synchronisieren\" neben den Einstellungen und warten Sie auf die Synchronisierung. Sie sind fertig und können Ihre Musik anhören!</string>
+    <string name="about_sources">Quellcode: github.com/vhaudiquet/BladePlayer</string>
     <string name="about_libraries_used">Verwendete Bibliotheken:</string>
     <string name="username">Nutzername</string>
     <string name="password">Passwort</string>
@@ -81,9 +81,9 @@
     <string name="welcome_to_blade">Wilkommen zu Blade player!</string>
     <string name="collaborative">Kollaborativ</string>
     <string name="welcome_message">Es sieht so aus, als hätten Sie keine \"Musikquelle\" konfiguriert (Dienst, von dem Blade Ihre Musik bezieht). Bitte öffnen Sie die Einstellungen (über das Symbol oben rechts), wählen Sie \"Quellen\", fügen Sie eine Quelle über die Schaltfläche \"+\" hinzu und klicken Sie darauf, um sie zu konfigurieren. Wenn Sie fertig sind, gehen Sie zurück, klicken Sie auf das Symbol \"Synchronisieren\" neben den Einstellungen und warten bis die Synchronisierung abgeschlossen ist. In dem Fall sind Sie fertig und können Ihre Musik anhören!</string>
-    <string name="dark_theme">Dunkles thema</string>
-    <string name="light_theme">Lichtthema</string>
-    <string name="system_default">Systemfehler</string>
+    <string name="dark_theme">Dunkles Design</string>
+    <string name="light_theme">Helles Design</string>
+    <string name="system_default">Systemstandard</string>
     <string name="explore">Erforschen</string>
     <string name="explore_sources">Quellen erkunden</string>
     <string name="cant_search_here">Eine Suche ist hier nicht möglich</string>
