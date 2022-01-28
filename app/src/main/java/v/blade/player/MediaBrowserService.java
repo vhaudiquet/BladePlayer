@@ -64,15 +64,21 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         mediaSession = new MediaSessionCompat(this, "BLADE-MEDIA");
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS);
 
-        //Set an initial PlaybackState
-        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
-                .setActions(PlaybackStateCompat.ACTION_PREPARE);
-        mediaSession.setPlaybackState(stateBuilder.build());
-
         //Set session callbacks
         mediaSessionCallback = new MediaSessionCallback(this);
         mediaSession.setCallback(mediaSessionCallback);
+
+        //NOTE : Set initial playback state here, so that we allow playing
+        // (makes sense when service is restarting)
+        if(playlist == null)
+        {
+            //We are stopped
+            PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
+                    .setActions(PlaybackStateCompat.ACTION_PREPARE);
+            mediaSession.setPlaybackState(stateBuilder.build());
+        }
+        else mediaSessionCallback.updatePlaybackState(false);
 
         //Set mediaSession activity
         Intent openUI = new Intent(this, PlayActivity.class);
@@ -114,11 +120,11 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     {
         if(intent != null && intent.getAction() != null && intent.getAction().equals("stop"))
         {
-            //Set playback state to stopped to notify UI
-            //PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
-            //        .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
-            //        .setActions(PlaybackStateCompat.ACTION_PREPARE);
-            //mediaSession.setPlaybackState(stateBuilder.build());
+            //Set playback state to stopped to notify UI (TODO implement restarting ? but how do i restore playlist/index ?)
+            PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_STOPPED, 0L, 0)
+                    .setActions(PlaybackStateCompat.ACTION_PREPARE);
+            mediaSession.setPlaybackState(stateBuilder.build());
 
             //Stop service
             isStarted = false;
