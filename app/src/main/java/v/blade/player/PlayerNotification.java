@@ -186,13 +186,14 @@ public class PlayerNotification
 
         PendingIntent contentIntent = PendingIntent.getActivity(service, REQUEST_CODE, openUI, contentIntentFlags);
 
-        Intent stopService = new Intent(service, MediaBrowserService.class);
-        stopService.setAction("stop");
-        int deleteIntentFlags = 0;
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
-            deleteIntentFlags |= PendingIntent.FLAG_IMMUTABLE;
-        @SuppressLint("UnspecifiedImmutableFlag")
-        PendingIntent deleteIntent = PendingIntent.getService(service, REQUEST_CODE, stopService, deleteIntentFlags);
+        //NOTE: we actually do not want to kill service when swiping notification i think
+        //Intent stopService = new Intent(service, MediaBrowserService.class);
+        //stopService.setAction("stop");
+        //int deleteIntentFlags = 0;
+        //if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+        //    deleteIntentFlags |= PendingIntent.FLAG_IMMUTABLE;
+        //@SuppressLint("UnspecifiedImmutableFlag")
+        PendingIntent deleteIntent = null;//PendingIntent.getService(service, REQUEST_CODE, stopService, deleteIntentFlags);
 
         //MediaStyle, with 3 actions (skip_previous, play/pause, skip_next) and notification building
         androidx.media.app.NotificationCompat.MediaStyle style = new androidx.media.app.NotificationCompat.MediaStyle()

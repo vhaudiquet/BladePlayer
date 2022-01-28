@@ -28,7 +28,6 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
     private boolean playOnAudioFocus = false;
     private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = focusChange ->
     {
-
         switch(focusChange)
         {
             case AudioManager.AUDIOFOCUS_GAIN:

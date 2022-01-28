@@ -123,6 +123,8 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        //NOTE ; we actually do NOT want to kill service when swiping notification, so this is useless
+        /*
         if(intent != null && intent.getAction() != null && intent.getAction().equals("stop"))
         {
             //Set playback state to stopped to notify UI (TODO implement restarting ? but how do i restore playlist/index ?)
@@ -135,7 +137,7 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
             isStarted = false;
             stopSelf();
             return START_STICKY;
-        }
+        }*/
 
         MediaButtonReceiver.handleIntent(mediaSession, intent);
         return START_STICKY;
