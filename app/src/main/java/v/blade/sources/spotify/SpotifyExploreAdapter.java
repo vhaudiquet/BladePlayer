@@ -1,11 +1,13 @@
 package v.blade.sources.spotify;
 
+import android.annotation.SuppressLint;
 import android.os.Process;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +24,15 @@ import retrofit2.Call;
 import retrofit2.Response;
 import v.blade.BladeApplication;
 import v.blade.R;
+import v.blade.library.Album;
+import v.blade.library.Artist;
 import v.blade.library.Library;
 import v.blade.library.Playlist;
 import v.blade.library.Song;
 import v.blade.player.MediaBrowserService;
+import v.blade.ui.Dialogs;
 import v.blade.ui.ExploreFragment;
+import v.blade.ui.LibraryFragment;
 
 public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAdapter.ViewHolder>
 {
@@ -75,29 +81,137 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
         }
     }
 
+    private Song handleFromSimplifiedTrackObject(SpotifyService.SimplifiedTrackObject track)
+    {
+        SpotifyService.SimplifiedAlbumObject album;
+        if(track instanceof SpotifyService.TrackObject)
+            album = ((SpotifyService.TrackObject) track).album;
+        else album = currentAlbum;
+
+        String[] artists = new String[track.artists.length];
+        String[] artistsImages = new String[track.artists.length];
+        for(int i = 0; i < track.artists.length; i++) artists[i] = track.artists[i].name;
+
+        String[] aartists = new String[album.artists.length];
+        String[] aartistsImages = new String[album.artists.length];
+        for(int i = 0; i < album.artists.length; i++) aartists[i] = album.artists[i].name;
+
+        return Library.addSongHandle(track.name, album.name, artists, exploreFragment.current, track.id, aartists,
+                album.images[album.images.length - 2].url, track.track_number,
+                artistsImages, aartistsImages, album.images[0].url, Spotify.SPOTIFY_IMAGE_LEVEL);
+    }
+
+    @SuppressLint("NonConstantResourceId")
     private void onMoreClick(View v)
     {
-        int tracks = currentTracks == null ? 0 : currentTracks.items.length;
-        int albums = currentAlbums == null ? 0 : currentAlbums.items.length;
-        int artists = currentArtists == null ? 0 : currentArtists.items.length;
-        int playlists = currentPlaylists == null ? 0 : currentPlaylists.items.length;
         Object current = v.getTag();
+
+        PopupMenu popupMenu = new PopupMenu(exploreFragment.requireContext(), v);
+        popupMenu.inflate(R.menu.item_more);
+
+        //Set element visibility depending on context
         if(current instanceof SpotifyService.SimplifiedTrackObject)
         {
-            
+            popupMenu.getMenu().getItem(3).setVisible(true);
+            popupMenu.getMenu().getItem(4).setVisible(true);
         }
-        else if(current instanceof SpotifyService.SimplifiedAlbumObject)
-        {
 
-        }
-        else if(current instanceof SpotifyService.SimplifiedArtistObject)
+        //Set actions
+        popupMenu.setOnMenuItemClickListener(item ->
         {
+            switch(item.getItemId())
+            {
+                case R.id.action_play:
+                    ArrayList<Song> playlist = new ArrayList<>();
+                    if(current instanceof SpotifyService.SimplifiedTrackObject)
+                    {
+                        Song element = handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current);
+                        playlist.add(element);
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedAlbumObject)
+                    {
+                        //TODO obtain album songs
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedArtistObject)
+                    {
+                        //Message : too big
+                        Toast.makeText(exploreFragment.requireContext(), exploreFragment.getString(R.string.selection_too_big), Toast.LENGTH_SHORT).show();
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
+                    {
+                        //TODO obtain playlist songs
+                    }
 
-        }
-        else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
-        {
+                    MediaBrowserService.getInstance().setPlaylist(playlist);
+                    MediaBrowserService.getInstance().setIndex(0);
+                    exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                    return true;
+                case R.id.action_play_next:
+                    ArrayList<Song> playlistAddNext = new ArrayList<>();
+                    if(current instanceof SpotifyService.SimplifiedTrackObject)
+                    {
+                        playlistAddNext.add(handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current));
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedAlbumObject)
+                    {
+                        //TODO obtain album songs
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedArtistObject)
+                    {
+                        Toast.makeText(exploreFragment.requireContext(), exploreFragment.getString(R.string.selection_too_big), Toast.LENGTH_SHORT).show();
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
+                    {
+                        //TODO obtain playlist songs
+                    }
 
-        }
+                    if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                        MediaBrowserService.getInstance().getPlaylist().addAll(MediaBrowserService.getInstance().getIndex() + 1, playlistAddNext);
+                    else
+                    {
+                        MediaBrowserService.getInstance().setPlaylist(playlistAddNext);
+                        MediaBrowserService.getInstance().setIndex(0);
+                        exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                    }
+                    return true;
+                case R.id.action_add_to_playlist:
+                    ArrayList<Song> playlistAdd = new ArrayList<>();
+                    if(current instanceof SpotifyService.SimplifiedTrackObject)
+                        playlistAdd.add(handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current));
+                    else if(current instanceof SpotifyService.SimplifiedAlbumObject)
+                    {
+                        //TODO obtain album songs
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedArtistObject)
+                    {
+                        Toast.makeText(exploreFragment.requireContext(), exploreFragment.getString(R.string.selection_too_big), Toast.LENGTH_SHORT).show();
+                    }
+                    else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
+                    {
+                        //TODO obtain playlist songs
+                    }
+
+                    if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                        MediaBrowserService.getInstance().getPlaylist().addAll(playlistAdd);
+                    else
+                    {
+                        MediaBrowserService.getInstance().setPlaylist(playlistAdd);
+                        MediaBrowserService.getInstance().setIndex(0);
+                        exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                    }
+                    return true;
+                case R.id.action_add_to_list:
+                    assert current instanceof SpotifyService.SimplifiedTrackObject;
+                    Dialogs.openAddToPlaylistDialog(exploreFragment.requireActivity(), handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current));
+                    return true;
+                case R.id.action_manage_libraries:
+                    assert current instanceof SpotifyService.SimplifiedTrackObject;
+                    Dialogs.openManageLibrariesDialog(exploreFragment.requireActivity(), handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current));
+                    return true;
+            }
+            return false;
+        });
+        popupMenu.show();
     }
 
     @NonNull
@@ -164,23 +278,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     ArrayList<Song> newList = new ArrayList<>();
                     for(SpotifyService.SimplifiedTrackObject t : currentTracks.items)
                     {
-                        String[] artists = new String[t.artists.length];
-                        String[] artistsImages = new String[t.artists.length];
-                        for(int i = 0; i < t.artists.length; i++) artists[i] = t.artists[i].name;
-
-                        SpotifyService.SimplifiedAlbumObject a;
-                        if(t instanceof SpotifyService.TrackObject)
-                            a = ((SpotifyService.TrackObject) t).album;
-                        else
-                            a = currentAlbum;
-
-                        String[] aartists = new String[a.artists.length];
-                        String[] aartistsImages = new String[a.artists.length];
-                        for(int i = 0; i < a.artists.length; i++) aartists[i] = a.artists[i].name;
-
-                        Song song = Library.addSongHandle(t.name, a.name, artists, exploreFragment.current, t.id, aartists,
-                                a.images[a.images.length - 2].url, t.track_number,
-                                artistsImages, aartistsImages, a.images[0].url, Spotify.SPOTIFY_IMAGE_LEVEL);
+                        Song song = handleFromSimplifiedTrackObject(t);
                         newList.add(song);
                     }
                     MediaBrowserService.getInstance().setPlaylist(newList);
@@ -189,18 +287,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                 else
                 {
                     //We play selected song
-                    String[] artists = new String[track.artists.length];
-                    String[] artistsImages = new String[track.artists.length];
-                    for(int i = 0; i < track.artists.length; i++) artists[i] = track.artists[i].name;
-
-                    String[] aartists = new String[album.artists.length];
-                    String[] aartistsImages = new String[album.artists.length];
-                    for(int i = 0; i < album.artists.length; i++) aartists[i] = album.artists[i].name;
-
-                    Song song = Library.addSongHandle(track.name, album.name, artists, exploreFragment.current, track.id, aartists,
-                            album.images[album.images.length - 2].url, track.track_number,
-                            artistsImages, aartistsImages, album.images[0].url, Spotify.SPOTIFY_IMAGE_LEVEL);
-
+                    Song song = handleFromSimplifiedTrackObject(track);
                     ArrayList<Song> newList = new ArrayList<>();
                     newList.add(song);
                     MediaBrowserService.getInstance().setPlaylist(newList);

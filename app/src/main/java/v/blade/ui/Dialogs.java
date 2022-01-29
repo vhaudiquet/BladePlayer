@@ -31,7 +31,7 @@ import v.blade.sources.SourceInformation;
 
 public class Dialogs
 {
-    protected static void openAddToPlaylistDialog(Activity context, Song toAdd)
+    public static void openAddToPlaylistDialog(Activity context, Song toAdd)
     {
         //Build the lists of playlists suitable to receive toAdd
         ArrayList<Playlist> playlists = new ArrayList<>();
@@ -240,7 +240,7 @@ public class Dialogs
         dialog.show();
     }
 
-    protected static void openManageLibrariesDialog(Activity context, Song song)
+    public static void openManageLibrariesDialog(Activity context, Song song)
     {
         BaseAdapter adapter = new BaseAdapter()
         {

@@ -102,4 +102,5 @@
     <string name="could_not_browse_artist">Could not browse artist %1$s</string>
     <string name="could_not_show_explore">Could not show explore tab</string>
     <string name="could_not_browse_playlist">Could not browse playlist %1$s</string>
+    <string name="selection_too_big">Selection is too big</string>
 </resources>
