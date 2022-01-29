@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -518,7 +517,7 @@ public class Spotify extends Source
             Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
 
             Call<SpotifyService.FeaturedPlaylistsResult> call =
-                service.getFeaturedPlaylists(AUTH_STRING);
+                    service.getFeaturedPlaylists(AUTH_STRING);
             try
             {
                 Response<SpotifyService.FeaturedPlaylistsResult> response =
@@ -590,7 +589,7 @@ public class Spotify extends Source
                 }
 
                 view.requireActivity().runOnUiThread(() ->
-                    view.updateContent(new SpotifyExploreAdapter(r, view), query, true));
+                        view.updateContent(new SpotifyExploreAdapter(r, view), query, true));
             }
             catch(IOException e)
             {

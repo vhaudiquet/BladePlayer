@@ -17,7 +17,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContentResolverCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -137,6 +136,7 @@ public class Local extends Source
     {
 
     }
+
     @Override
     public void exploreSearch(String query, ExploreFragment view)
     {

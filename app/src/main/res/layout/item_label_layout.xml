@@ -9,50 +9,51 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
         android:id="@+id/item_element_label"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <RelativeLayout
         android:layout_below="@id/item_element_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/item_element_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="2dp"
-        android:contentDescription="@string/item_image" />
 
-    <TextView
-        android:id="@+id/item_element_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textSize="18sp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@id/item_element_image"
-        android:layout_toStartOf="@id/item_element_more"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:singleLine="true" />
+        <ImageView
+            android:id="@+id/item_element_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="2dp"
+            android:contentDescription="@string/item_image" />
 
-    <TextView
-        android:id="@+id/item_element_subtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:layout_below="@id/item_element_title"
-        android:layout_toEndOf="@id/item_element_image"
-        android:layout_toStartOf="@id/item_element_more"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:singleLine="true" />
+        <TextView
+            android:id="@+id/item_element_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textSize="18sp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@id/item_element_image"
+            android:layout_toStartOf="@id/item_element_more"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:singleLine="true" />
 
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="50dp"
-        android:id="@+id/item_element_more"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/item_more" />
+        <TextView
+            android:id="@+id/item_element_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_below="@id/item_element_title"
+            android:layout_toEndOf="@id/item_element_image"
+            android:layout_toStartOf="@id/item_element_more"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:singleLine="true" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            android:id="@+id/item_element_more"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/item_more" />
     </RelativeLayout>
 </RelativeLayout>

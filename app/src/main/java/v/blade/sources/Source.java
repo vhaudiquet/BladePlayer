@@ -3,7 +3,6 @@ package v.blade.sources;
 import android.os.Process;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -137,6 +136,7 @@ public abstract class Source
     public abstract void restoreFromJSON(JsonObject jsonObject);
 
     public abstract void explore(ExploreFragment view);
+
     public abstract void exploreSearch(String query, ExploreFragment view);
 
     /**

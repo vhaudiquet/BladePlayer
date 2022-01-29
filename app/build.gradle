@@ -19,9 +19,9 @@ android {
         release {
             storeFile file("../blade-keystore.jks")
             keyAlias "blade-release"
-            if(project.hasProperty("releaseStorePassword"))
+            if (project.hasProperty("releaseStorePassword"))
                 storePassword project.getProperty("releaseStorePassword")
-            if(project.hasProperty("releaseKeyPassword"))
+            if (project.hasProperty("releaseKeyPassword"))
                 keyPassword project.getProperty("releaseKeyPassword")
         }
     }

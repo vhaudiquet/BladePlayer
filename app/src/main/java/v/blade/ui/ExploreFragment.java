@@ -17,7 +17,6 @@ import java.util.Stack;
 
 import v.blade.R;
 import v.blade.databinding.FragmentExploreBinding;
-import v.blade.library.Library;
 import v.blade.sources.Source;
 
 public class ExploreFragment extends Fragment
@@ -33,6 +32,7 @@ public class ExploreFragment extends Fragment
             this.title = title;
         }
     }
+
     public FragmentExploreBinding binding;
     private Stack<BackInformation> backStack;
     public Source current;
@@ -109,6 +109,7 @@ public class ExploreFragment extends Fragment
     }
 
     boolean lastSearched = false;
+
     protected void onSearch(String query)
     {
         if(current == null)

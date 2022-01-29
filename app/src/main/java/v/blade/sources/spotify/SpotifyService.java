@@ -168,6 +168,7 @@ public interface SpotifyService
         String type;
         String uri;
     }
+
     class AlbumObject extends SimplifiedAlbumObject
     {
         //ArtistObject[] artists;
@@ -188,6 +189,7 @@ public interface SpotifyService
         String type;
         String uri;
     }
+
     class ArtistObject extends SimplifiedArtistObject
     {
         FollowersObject followers;
@@ -235,6 +237,7 @@ public interface SpotifyService
         String type;
         String uri;
     }
+
     class TrackObject extends SimplifiedTrackObject
     {
         SimplifiedAlbumObject album;
