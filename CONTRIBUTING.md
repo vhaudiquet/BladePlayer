@@ -76,6 +76,7 @@ A Source component has to :
 - Provide a way to play songs of such source in a SourcePlayer
 - Have an explore/search adapter
 - Provide ways of interacting with it (adding songs to playlists, removing elements, ...)
+
 All of this is done extending the Source class.
 
 ## GitHub actions setup
