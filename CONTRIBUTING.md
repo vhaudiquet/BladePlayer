@@ -60,3 +60,23 @@ If you want to add a new feature to Blade, go ahead. However, know that this is 
 and if i don't like your feature, i won't add it to mainline. It does not mean i hate you or your
 code, it is just that i have no interest in that feature, so i don't want it in my Blade version ;
 but feel free to keep a fork of the project with your feature.
+
+## Blade internals : global architecture
+
+Blade consists of 4 components :
+- UI (User Interface) with activities/settings/...
+- Library, handling library and Blade internals Song, Album, Artist, Playlist types
+- Source, handling source submodules
+- Player, that handles the music playing
+
+## Blade internals : adding a new source
+
+A Source component has to :
+- Register songs in library
+- Provide a way to play songs of such source in a SourcePlayer
+- Have an explore/search adapter
+- Provide ways of interacting with it (adding songs to playlists, removing elements, ...)
+All of this is done extending the Source class.
+
+## GitHub actions setup
+
