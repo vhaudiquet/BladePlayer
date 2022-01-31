@@ -35,8 +35,7 @@ devices and scenarios ; if you find an issue, open one here.
 - **(TODO)** The "explore" mode allows you to search and browse sources for new music (for example
   search all Spotify and look for new releases)
 - It has a layout that can adapt for tablet users (landscape layout)
-- It is available in different languages : English or
-  French ([and you can easily help me traduce it](CONTRIBUTING.md))
+- It is available in different languages : English, French, German ([and you can easily help me traduce it](CONTRIBUTING.md))
 
 <div align="center" style="text-align: center;">
   <img src="https://valou3433.fr/bladef0.png" width="200" style="max-width: 200;"/>

@@ -97,6 +97,50 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                 artistsImages, aartistsImages, album.images[0].url, Spotify.SPOTIFY_IMAGE_LEVEL);
     }
 
+    private SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> albumTracks(SpotifyService.SimplifiedAlbumObject album)
+    {
+        if(album instanceof SpotifyService.AlbumObject)
+            return ((SpotifyService.AlbumObject) album).tracks;
+
+        Spotify spotify = (Spotify) exploreFragment.current;
+        Call<SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject>> call =
+                spotify.service.getAlbumTracks(spotify.AUTH_STRING, currentAlbum.id, 50);
+
+        try
+        {
+            Response<SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject>> response =
+                    call.execute();
+
+            if(response.code() == 401)
+            {
+                //Expired token
+                spotify.refreshAccessTokenSync();
+                return albumTracks(album);
+            }
+
+            SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> r = response.body();
+            if(response.code() != 200 || r == null)
+            {
+                System.err.println("BLADE-SPOTIFY: Could not browse album " + currentAlbum.name);
+                exploreFragment.requireActivity().runOnUiThread(() ->
+                        Toast.makeText(exploreFragment.requireContext(),
+                                exploreFragment.getString(R.string.could_not_browse_album, currentAlbum.name),
+                                Toast.LENGTH_SHORT).show());
+                return null;
+            }
+
+            return r;
+        }
+        catch(IOException e)
+        {
+            exploreFragment.requireActivity().runOnUiThread(() ->
+                    Toast.makeText(exploreFragment.requireContext(),
+                            exploreFragment.getString(R.string.could_not_browse_album, currentAlbum.name),
+                            Toast.LENGTH_SHORT).show());
+            return null;
+        }
+    }
+
     @SuppressLint("NonConstantResourceId")
     private void onMoreClick(View v)
     {
@@ -118,15 +162,35 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
             switch(item.getItemId())
             {
                 case R.id.action_play:
-                    ArrayList<Song> playlist = new ArrayList<>();
                     if(current instanceof SpotifyService.SimplifiedTrackObject)
                     {
+                        ArrayList<Song> playlist = new ArrayList<>();
                         Song element = handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current);
                         playlist.add(element);
+                        MediaBrowserService.getInstance().setPlaylist(playlist);
+                        MediaBrowserService.getInstance().setIndex(0);
+                        exploreFragment.requireActivity().getMediaController().getTransportControls().play();
                     }
                     else if(current instanceof SpotifyService.SimplifiedAlbumObject)
                     {
-                        //TODO obtain album songs
+                        BladeApplication.obtainExecutorService().execute(() ->
+                        {
+                            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+                            ArrayList<Song> playlist = new ArrayList<>();
+                            SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> tracks = albumTracks((SpotifyService.SimplifiedAlbumObject) current);
+                            if(tracks != null)
+                            {
+                                for(SpotifyService.SimplifiedTrackObject t : tracks.items)
+                                {
+                                    Song song = handleFromSimplifiedTrackObject(t);
+                                    playlist.add(song);
+                                }
+                                MediaBrowserService.getInstance().setPlaylist(playlist);
+                                MediaBrowserService.getInstance().setIndex(0);
+                                exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                            }
+                        });
                     }
                     else if(current instanceof SpotifyService.SimplifiedArtistObject)
                     {
@@ -138,19 +202,48 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                         //TODO obtain playlist songs
                     }
 
-                    MediaBrowserService.getInstance().setPlaylist(playlist);
-                    MediaBrowserService.getInstance().setIndex(0);
-                    exploreFragment.requireActivity().getMediaController().getTransportControls().play();
                     return true;
                 case R.id.action_play_next:
-                    ArrayList<Song> playlistAddNext = new ArrayList<>();
                     if(current instanceof SpotifyService.SimplifiedTrackObject)
                     {
+                        ArrayList<Song> playlistAddNext = new ArrayList<>();
                         playlistAddNext.add(handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current));
+
+                        if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                            MediaBrowserService.getInstance().getPlaylist().addAll(MediaBrowserService.getInstance().getIndex() + 1, playlistAddNext);
+                        else
+                        {
+                            MediaBrowserService.getInstance().setPlaylist(playlistAddNext);
+                            MediaBrowserService.getInstance().setIndex(0);
+                            exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                        }
                     }
                     else if(current instanceof SpotifyService.SimplifiedAlbumObject)
                     {
-                        //TODO obtain album songs
+                        BladeApplication.obtainExecutorService().execute(() ->
+                        {
+                            ArrayList<Song> playlistAddNext = new ArrayList<>();
+
+                            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+                            SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> tracks = albumTracks((SpotifyService.SimplifiedAlbumObject) current);
+                            if(tracks != null)
+                            {
+                                for(SpotifyService.SimplifiedTrackObject t : tracks.items)
+                                {
+                                    Song song = handleFromSimplifiedTrackObject(t);
+                                    playlistAddNext.add(song);
+                                }
+
+                                if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                                    MediaBrowserService.getInstance().getPlaylist().addAll(MediaBrowserService.getInstance().getIndex() + 1, playlistAddNext);
+                                else
+                                {
+                                    MediaBrowserService.getInstance().setPlaylist(playlistAddNext);
+                                    MediaBrowserService.getInstance().setIndex(0);
+                                    exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                                }
+                            }
+                        });
                     }
                     else if(current instanceof SpotifyService.SimplifiedArtistObject)
                     {
@@ -161,22 +254,47 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                         //TODO obtain playlist songs
                     }
 
-                    if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
-                        MediaBrowserService.getInstance().getPlaylist().addAll(MediaBrowserService.getInstance().getIndex() + 1, playlistAddNext);
-                    else
-                    {
-                        MediaBrowserService.getInstance().setPlaylist(playlistAddNext);
-                        MediaBrowserService.getInstance().setIndex(0);
-                        exploreFragment.requireActivity().getMediaController().getTransportControls().play();
-                    }
                     return true;
                 case R.id.action_add_to_playlist:
-                    ArrayList<Song> playlistAdd = new ArrayList<>();
                     if(current instanceof SpotifyService.SimplifiedTrackObject)
+                    {
+                        ArrayList<Song> playlistAdd = new ArrayList<>();
                         playlistAdd.add(handleFromSimplifiedTrackObject((SpotifyService.SimplifiedTrackObject) current));
+                        if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                            MediaBrowserService.getInstance().getPlaylist().addAll(playlistAdd);
+                        else
+                        {
+                            MediaBrowserService.getInstance().setPlaylist(playlistAdd);
+                            MediaBrowserService.getInstance().setIndex(0);
+                            exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                        }
+                    }
                     else if(current instanceof SpotifyService.SimplifiedAlbumObject)
                     {
-                        //TODO obtain album songs
+                        BladeApplication.obtainExecutorService().execute(() ->
+                        {
+                            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+                            ArrayList<Song> playlistAdd = new ArrayList<>();
+                            SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> tracks = albumTracks((SpotifyService.SimplifiedAlbumObject) current);
+                            if(tracks != null)
+                            {
+                                for(SpotifyService.SimplifiedTrackObject t : tracks.items)
+                                {
+                                    Song song = handleFromSimplifiedTrackObject(t);
+                                    playlistAdd.add(song);
+                                }
+
+                                if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                                    MediaBrowserService.getInstance().getPlaylist().addAll(playlistAdd);
+                                else
+                                {
+                                    MediaBrowserService.getInstance().setPlaylist(playlistAdd);
+                                    MediaBrowserService.getInstance().setIndex(0);
+                                    exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                                }
+                            }
+                        });
                     }
                     else if(current instanceof SpotifyService.SimplifiedArtistObject)
                     {
@@ -187,14 +305,6 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                         //TODO obtain playlist songs
                     }
 
-                    if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
-                        MediaBrowserService.getInstance().getPlaylist().addAll(playlistAdd);
-                    else
-                    {
-                        MediaBrowserService.getInstance().setPlaylist(playlistAdd);
-                        MediaBrowserService.getInstance().setIndex(0);
-                        exploreFragment.requireActivity().getMediaController().getTransportControls().play();
-                    }
                     return true;
                 case R.id.action_add_to_list:
                     assert current instanceof SpotifyService.SimplifiedTrackObject;
@@ -267,7 +377,6 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
             //TODO : maybe optimize and put clickListeners in onCreateViewHolder instead
             holder.itemView.setOnClickListener(v ->
             {
-
                 if(currentAlbums == null && currentArtists == null && currentPlaylists == null)
                 {
                     //We play the whole thing
@@ -322,65 +431,20 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
 
             //OnClick action : browse album
             holder.itemView.setOnClickListener(v ->
-            {
-                if(currentAlbum instanceof SpotifyService.AlbumObject)
-                {
-                    SpotifyService.AlbumObject album = (SpotifyService.AlbumObject) currentAlbum;
-                    SpotifyExploreAdapter adapter = new SpotifyExploreAdapter(exploreFragment);
-                    adapter.currentTracks = album.tracks;
-                    adapter.currentAlbum = album;
-                    exploreFragment.updateContent(adapter, album.name, true);
-                }
-                else
-                {
                     BladeApplication.obtainExecutorService().execute(() ->
                     {
                         Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
 
-                        Spotify spotify = (Spotify) exploreFragment.current;
-                        Call<SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject>> call =
-                                spotify.service.getAlbumTracks(spotify.AUTH_STRING, currentAlbum.id, 50);
-
-                        try
+                        SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> r = albumTracks(currentAlbum);
+                        if(r != null)
                         {
-                            Response<SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject>> response =
-                                    call.execute();
-
-                            if(response.code() == 401)
-                            {
-                                //Expired token
-                                spotify.refreshAccessTokenSync();
-                                holder.itemView.callOnClick();
-                                return;
-                            }
-
-                            SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> r = response.body();
-                            if(response.code() != 200 || r == null)
-                            {
-                                System.err.println("BLADE-SPOTIFY: Could not browse album " + currentAlbum.name);
-                                exploreFragment.requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(exploreFragment.requireContext(),
-                                                exploreFragment.getString(R.string.could_not_browse_album, currentAlbum.name),
-                                                Toast.LENGTH_SHORT).show());
-                                return;
-                            }
-
                             SpotifyExploreAdapter adapter = new SpotifyExploreAdapter(exploreFragment);
                             adapter.currentTracks = r;
                             adapter.currentAlbum = currentAlbum;
                             exploreFragment.requireActivity().runOnUiThread(() ->
                                     exploreFragment.updateContent(adapter, currentAlbum.name, true));
                         }
-                        catch(IOException e)
-                        {
-                            exploreFragment.requireActivity().runOnUiThread(() ->
-                                    Toast.makeText(exploreFragment.requireContext(),
-                                            exploreFragment.getString(R.string.could_not_browse_album, currentAlbum.name),
-                                            Toast.LENGTH_SHORT).show());
-                        }
-                    });
-                }
-            });
+                    }));
         }
         //Artists
         else if(currentArtistsLen + currentAlbumsLen + currentTracksLen > position)
