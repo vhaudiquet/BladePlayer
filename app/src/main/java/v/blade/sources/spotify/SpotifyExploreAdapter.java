@@ -97,10 +97,10 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                 artistsImages, aartistsImages, album.images[0].url, Spotify.SPOTIFY_IMAGE_LEVEL);
     }
 
-    private SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> albumTracks(SpotifyService.SimplifiedAlbumObject album)
+    private SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> albumTracks(SpotifyService.SimplifiedAlbumObject currentAlbum)
     {
-        if(album instanceof SpotifyService.AlbumObject)
-            return ((SpotifyService.AlbumObject) album).tracks;
+        if(currentAlbum instanceof SpotifyService.AlbumObject)
+            return ((SpotifyService.AlbumObject) currentAlbum).tracks;
 
         Spotify spotify = (Spotify) exploreFragment.current;
         Call<SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject>> call =
@@ -115,7 +115,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
             {
                 //Expired token
                 spotify.refreshAccessTokenSync();
-                return albumTracks(album);
+                return albumTracks(currentAlbum);
             }
 
             SpotifyService.PagingObject<SpotifyService.SimplifiedTrackObject> r = response.body();
@@ -136,6 +136,52 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
             exploreFragment.requireActivity().runOnUiThread(() ->
                     Toast.makeText(exploreFragment.requireContext(),
                             exploreFragment.getString(R.string.could_not_browse_album, currentAlbum.name),
+                            Toast.LENGTH_SHORT).show());
+            return null;
+        }
+    }
+
+    private SpotifyService.PagingObject<SpotifyService.TrackObject> playlistTracks(SpotifyService.SimplifiedPlaylistObject currentPlaylist)
+    {
+        Spotify spotify = (Spotify) exploreFragment.current;
+        //TODO : for now we only show the first 100 songs of playlists when browsing ; maybe we should show more ?
+        Call<SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject>> call =
+                spotify.service.getPlaylistItems(spotify.AUTH_STRING, currentPlaylist.id, 100, 0);
+
+        try
+        {
+            Response<SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject>> response =
+                    call.execute();
+
+            if(response.code() == 401)
+            {
+                //Expired token
+                spotify.refreshAccessTokenSync();
+                return playlistTracks(currentPlaylist);
+            }
+
+            SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject> r = response.body();
+            if(response.code() != 200 || r == null)
+            {
+                System.err.println("BLADE-SPOTIFY: Could not browse playlist " + currentPlaylist.name);
+                exploreFragment.requireActivity().runOnUiThread(() ->
+                        Toast.makeText(exploreFragment.requireContext(),
+                                exploreFragment.getString(R.string.could_not_browse_playlist, currentPlaylist.name),
+                                Toast.LENGTH_SHORT).show());
+                return null;
+            }
+
+            SpotifyService.PagingObject<SpotifyService.TrackObject> tr = new SpotifyService.PagingObject<>();
+            tr.items = new SpotifyService.TrackObject[r.items.length];
+            for(int i = 0; i < r.items.length; i++) tr.items[i] = r.items[i].track;
+
+            return tr;
+        }
+        catch(IOException e)
+        {
+            exploreFragment.requireActivity().runOnUiThread(() ->
+                    Toast.makeText(exploreFragment.requireContext(),
+                            exploreFragment.getString(R.string.could_not_browse_playlist, currentPlaylist.name),
                             Toast.LENGTH_SHORT).show());
             return null;
         }
@@ -199,7 +245,24 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     }
                     else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
                     {
-                        //TODO obtain playlist songs
+                        BladeApplication.obtainExecutorService().execute(() ->
+                        {
+                            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+                            ArrayList<Song> playlist = new ArrayList<>();
+                            SpotifyService.PagingObject<SpotifyService.TrackObject> tracks = playlistTracks((SpotifyService.SimplifiedPlaylistObject) current);
+                            if(tracks != null)
+                            {
+                                for(SpotifyService.TrackObject t : tracks.items)
+                                {
+                                    Song song = handleFromSimplifiedTrackObject(t);
+                                    playlist.add(song);
+                                }
+                                MediaBrowserService.getInstance().setPlaylist(playlist);
+                                MediaBrowserService.getInstance().setIndex(0);
+                                exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                            }
+                        });
                     }
 
                     return true;
@@ -251,7 +314,30 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     }
                     else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
                     {
-                        //TODO obtain playlist songs
+                        BladeApplication.obtainExecutorService().execute(() ->
+                        {
+                            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+                            ArrayList<Song> playlistAddNext = new ArrayList<>();
+                            SpotifyService.PagingObject<SpotifyService.TrackObject> tracks = playlistTracks((SpotifyService.SimplifiedPlaylistObject) current);
+                            if(tracks != null)
+                            {
+                                for(SpotifyService.TrackObject t : tracks.items)
+                                {
+                                    Song song = handleFromSimplifiedTrackObject(t);
+                                    playlistAddNext.add(song);
+                                }
+
+                                if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                                    MediaBrowserService.getInstance().getPlaylist().addAll(MediaBrowserService.getInstance().getIndex() + 1, playlistAddNext);
+                                else
+                                {
+                                    MediaBrowserService.getInstance().setPlaylist(playlistAddNext);
+                                    MediaBrowserService.getInstance().setIndex(0);
+                                    exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                                }
+                            }
+                        });
                     }
 
                     return true;
@@ -302,7 +388,30 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     }
                     else if(current instanceof SpotifyService.SimplifiedPlaylistObject)
                     {
-                        //TODO obtain playlist songs
+                        BladeApplication.obtainExecutorService().execute(() ->
+                        {
+                            Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
+
+                            ArrayList<Song> playlistAdd = new ArrayList<>();
+                            SpotifyService.PagingObject<SpotifyService.TrackObject> tracks = playlistTracks((SpotifyService.SimplifiedPlaylistObject) current);
+                            if(tracks != null)
+                            {
+                                for(SpotifyService.TrackObject t : tracks.items)
+                                {
+                                    Song song = handleFromSimplifiedTrackObject(t);
+                                    playlistAdd.add(song);
+                                }
+
+                                if(MediaBrowserService.getInstance().getPlaylist() != null && !MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                                    MediaBrowserService.getInstance().getPlaylist().addAll(playlistAdd);
+                                else
+                                {
+                                    MediaBrowserService.getInstance().setPlaylist(playlistAdd);
+                                    MediaBrowserService.getInstance().setIndex(0);
+                                    exploreFragment.requireActivity().getMediaController().getTransportControls().play();
+                                }
+                            }
+                        });
                     }
 
                     return true;
@@ -542,51 +651,12 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     {
                         Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
 
-                        Spotify spotify = (Spotify) exploreFragment.current;
-                        //TODO : for now we only show the first 100 songs of playlists when browsing ; maybe we should show more ?
-                        Call<SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject>> call =
-                                spotify.service.getPlaylistItems(spotify.AUTH_STRING, currentPlaylist.id, 100, 0);
+                        SpotifyService.PagingObject<SpotifyService.TrackObject> tr = playlistTracks(currentPlaylist);
 
-                        try
-                        {
-                            Response<SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject>> response =
-                                    call.execute();
-
-                            if(response.code() == 401)
-                            {
-                                //Expired token
-                                spotify.refreshAccessTokenSync();
-                                holder.itemView.callOnClick();
-                                return;
-                            }
-
-                            SpotifyService.PagingObject<SpotifyService.PlaylistTrackObject> r = response.body();
-                            if(response.code() != 200 || r == null)
-                            {
-                                System.err.println("BLADE-SPOTIFY: Could not browse playlist " + currentPlaylist.name);
-                                exploreFragment.requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(exploreFragment.requireContext(),
-                                                exploreFragment.getString(R.string.could_not_browse_playlist, currentPlaylist.name),
-                                                Toast.LENGTH_SHORT).show());
-                                return;
-                            }
-
-                            SpotifyService.PagingObject<SpotifyService.TrackObject> tr = new SpotifyService.PagingObject<>();
-                            tr.items = new SpotifyService.TrackObject[r.items.length];
-                            for(int i = 0; i < r.items.length; i++) tr.items[i] = r.items[i].track;
-
-                            SpotifyExploreAdapter adapter = new SpotifyExploreAdapter(exploreFragment);
-                            adapter.currentTracks = tr;
-                            exploreFragment.requireActivity().runOnUiThread(() ->
-                                    exploreFragment.updateContent(adapter, currentPlaylist.name, true));
-                        }
-                        catch(IOException e)
-                        {
-                            exploreFragment.requireActivity().runOnUiThread(() ->
-                                    Toast.makeText(exploreFragment.requireContext(),
-                                            exploreFragment.getString(R.string.could_not_browse_playlist, currentPlaylist.name),
-                                            Toast.LENGTH_SHORT).show());
-                        }
+                        SpotifyExploreAdapter adapter = new SpotifyExploreAdapter(exploreFragment);
+                        adapter.currentTracks = tr;
+                        exploreFragment.requireActivity().runOnUiThread(() ->
+                                exploreFragment.updateContent(adapter, currentPlaylist.name, true));
                     }));
         }
     }
