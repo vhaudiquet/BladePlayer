@@ -248,6 +248,9 @@ public class LibraryFragment extends Fragment
                     assert element instanceof Song;
                     Dialogs.openRemoveFromPlaylistDialog(requireActivity(), (Song) element, (Playlist) currentObject);
                     return true;
+                case R.id.action_explore:
+                    Dialogs.openExploreDialog(requireActivity(), element);
+                    return true;
             }
             return false;
         });

@@ -27,5 +27,6 @@
         android:visible="false" /> <!-- visible only for playlists -->
     <item
         android:id="@+id/action_explore"
-        android:title="@string/explore" />
+        android:title="@string/explore"
+        android:visible="false" /> <!-- TODO : when should we show that ? -->
 </menu>
