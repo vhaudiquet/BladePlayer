@@ -283,8 +283,11 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
             }
 
             //Set subimage view
-            viewHolder.subimageView.setVisibility(View.VISIBLE);
-            viewHolder.subimageView.setImageResource(((Playlist) current).getSource().source.getImageResource());
+            if(((Playlist) current).getSource() != null)
+            {
+                viewHolder.subimageView.setVisibility(View.VISIBLE);
+                viewHolder.subimageView.setImageResource(((Playlist) current).getSource().source.getImageResource());
+            }
         }
 
         //If 'moreClickListener', put object as more view tag
