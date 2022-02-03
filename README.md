@@ -32,7 +32,7 @@ devices and scenarios ; if you find an issue, open one here.
 - **(TODO)** It has a 'data saving' mode that allows you to listen to music while consuming very low
   mobile data (by not loading album arts)
 - The search feature allows you to search the local library instantly
-- **(TODO)** The "explore" mode allows you to search and browse sources for new music (for example
+- The "explore" mode allows you to search and browse sources for new music (for example
   search all Spotify and look for new releases)
 - It has a layout that can adapt for tablet users (landscape layout)
 - It is available in different languages : English, French, German ([and you can easily help me traduce it](CONTRIBUTING.md))
@@ -81,7 +81,6 @@ New features and bug fixes or improvements are coming. Here is a list of what i 
 - SPOTIFY: Use Android Native Decoders, and/or libtremolo if native decoder not present
 - UI: Show albums in an 'album view' instead of a list
 - Add new services : SoundCloud, YouTube Music, Amazon Music, Tidal, WebDAV/FTP Servers...
-- UI/CORE: Add a way to explore web sources for new content (cf. 'explore' mode above)
 - CORE: 'Blade' playlists, that can contain song from all sources
 
 ## Contributing
