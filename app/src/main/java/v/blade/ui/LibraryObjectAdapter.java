@@ -36,6 +36,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         ImageView imageView;
         ImageView moreView;
         TextView labelView;
+        ImageView subimageView;
 
         //cf. https://stackoverflow.com/questions/47107105/android-button-has-setontouchlistener-called-on-it-but-does-not-override-perform
         //for example for explication
@@ -53,6 +54,8 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
 
             labelView = itemView.findViewById(R.id.item_element_label);
             labelView.setVisibility(View.GONE);
+
+            subimageView = itemView.findViewById(R.id.item_element_subimage);
 
             if(touchHelper != null)
             {
@@ -217,6 +220,9 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         else if(current instanceof Playlist)
             viewHolder.imageView.setImageResource(R.drawable.ic_playlist);
 
+        //Clear subimageview
+        viewHolder.subimageView.setVisibility(View.GONE);
+
         //Clear label if multiple types in dataset
         if(containsMultipleTypes)
             viewHolder.labelView.setVisibility(View.GONE);
@@ -275,6 +281,10 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
                 viewHolder.labelView.setVisibility(View.VISIBLE);
                 viewHolder.labelView.setText(R.string.playlists);
             }
+
+            //Set subimage view
+            viewHolder.subimageView.setVisibility(View.VISIBLE);
+            viewHolder.subimageView.setImageResource(((Playlist) current).getSource().source.getImageResource());
         }
 
         //If 'moreClickListener', put object as more view tag
