@@ -35,6 +35,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         TextView subtitleView;
         ImageView imageView;
         ImageView moreView;
+        TextView labelView;
 
         //cf. https://stackoverflow.com/questions/47107105/android-button-has-setontouchlistener-called-on-it-but-does-not-override-perform
         //for example for explication
@@ -49,6 +50,9 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
             subtitleView = itemView.findViewById(R.id.item_element_subtitle);
             imageView = itemView.findViewById(R.id.item_element_image);
             moreView = itemView.findViewById(R.id.item_element_more);
+
+            labelView = itemView.findViewById(R.id.item_element_label);
+            labelView.setVisibility(View.GONE);
 
             if(touchHelper != null)
             {
@@ -69,6 +73,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     }
 
     private final List<? extends LibraryObject> objects;
+    private final boolean containsMultipleTypes;
     private View.OnClickListener moreClickListener;
     private ItemTouchHelper touchHelper;
     private View.OnClickListener clickListener;
@@ -79,6 +84,22 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     {
         this.objects = objects == null ? new ArrayList<>() : objects;
         this.clickListener = clickListener;
+
+        //Check if contains multiple types
+        boolean containsMultipleTypes = false;
+        if(this.objects.size() > 0)
+        {
+            LibraryObject first = this.objects.get(0);
+            for(LibraryObject lo : objects)
+            {
+                if(!lo.getClass().equals(first.getClass()))
+                {
+                    containsMultipleTypes = true;
+                    break;
+                }
+            }
+        }
+        this.containsMultipleTypes = containsMultipleTypes;
     }
 
     public LibraryObjectAdapter(List<? extends LibraryObject> objects, View.OnClickListener moreClickListener, View.OnClickListener clickListener)
@@ -146,7 +167,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         if(convertView == null)
         {
             convertView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_layout, parent, false);
+                    .inflate(R.layout.item_label_layout, parent, false);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         }
@@ -174,7 +195,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_layout, parent, false);
+                .inflate(R.layout.item_label_layout, parent, false);
 
         return new ViewHolder(view);
     }
@@ -196,15 +217,44 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         else if(current instanceof Playlist)
             viewHolder.imageView.setImageResource(R.drawable.ic_playlist);
 
+        //Clear label if multiple types in dataset
+        if(containsMultipleTypes)
+            viewHolder.labelView.setVisibility(View.GONE);
+
         if(current instanceof Song)
+        {
             viewHolder.subtitleView.setText(((Song) current).getArtistsString());
+
+            //Set label if position is 0 and there are multiple types in dataset
+            if(containsMultipleTypes && i == 0)
+            {
+                viewHolder.labelView.setVisibility(View.VISIBLE);
+                viewHolder.labelView.setText(R.string.songs);
+            }
+        }
         else if(current instanceof Album)
+        {
             viewHolder.subtitleView.setText(((Album) current).getArtistsString());
+
+            //Set label if previous is not album and multiple types in dataset
+            if(containsMultipleTypes && (i == 0 || !(getItem(i - 1) instanceof Album)))
+            {
+                viewHolder.labelView.setVisibility(View.VISIBLE);
+                viewHolder.labelView.setText(R.string.albums);
+            }
+        }
         else if(current instanceof Artist)
         {
             String artistTrackCount = ((Artist) current).getTrackCount() + " "
                     + viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
             viewHolder.subtitleView.setText(artistTrackCount);
+
+            //Set label if previous is not album and multiple types in dataset
+            if(containsMultipleTypes && (i == 0 || !(getItem(i - 1) instanceof Artist)))
+            {
+                viewHolder.labelView.setVisibility(View.VISIBLE);
+                viewHolder.labelView.setText(R.string.artists);
+            }
         }
         else if(current instanceof Playlist)
         {
@@ -218,6 +268,13 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
                 viewHolder.subtitleView.setText(subtitle);
             }
             else viewHolder.subtitleView.setText("");
+
+            //Set label if previous is not album and multiple types in dataset
+            if(containsMultipleTypes && (i == 0 || !(getItem(i - 1) instanceof Playlist)))
+            {
+                viewHolder.labelView.setVisibility(View.VISIBLE);
+                viewHolder.labelView.setText(R.string.playlists);
+            }
         }
 
         //If 'moreClickListener', put object as more view tag

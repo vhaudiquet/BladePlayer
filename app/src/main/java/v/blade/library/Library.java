@@ -594,10 +594,12 @@ public class Library
         return song;
     }
 
-    public static List<Song> search(String query)
+    public static List<LibraryObject> search(String query)
     {
-        ArrayList<Song> result = new ArrayList<>();
+        //TODO : improve search, for now we just do "contains", cringe
+        ArrayList<LibraryObject> result = new ArrayList<>();
 
+        //Add songs from library and handles
         for(Song s : songs_list)
             if(s.getName().toLowerCase().contains(query.toLowerCase()))
                 result.add(s);
@@ -605,6 +607,21 @@ public class Library
         for(Song s : handled_songs.values())
             if(s.getName().toLowerCase().contains(query.toLowerCase()) && !result.contains(s))
                 result.add(s);
+
+        //Add albums
+        for(Album a : albums_list)
+            if(a.getName().toLowerCase().contains(query.toLowerCase()))
+                result.add(a);
+
+        //Add artists
+        for(Artist a : artists_list)
+            if(a.getName().toLowerCase().contains(query.toLowerCase()))
+                result.add(a);
+
+        //Add playlists
+        for(Playlist p : library_playlists)
+            if(p.getName().toLowerCase().contains(query.toLowerCase()))
+                result.add(p);
 
         return result;
     }
