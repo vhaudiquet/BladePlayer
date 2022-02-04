@@ -9,8 +9,8 @@ android {
         applicationId "v.blade"
         minSdk 21
         targetSdk 31
-        versionCode 26
-        versionName "2.1"
+        versionCode 27
+        versionName "2.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
