@@ -45,8 +45,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility sourceCompatibility
+        targetCompatibility targetCompatibility
     }
     buildFeatures {
         viewBinding true
@@ -56,9 +56,16 @@ android {
             excludes += ['log4j2.xml', 'META-INF/DEPENDENCIES']
         }
     }
+    buildToolsVersion '32.0.0'
 }
 
 dependencies {
+    /* stdlib */
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.6.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0'
+
     /* AndroidX (Jetpack) : compat libraries, and Material */
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'

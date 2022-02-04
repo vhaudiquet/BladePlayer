@@ -1,4 +1,7 @@
-// Top-level build file
+ext {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}// Top-level build file
 buildscript {
     repositories {
         google()
