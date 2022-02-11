@@ -42,13 +42,19 @@ public class LyricsActivity extends AppCompatActivity
             {
                 Response<GeniusService.SearchApiResponse> response = search.execute();
 
-                if(response.code() != 200 || response.body() == null)
+                if(response.code() != 200)
+                {
+                    return;
+                }
+
+                GeniusService.SearchApiResponse r = response.body();
+                if(r == null || r.response.hits.length == 0)
                 {
                     return;
                 }
 
                 runOnUiThread(() ->
-                        webView.loadUrl("https://genius.com" + response.body().response.hits[0].result.path));
+                        webView.loadUrl("https://genius.com" + r.response.hits[0].result.path));
             }
             catch(IOException e)
             {
