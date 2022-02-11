@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import v.blade.BladeApplication;
+import v.blade.R;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
 import v.blade.ui.LibraryFragment;
@@ -599,6 +600,9 @@ public class Library
         //TODO : improve search, for now we just do "contains", cringe
         ArrayList<LibraryObject> result = new ArrayList<>();
 
+        //Add separator
+        result.add(new Separator(BladeApplication.appContext.getString(R.string.songs)));
+
         //Add songs from library and handles
         for(Song s : songs_list)
             if(s.getName().toLowerCase().contains(query.toLowerCase()))
@@ -608,15 +612,24 @@ public class Library
             if(s.getName().toLowerCase().contains(query.toLowerCase()) && !result.contains(s))
                 result.add(s);
 
+        //Add separator
+        result.add(new Separator(BladeApplication.appContext.getString(R.string.albums)));
+
         //Add albums
         for(Album a : albums_list)
             if(a.getName().toLowerCase().contains(query.toLowerCase()))
                 result.add(a);
 
+        //Add separator
+        result.add(new Separator(BladeApplication.appContext.getString(R.string.artists)));
+
         //Add artists
         for(Artist a : artists_list)
             if(a.getName().toLowerCase().contains(query.toLowerCase()))
                 result.add(a);
+
+        //Add separator
+        result.add(new Separator(BladeApplication.appContext.getString(R.string.playlists)));
 
         //Add playlists
         for(Playlist p : library_playlists)

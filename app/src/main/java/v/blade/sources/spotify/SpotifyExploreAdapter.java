@@ -60,7 +60,6 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
         TextView titleView;
         ImageView imageView;
         TextView subtitleView;
-        TextView labelView;
         ImageView moreView;
 
         public ViewHolder(@NonNull View itemView)
@@ -69,11 +68,13 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
             titleView = itemView.findViewById(R.id.item_element_title);
             subtitleView = itemView.findViewById(R.id.item_element_subtitle);
             imageView = itemView.findViewById(R.id.item_element_image);
-            labelView = itemView.findViewById(R.id.item_element_label);
 
             moreView = itemView.findViewById(R.id.item_element_more);
-            moreView.setImageResource(R.drawable.ic_more_vert);
-            moreView.setOnClickListener(SpotifyExploreAdapter.this::onMoreClick);
+            if(moreView != null)
+            {
+                moreView.setImageResource(R.drawable.ic_more_vert);
+                moreView.setOnClickListener(SpotifyExploreAdapter.this::onMoreClick);
+            }
         }
     }
 
@@ -434,7 +435,7 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_label_layout, parent, false);
+                .inflate(viewType == 0 ? R.layout.item_layout : R.layout.item_label_layout, parent, false);
 
         return new ViewHolder(view);
     }
@@ -448,18 +449,31 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
         int currentArtistsLen = currentArtists == null ? 0 : currentArtists.items.length;
         int currentPlaylistsLen = currentPlaylists == null ? 0 : currentPlaylists.items.length;
 
-        //Songs
-        if(currentTracksLen > position)
+        if(position == 0)
         {
-            if(position == 0)
-            {
-                holder.labelView.setVisibility(View.VISIBLE);
-                holder.labelView.setText(R.string.songs);
-            }
-            else
-                holder.labelView.setVisibility(View.GONE);
+            holder.titleView.setText(R.string.songs);
+            return;
+        }
+        else if(position == currentTracksLen + 1)
+        {
+            holder.titleView.setText(R.string.albums);
+            return;
+        }
+        else if(position == currentTracksLen + currentAlbumsLen + 2)
+        {
+            holder.titleView.setText(R.string.artists);
+            return;
+        }
+        else if(position == currentTracksLen + currentAlbumsLen + currentArtistsLen + 3)
+        {
+            holder.titleView.setText(R.string.playlists);
+            return;
+        }
 
-            SpotifyService.SimplifiedTrackObject track = currentTracks.items[position];
+        //Songs
+        if(currentTracksLen + 1 > position)
+        {
+            SpotifyService.SimplifiedTrackObject track = currentTracks.items[position - 1];
             holder.titleView.setText(track.name);
             holder.moreView.setTag(track);
 
@@ -512,17 +526,9 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
             });
         }
         //Albums
-        else if(currentAlbumsLen + currentTracksLen > position)
+        else if(currentAlbumsLen + currentTracksLen + 2 > position)
         {
-            if(position == currentTracksLen)
-            {
-                holder.labelView.setVisibility(View.VISIBLE);
-                holder.labelView.setText(R.string.albums);
-            }
-            else
-                holder.labelView.setVisibility(View.GONE);
-
-            SpotifyService.SimplifiedAlbumObject currentAlbum = currentAlbums.items[position - currentTracksLen];
+            SpotifyService.SimplifiedAlbumObject currentAlbum = currentAlbums.items[position - currentTracksLen - 2];
             holder.titleView.setText(currentAlbum.name);
             holder.moreView.setTag(currentAlbum);
 
@@ -556,17 +562,9 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     }));
         }
         //Artists
-        else if(currentArtistsLen + currentAlbumsLen + currentTracksLen > position)
+        else if(currentArtistsLen + currentAlbumsLen + currentTracksLen + 3 > position)
         {
-            if(position == currentTracksLen + currentAlbumsLen)
-            {
-                holder.labelView.setVisibility(View.VISIBLE);
-                holder.labelView.setText(R.string.artists);
-            }
-            else
-                holder.labelView.setVisibility(View.GONE);
-
-            SpotifyService.SimplifiedArtistObject currentArtist = currentArtists.items[position - currentTracksLen - currentAlbumsLen];
+            SpotifyService.SimplifiedArtistObject currentArtist = currentArtists.items[position - currentTracksLen - currentAlbumsLen - 3];
             holder.titleView.setText(currentArtist.name);
             holder.moreView.setTag(currentArtist);
 
@@ -623,17 +621,9 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
                     }));
         }
         //Playlists
-        else if(currentTracksLen + currentAlbumsLen + currentArtistsLen + currentPlaylistsLen > position)
+        else if(currentTracksLen + currentAlbumsLen + currentArtistsLen + currentPlaylistsLen + 4 > position)
         {
-            if(position == currentTracksLen + currentAlbumsLen)
-            {
-                holder.labelView.setVisibility(View.VISIBLE);
-                holder.labelView.setText(R.string.playlists);
-            }
-            else
-                holder.labelView.setVisibility(View.GONE);
-
-            SpotifyService.SimplifiedPlaylistObject currentPlaylist = currentPlaylists.items[position - currentTracksLen - currentAlbumsLen - currentArtistsLen];
+            SpotifyService.SimplifiedPlaylistObject currentPlaylist = currentPlaylists.items[position - currentTracksLen - currentAlbumsLen - currentArtistsLen - 4];
 
             holder.titleView.setText(currentPlaylist.name);
             holder.moreView.setTag(currentPlaylist);
@@ -668,6 +658,20 @@ public class SpotifyExploreAdapter extends RecyclerView.Adapter<SpotifyExploreAd
         int albums = currentAlbums == null ? 0 : currentAlbums.items.length;
         int artists = currentArtists == null ? 0 : currentArtists.items.length;
         int playlists = currentPlaylists == null ? 0 : currentPlaylists.items.length;
-        return tracks + albums + artists + playlists;
+        return tracks + albums + artists + playlists + 4;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        int tracks = currentTracks == null ? 0 : currentTracks.items.length;
+        int albums = currentAlbums == null ? 0 : currentAlbums.items.length;
+        int artists = currentArtists == null ? 0 : currentArtists.items.length;
+        if(position == 0 || position == tracks + 1
+                || position == tracks + albums + 2
+                || position == tracks + albums + artists + 3)
+            return 1;
+
+        return 0;
     }
 }

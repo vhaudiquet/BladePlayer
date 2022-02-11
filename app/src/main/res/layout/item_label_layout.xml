@@ -5,7 +5,7 @@
     android:background="?attr/selectableItemBackground">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/item_element_label"
+        android:id="@+id/item_element_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -13,62 +13,4 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/item_element_label">
-
-        <ImageView
-            android:id="@+id/item_element_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="2dp"
-            android:contentDescription="@string/item_image" />
-
-        <TextView
-            android:id="@+id/item_element_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_toStartOf="@id/item_element_more"
-            android:layout_toEndOf="@id/item_element_image"
-            android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textSize="18sp" />
-
-        <ImageView
-            android:id="@+id/item_element_subimage"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_below="@id/item_element_title"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="3dp"
-            android:layout_toEndOf="@id/item_element_image"
-            android:visibility="gone"
-            android:contentDescription="@string/item_image" />
-
-        <TextView
-            android:id="@+id/item_element_subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/item_element_title"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_toStartOf="@id/item_element_more"
-            android:layout_toEndOf="@id/item_element_subimage"
-            android:singleLine="true"
-            android:textSize="12sp" />
-
-
-        <ImageView
-            android:id="@+id/item_element_more"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="@string/item_more" />
-    </RelativeLayout>
 </RelativeLayout>
