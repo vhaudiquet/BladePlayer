@@ -150,6 +150,17 @@ public class LibraryFragment extends Fragment
             updateContent(element.getName(), ((Playlist) element).getSongs(), CURRENT_TYPE.PLAYLIST, element);
         else if(element instanceof Song)
         {
+            if(currentType == CURRENT_TYPE.SEARCH)
+            {
+                //On search, we only play current song
+                ArrayList<Song> list = new ArrayList<>();
+                list.add((Song) element);
+                MediaBrowserService.getInstance().setPlaylist(list);
+                MediaBrowserService.getInstance().setIndex(0);
+                MediaControllerCompat.getMediaController(requireActivity()).getTransportControls().play();
+                return;
+            }
+
             //noinspection unchecked
             MediaBrowserService.getInstance().setPlaylist(new ArrayList<>((List<Song>) current));
             MediaBrowserService.getInstance().setIndex(position);
