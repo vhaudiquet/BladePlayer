@@ -12,7 +12,7 @@
   <string name="playlists">Çalma Listeleri</string>
   <string name="sources">Kaynaklar</string>
   <string name="about">Hakkında</string>
-  <string name="add_source">Kaynak ekle...</string>
+  <string name="add_source">Kaynak ekle…</string>
   <string name="spotify">Spotify</string>
   <string name="spotify_desc">Spotify hesabından müzik çal</string>
   <string name="local">Yerel</string>
@@ -21,7 +21,7 @@
   <string name="item_more">Daha…</string>
   <string name="source_down_desc">Aşağı - Lütfen yapılandırmayı kontrol edin</string>
   <string name="source_need_init_desc">Başlatma gerek - Ya zorlayın ya da yapılandırmayı kontrol edin</string>
-  <string name="source_connecting_desc">Bağlanıyor...</string>
+  <string name="source_connecting_desc">Bağlanıyor…</string>
   <string name="source_ready_desc">Hazır</string>
   <string name="sign_in">Giriş yap</string>
   <string name="disconnected">Bağlantı kesildi</string>
@@ -51,17 +51,15 @@
   <string name="add_to_current_playlist">Geçerli çalma listesine ekle</string>
   <string name="shuffle">Karıştır</string>
   <string name="repeat">Tekrarla</string>
-  <string name="build_type" translatable="false">Yapı Türü</string>
   <string name="song_no_source_error">Bu şarkının hazır bir kaynağı yok. Kaynak yapılandırmasında bir sorun olmalı…</string>
   <string name="search">Ara</string>
-  <string name="add_to_playlist">Çalma listesine ekle...</string>
+  <string name="add_to_playlist">Çalma listesine ekle…</string>
   <string name="manage_libraries">Kitaplıkları yönet</string>
   <string name="remove_from_list">Çalma listesinden kaldır</string>
   <string name="song_added_to_list">%2$s listesine %1$s eklendi</string>
   <string name="song_added_to_list_error">%2$s listesine %1$s eklenemedi</string>
   <string name="new_playlist">Yeni çalma listesi</string>
   <string name="name">İsim</string>
-  <string name="ok" translatable="false">TAMAM</string>
   <string name="could_not_create_playlist">%1$s çalma listesi oluşturulamadı</string>
   <string name="are_you_sure_delete_playlist">%1$s çalma listesini silmek istediğinizden emin misiniz?</string>
   <string name="yes">Evet</string>
@@ -88,8 +86,8 @@
   <string name="collaborative">Ortak</string>
   <string name="player_not_ready">%1$s oynatıcısı hazır değildi
 </string>
-  <string name="welcome_to_blade">Blade Player'a hoş geldiniz!</string>
-  <string name="welcome_message">Görünüşe göre herhangi bir müzik "kaynağı" yapılandırmamışsınız (Blade'in müziğinizi alacağı hizmet). Lütfen ayarlara gidin (sağ üstteki simgeyi kullanarak), \'Kaynaklar\', + düğmesini kullanarak bir kaynak ekleyin ve yapılandırmak için üzerine tıklayın. İşiniz bittiğinde geri dönün, ayarların yanındaki \'senkronizasyon\' simgesine basın ve senkronizasyonu bekleyin. Her şey hazır, müziğinizi dinleyin!
+  <string name="welcome_to_blade">Blade Player\'a hoş geldiniz!</string>
+  <string name="welcome_message">Görünüşe göre herhangi bir müzik "kaynağı" yapılandırmamışsınız (Blade\'in müziğinizi alacağı hizmet). Lütfen ayarlara gidin (sağ üstteki simgeyi kullanarak), \'Kaynaklar\', + düğmesini kullanarak bir kaynak ekleyin ve yapılandırmak için üzerine tıklayın. İşiniz bittiğinde geri dönün, ayarların yanındaki \'senkronizasyon\' simgesine basın ve senkronizasyonu bekleyin. Her şey hazır, müziğinizi dinleyin!
 </string>
   <string name="dark_theme">Koyu tema</string>
   <string name="light_theme">Açık tema</string>
