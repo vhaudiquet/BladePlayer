@@ -88,6 +88,10 @@ public class PlayActivity extends AppCompatActivity
                     case R.id.action_manage_libraries:
                         Dialogs.openManageLibrariesDialog(this, current);
                         return true;
+                    case R.id.action_lyrics:
+                        Intent intent = new Intent(this, LyricsActivity.class);
+                        startActivity(intent);
+                        return true;
                 }
                 return false;
             });

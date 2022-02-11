@@ -3,13 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="v.blade">
     <!-- Start foreground service : for notifications -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!-- Read external storage : needed for Local source -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Read external storage : needed for Local source -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- Network, internet : needed for online sources -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Network, internet : needed for online sources -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -20,11 +18,16 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BladePlayer"
-        android:requestLegacyExternalStorage="true"
         tools:targetApi="n">
+        <activity
+            android:name=".ui.LyricsActivity"
+            android:label="@string/lyrics"
+            android:parentActivityName=".ui.PlayActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.SettingsActivity"
             android:exported="true"
@@ -50,9 +53,9 @@
         </activity>
         <activity
             android:name=".ui.PlayActivity"
+            android:exported="false"
             android:label="@string/currently_playing"
-            android:parentActivityName=".ui.MainActivity"
-            android:exported="false" />
+            android:parentActivityName=".ui.MainActivity" />
 
         <service
             android:name=".player.MediaBrowserService"

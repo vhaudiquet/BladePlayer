@@ -40,6 +40,9 @@
 -keep class v.blade.ui.SettingsActivity$AboutFragment
 -keep class v.blade.ui.SettingsActivity$SourcesFragment
 
+# For lyrics, we use Genius API, as a retrofit service : reflexion
+-keep class v.blade.ui.GeniusService$* {*;}
+
 # OkHttp version < 5.0 warns for this missing ; this is
 # a bug (https://github.com/square/okhttp/issues/6258)
 # We can safely ignore (those classes are not needed on Android)

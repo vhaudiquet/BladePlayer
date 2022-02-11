@@ -101,4 +101,5 @@
     <string name="could_not_show_explore">Impossible d\'afficher l\'onglet d\'exploration</string>
     <string name="could_not_browse_playlist">Impossible de trouver les titres de la playlist %1$s</string>
     <string name="selection_too_big">La sélection est trop grande</string>
+    <string name="lyrics">Paroles</string>
 </resources>

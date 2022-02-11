@@ -103,4 +103,5 @@
   <string name="could_not_show_explore">Keşfet sekmesi gösterilemedi</string>
   <string name="could_not_browse_playlist">%1$s çalma listesine göz atılamadı</string>
   <string name="selection_too_big">Seçim çok büyük</string>
+    <string name="lyrics">Sözler</string>
 </resources>

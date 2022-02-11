@@ -64,6 +64,7 @@
         <entry key="app/src/main/res/drawable/ic_sync.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/side_nav_bar.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable/sync.xml" value="0.21354166666666666" />
+        <entry key="app/src/main/res/layout/activity_lyrics.xml" value="0.359375" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/activity_play.xml" value="0.22" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.19739583333333333" />
@@ -81,6 +82,7 @@
         <entry key="app/src/main/res/layout/settings_fragment_sources.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/settings_fragment_spotify.xml" value="0.13677536231884058" />
         <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/menu/currentplay_more.xml" value="0.359375" />
         <entry key="app/src/main/res/menu/item_more.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/menu/main.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/xml/header_preferences.xml" value="0.19739583333333333" />
