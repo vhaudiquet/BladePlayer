@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Blade Player</string>
+  <string name="navigation_drawer_open">Gezinti çubuğunu aç</string>
+  <string name="navigation_drawer_close">Gezinti çubuğunu kapat</string>
+  <string name="action_sync">Senkronize et</string>
+  <string name="action_settings">Ayarlar</string>
+  <string name="library">Kitaplık</string>
+  <string name="artists">Sanatçılar</string>
+  <string name="albums">Albümler</string>
+  <string name="songs">Şarkılar</string>
+  <string name="playlists">Çalma Listeleri</string>
+  <string name="sources">Kaynaklar</string>
+  <string name="about">Hakkında</string>
+  <string name="add_source">Kaynak ekle...</string>
+  <string name="spotify">Spotify</string>
+  <string name="spotify_desc">Spotify hesabından müzik çal</string>
+  <string name="local">Yerel</string>
+  <string name="local_desc">Telefonundaki dosyalardan müzik çal</string>
+  <string name="item_image">Ürün resmi</string>
+  <string name="item_more">Daha…</string>
+  <string name="source_down_desc">Aşağı - Lütfen yapılandırmayı kontrol edin</string>
+  <string name="source_need_init_desc">Başlatma gerek - Ya zorlayın ya da yapılandırmayı kontrol edin</string>
+  <string name="source_connecting_desc">Bağlanıyor...</string>
+  <string name="source_ready_desc">Hazır</string>
+  <string name="sign_in">Giriş yap</string>
+  <string name="disconnected">Bağlantı kesildi</string>
+  <string name="auth_error">Doğrulama hatası</string>
+  <string name="init_error">Kaynak başlatılamadı</string>
+  <string name="force_init">Başlatmaya zorla</string>
+  <string name="remove">Kaldır</string>
+  <string name="version">Sürüm</string>
+  <string name="about_desc">Blade Player bir Android müzik oynatıcısıdır (@vhaudiquet tarafından) birden fazla hizmetten şarkı çalmak için yapılmıştır.</string>
+  <string name="about_license">Lisans : Apache 2.0</string>
+  <string name="about_logo">Logo : @zularizal</string>
+  <string name="about_sources">Kaynaklar : github.com/vhaudiquet/BladePlayer</string>
+  <string name="about_libraries_used">Kullanılan kütüphaneler :</string>
+  <string name="username">Kullanıcı adı</string>
+  <string name="password">Parola</string>
+  <string name="spotify_login_desc">(API ve Oynatıcı için kimlik bilgilerinizi tekrar girmeniz gerekebilir)</string>
+  <string name="please_sync_to_apply">Değişikliklerinizi uygulamak için lütfen kitaplığı senkronize edin</string>
+  <string name="play">Oynat</string>
+  <string name="pause">Durdur</string>
+  <string name="skip_next">Sonrakine atla
+</string>
+  <string name="skip_previous">Öncekine atla</string>
+  <string name="notification_channel_name">Medya oynatma</string>
+  <string name="notification_channel_description">Medya bildirimi ve kontroller</string>
+  <string name="currently_playing">Şu anda çalıyor</string>
+  <string name="play_next">Geçerli şarkıdan sonra çal</string>
+  <string name="add_to_current_playlist">Geçerli çalma listesine ekle</string>
+  <string name="shuffle">Karıştır</string>
+  <string name="repeat">Tekrarla</string>
+  <string name="build_type" translatable="false">Yapı Türü</string>
+  <string name="song_no_source_error">Bu şarkının hazır bir kaynağı yok. Kaynak yapılandırmasında bir sorun olmalı…</string>
+  <string name="search">Ara</string>
+  <string name="add_to_playlist">Çalma listesine ekle...</string>
+  <string name="manage_libraries">Kitaplıkları yönet</string>
+  <string name="remove_from_list">Çalma listesinden kaldır</string>
+  <string name="song_added_to_list">%2$s listesine %1$s eklendi</string>
+  <string name="song_added_to_list_error">%2$s listesine %1$s eklenemedi</string>
+  <string name="new_playlist">Yeni çalma listesi</string>
+  <string name="name">İsim</string>
+  <string name="ok" translatable="false">TAMAM</string>
+  <string name="could_not_create_playlist">%1$s çalma listesi oluşturulamadı</string>
+  <string name="are_you_sure_delete_playlist">%1$s çalma listesini silmek istediğinizden emin misiniz?</string>
+  <string name="yes">Evet</string>
+  <string name="no">Hayır</string>
+  <string name="playlist_removed">%1$s çalma listesi kaldırıldı</string>
+  <string name="delete_playlist">Çalma listesini sil</string>
+  <string name="playlist_could_not_remove">%1$s çalma listesi kaldırılamadı</string>
+  <string name="song_added_to_library">%1$s şarkısı kitaplığa eklendi</string>
+  <string name="song_added_to_library_error">%1$s şarkısı kitaplığa eklenemedi
+</string>
+  <string name="song_removed_from_library">%1$s şarkısı kitaplıktan kaldırıldı
+</string>
+  <string name="song_removed_from_library_error">%1$s şarkısı kitaplıktan kaldırılamadı</string>
+  <string name="are_you_sure_remove_from_list">%1$s şarkısını %2$s çalma listesinden kaldırmak istediğinizden emin misiniz?
+</string>
+  <string name="song_removed_from_list">%1$s, %2$s çalma listesinden kaldırıldı</string>
+  <string name="song_removed_from_list_error">%1$s, %2$s çalma listesinden kaldırılamadı</string>
+  <string name="spotify_player_panic">Spotify oynatıcı hatası, bir sorun olmalı (internet/ayarlar ?)</string>
+  <string name="grant_storage_permission">Depolama alanına erişim izni verin</string>
+  <string name="permission_already_granted">İzin zaten verildi
+</string>
+  <string name="permission_granted">İzin verildi !
+</string>
+  <string name="collaborative">Ortak</string>
+  <string name="player_not_ready">%1$s oynatıcısı hazır değildi
+</string>
+  <string name="welcome_to_blade">Blade Player'a hoş geldiniz!</string>
+  <string name="welcome_message">Görünüşe göre herhangi bir müzik "kaynağı" yapılandırmamışsınız (Blade'in müziğinizi alacağı hizmet). Lütfen ayarlara gidin (sağ üstteki simgeyi kullanarak), \'Kaynaklar\', + düğmesini kullanarak bir kaynak ekleyin ve yapılandırmak için üzerine tıklayın. İşiniz bittiğinde geri dönün, ayarların yanındaki \'senkronizasyon\' simgesine basın ve senkronizasyonu bekleyin. Her şey hazır, müziğinizi dinleyin!
+</string>
+  <string name="dark_theme">Koyu tema</string>
+  <string name="light_theme">Açık tema</string>
+  <string name="system_default">Sistem varsayılanı</string>
+  <string name="explore">Keşfet</string>
+  <string name="explore_sources">Kaynakları keşfet</string>
+  <string name="cant_search_here">Burada aranacak bir şey yok</string>
+  <string name="could_not_search_for">%1$s aranamadı
+</string>
+  <string name="could_not_browse_album">%1$s albümüne göz atılamadı
+</string>
+  <string name="could_not_browse_artist">%1$s sanatçısına göz atılamadı</string>
+  <string name="could_not_show_explore">Keşfet sekmesi gösterilemedi</string>
+  <string name="could_not_browse_playlist">%1$s çalma listesine göz atılamadı</string>
+  <string name="selection_too_big">Seçim çok büyük</string>
+</resources>
