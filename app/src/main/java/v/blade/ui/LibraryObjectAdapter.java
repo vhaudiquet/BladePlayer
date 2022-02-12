@@ -148,7 +148,7 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         if(convertView == null)
         {
             convertView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_label_layout, parent, false);
+                    .inflate(R.layout.item_layout, parent, false);
             viewHolder = new ViewHolder(convertView);
             viewHolder.itemView.setOnClickListener(clickListener);
             convertView.setTag(viewHolder);
@@ -188,51 +188,57 @@ public class LibraryObjectAdapter extends RecyclerView.Adapter<LibraryObjectAdap
         viewHolder.titleView.setText(current.getName());
 
         RequestCreator image = current.getImageRequest();
-        if(image != null)
-            image.into(viewHolder.imageView);
-        else if(current instanceof Artist)
-            viewHolder.imageView.setImageResource(R.drawable.ic_artist);
-        else if(current instanceof Album || current instanceof Song)
-            viewHolder.imageView.setImageResource(R.drawable.ic_album);
-        else if(current instanceof Playlist)
-            viewHolder.imageView.setImageResource(R.drawable.ic_playlist);
+        if(viewHolder.imageView != null)
+        {
+            if(image != null)
+                image.into(viewHolder.imageView);
+            else if(current instanceof Artist)
+                viewHolder.imageView.setImageResource(R.drawable.ic_artist);
+            else if(current instanceof Album || current instanceof Song)
+                viewHolder.imageView.setImageResource(R.drawable.ic_album);
+            else if(current instanceof Playlist)
+                viewHolder.imageView.setImageResource(R.drawable.ic_playlist);
+        }
 
         //Clear subimageview
         if(viewHolder.subimageView != null)
             viewHolder.subimageView.setVisibility(View.GONE);
 
-        if(current instanceof Song)
+        if(viewHolder.subtitleView != null)
         {
-            viewHolder.subtitleView.setText(((Song) current).getArtistsString());
-        }
-        else if(current instanceof Album)
-        {
-            viewHolder.subtitleView.setText(((Album) current).getArtistsString());
-        }
-        else if(current instanceof Artist)
-        {
-            String artistTrackCount = ((Artist) current).getTrackCount() + " "
-                    + viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
-            viewHolder.subtitleView.setText(artistTrackCount);
-        }
-        else if(current instanceof Playlist)
-        {
-            if(((Playlist) current).getSongs() != null)
+            if(current instanceof Song)
             {
-                String subtitle = ((Playlist) current).getSongs().size() + " " +
-                        viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
-                if(((Playlist) current).getSubtitle() != null && !((Playlist) current).getSubtitle().equals(""))
-                    subtitle += (" \u00B7 " + ((Playlist) current).getSubtitle());
-
-                viewHolder.subtitleView.setText(subtitle);
+                viewHolder.subtitleView.setText(((Song) current).getArtistsString());
             }
-            else viewHolder.subtitleView.setText("");
-
-            //Set subimage view
-            if(((Playlist) current).getSource() != null)
+            else if(current instanceof Album)
             {
-                viewHolder.subimageView.setVisibility(View.VISIBLE);
-                viewHolder.subimageView.setImageResource(((Playlist) current).getSource().source.getImageResource());
+                viewHolder.subtitleView.setText(((Album) current).getArtistsString());
+            }
+            else if(current instanceof Artist)
+            {
+                String artistTrackCount = ((Artist) current).getTrackCount() + " "
+                        + viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
+                viewHolder.subtitleView.setText(artistTrackCount);
+            }
+            else if(current instanceof Playlist)
+            {
+                if(((Playlist) current).getSongs() != null)
+                {
+                    String subtitle = ((Playlist) current).getSongs().size() + " " +
+                            viewHolder.itemView.getContext().getString(R.string.songs).toLowerCase();
+                    if(((Playlist) current).getSubtitle() != null && !((Playlist) current).getSubtitle().equals(""))
+                        subtitle += (" \u00B7 " + ((Playlist) current).getSubtitle());
+
+                    viewHolder.subtitleView.setText(subtitle);
+                }
+                else viewHolder.subtitleView.setText("");
+
+                //Set subimage view
+                if(((Playlist) current).getSource() != null)
+                {
+                    viewHolder.subimageView.setVisibility(View.VISIBLE);
+                    viewHolder.subimageView.setImageResource(((Playlist) current).getSource().source.getImageResource());
+                }
             }
         }
 
