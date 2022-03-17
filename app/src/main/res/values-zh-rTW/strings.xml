@@ -1,0 +1,107 @@
+<resources>
+    <string name="app_name">Blade 播放器</string>
+
+    <string name="navigation_drawer_open">開啟導航欄</string>
+    <string name="navigation_drawer_close">關閉導航欄</string>
+
+    <string name="action_sync">同步</string>
+    <string name="action_settings">設定</string>
+
+    <string name="library">庫</string>
+    <string name="artists">歌手</string>
+    <string name="albums">專輯</string>
+    <string name="songs">歌曲</string>
+    <string name="playlists">播放列表</string>
+
+    <string name="sources">來源</string>
+    <string name="about">關於</string>
+
+    <string name="add_source">新增源…</string>
+
+    <string name="spotify">Spotify</string>
+    <string name="spotify_desc">播放來自 Spotify 賬戶的音樂</string>
+    <string name="local">本地</string>
+    <string name="local_desc">播放手機上儲存的音樂</string>
+
+    <string name="item_image">專案圖片</string>
+    <string name="item_more">更多…</string>
+
+    <string name="source_down_desc">已離線 - 請檢查配置檔案</string>
+    <string name="source_need_init_desc">需初始化 - 強制或檢查配置</string>
+    <string name="source_connecting_desc">連線中…</string>
+    <string name="source_ready_desc">Ready</string>
+
+    <string name="sign_in">登入</string>
+    <string name="disconnected">已斷開</string>
+    <string name="auth_error">身份驗證錯誤</string>
+    <string name="init_error">初始化失敗</string>
+    <string name="force_init">強制初始化</string>
+    <string name="remove">刪除</string>
+    <string name="version">版本</string>
+    <string name="about_desc">Blade Player 是一個安卓音樂播放器（由 @vhaudiquet 製作），用於播放來自多個服務的歌曲。</string>
+    <string name="about_license">許可證 : Apache 2.0</string>
+    <string name="about_logo">圖示 : @zularizal</string>
+    <string name="about_sources">原始碼 : github.com/vhaudiquet/BladePlayer</string>
+    <string name="about_libraries_used">使用的庫 :</string>
+    <string name="username">使用者名稱</string>
+    <string name="password">密碼</string>
+    <string name="spotify_login_desc">(當使用 API 或播放器時，你也許需要重新登入)</string>
+    <string name="please_sync_to_apply">請同步庫以應用您的更改</string>
+    <string name="play">播放</string>
+    <string name="pause">暫停</string>
+    <string name="skip_next">下一個</string>
+    <string name="skip_previous">上一個</string>
+    <string name="notification_channel_name">媒體播放</string>
+    <string name="notification_channel_description">媒體通知與控制</string>
+    <string name="currently_playing">當前播放</string>
+    <string name="play_next">下一首播放</string>
+    <string name="add_to_current_playlist">加入當前播放列表</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat">單曲迴圈</string>
+    <string name="build_type" translatable="false">Build type</string>
+    <string name="song_no_source_error">這首歌沒有任何可用來源，難道是來源配置出了點問題？</string>
+    <string name="search">搜尋</string>
+    <string name="add_to_playlist">加入播放列表…</string>
+    <string name="manage_libraries">管理庫</string>
+    <string name="remove_from_list">從播放列表移除</string>
+    <string name="song_added_to_list">已新增 %1$s 至 %2$s</string>
+    <string name="song_added_to_list_error">無法將 %1$s 新增至 %2$s</string>
+    <string name="new_playlist">新建播放列表</string>
+    <string name="name">名字</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="could_not_create_playlist">無法建立 %1$s</string>
+    <string name="are_you_sure_delete_playlist">你確定要刪除 %1$s 嗎？</string>
+    <string name="yes">好的</string>
+    <string name="no">不要</string>
+    <string name="playlist_removed">已刪除 %1$s</string>
+    <string name="delete_playlist">刪除播放列表</string>
+    <string name="playlist_could_not_remove">無法刪除 %1$s</string>
+    <string name="song_added_to_library">%1$s 已加入庫</string>
+    <string name="song_added_to_library_error">%1$s 無法被加入庫</string>
+    <string name="song_removed_from_library">%1$s 已從庫中移除</string>
+    <string name="song_removed_from_library_error">%1$s 無法從庫中移除</string>
+    <string name="are_you_sure_remove_from_list">你確定要將 %1$s 從 %2$s 中刪除嗎？</string>
+    <string name="song_removed_from_list">%1$s 已從 %2$s 中移除</string>
+    <string name="song_removed_from_list_error">%1$s 無法從 %2$s 中移除</string>
+    <string name="spotify_player_panic">Spotify 播放出錯，難道 網際網路 / 設定 出了問題？</string>
+    <string name="grant_storage_permission">授予儲存空間許可權</string>
+    <string name="permission_already_granted">許可權已授予</string>
+    <string name="permission_granted">拿到許可權啦!</string>
+    <string name="collaborative">Collaborative</string>
+    <string name="player_not_ready">%1$s 播放器還沒準備好呢</string>
+    <string name="welcome_to_blade">歡迎使用 Blade 播放器！</string>
+    <string name="welcome_message">看來你沒有配置任何音樂來源（Blade 將播放其中的音樂）。請進入設定（右上角圖示），來源，使用 + 按鈕新增一個來源，並配置它。完成後回到主頁，點選設定旁邊的 "同步" 圖示，等待片刻，享受你的音樂吧！</string>
+    <string name="dark_theme">深色模式</string>
+    <string name="light_theme">亮色模式</string>
+    <string name="system_default">系統預設</string>
+    <string name="explore">探索</string>
+    <string name="explore_sources">探索來源</string>
+    <string name="cant_search_here">這裡...好像什麼都沒有？</string>
+    <string name="could_not_search_for">無法搜尋 %1$s</string>
+    <string name="could_not_browse_album">無法檢視專輯 %1$s</string>
+    <string name="could_not_browse_artist">無法檢視歌手 %1$s</string>
+    <string name="could_not_show_explore">無法顯示探索頁</string>
+    <string name="could_not_browse_playlist">無法檢視播放列表 %1$s</string>
+    <string name="selection_too_big">你選的太多啦</string>
+    <string name="lyrics">歌詞</string>
+</resources>
