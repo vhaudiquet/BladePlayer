@@ -170,7 +170,6 @@ public class Spotify extends Source
                 okhttp3.Response response = call.execute();
                 if(!response.isSuccessful() || response.code() != 200 || response.body() == null)
                 {
-                    //noinspection ConstantConditions
                     String responseBody = response.body() == null ? "Unknown error" : response.body().string();
                     //Toast.makeText(BladeApplication.appContext, BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show();
                     System.err.println("BLADE-SPOTIFY: " + BladeApplication.appContext.getString(R.string.init_error) + " " + BladeApplication.appContext.getString(NAME_RESOURCE) + " (" + response.code() + " : " + responseBody + ")");
@@ -179,7 +178,6 @@ public class Spotify extends Source
                 }
 
                 Gson gson = new Gson();
-                //noinspection ConstantConditions
                 String rstring = response.body().string();
                 SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
                 if(sr == null)
@@ -235,14 +233,12 @@ public class Spotify extends Source
             okhttp3.Response response = call.execute();
             if(!response.isSuccessful() || response.code() != 200 || response.body() == null)
             {
-                //noinspection ConstantConditions
                 String responseBody = response.body() == null ? "Unknown error" : response.body().string();
                 System.err.println("BLADE-SPOTIFY: Could not refresh token" + " (" + response.code() + " : " + responseBody + ")");
                 return;
             }
 
             Gson gson = new Gson();
-            //noinspection ConstantConditions
             String rstring = response.body().string();
             SpotifyTokenResponse sr = gson.fromJson(rstring, SpotifyTokenResponse.class);
             if(sr == null)
@@ -925,6 +921,11 @@ public class Spotify extends Source
             {
                 binding.settingsSpotifyAccount.setText(spotify.account_name);
                 binding.settingsSpotifyAccount.setTextColor(getResources().getColor(R.color.okGreen));
+
+                // Hide login buttons (we are already connected)
+                binding.settingsSpotifyUser.setVisibility(View.GONE);
+                binding.settingsSpotifyPassword.setVisibility(View.GONE);
+                binding.settingsSpotifySignIn.setVisibility(View.GONE);
             }
 
             //Set 'sign in' button action : call spotify auth
@@ -1059,7 +1060,6 @@ public class Spotify extends Source
                     okhttp3.Response postResponse = call.execute();
                     if(!postResponse.isSuccessful() || postResponse.code() != 200 || postResponse.body() == null)
                     {
-                        //noinspection ConstantConditions
                         String responseBody = (postResponse.body() == null ? "Unknown error" : postResponse.body().string());
                         requireActivity().runOnUiThread(() ->
                                 Toast.makeText(getContext(), getString(R.string.auth_error) + " (" + postResponse.code() + " : " + responseBody + ")", Toast.LENGTH_SHORT).show());
