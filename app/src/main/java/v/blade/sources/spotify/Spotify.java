@@ -931,6 +931,7 @@ public class Spotify extends Source
                 binding.settingsSpotifyUser.setVisibility(View.GONE);
                 binding.settingsSpotifyPassword.setVisibility(View.GONE);
                 binding.settingsSpotifySignIn.setVisibility(View.GONE);
+                binding.settingsSpotifyCredentialsTwice.setVisibility(View.GONE);
             }
 
             //Set 'sign in' button action : call spotify auth
