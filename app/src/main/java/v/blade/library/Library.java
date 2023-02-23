@@ -430,7 +430,7 @@ public class Library
         }
     }
 
-    private static JsonObject songJson(Song s, Gson gson)
+    public static JsonObject songJson(Song s, Gson gson)
     {
         JsonObject songJson = new JsonObject();
         songJson.addProperty("name", s.getName());
@@ -536,7 +536,7 @@ public class Library
         }
     }
 
-    private static Song jsonSong(JSONObject s, boolean handled) throws JSONException
+    public static Song jsonSong(JSONObject s, boolean handled) throws JSONException
     {
         JSONArray artistsJson = s.getJSONArray("artists");
         String[] artists = new String[artistsJson.length()];

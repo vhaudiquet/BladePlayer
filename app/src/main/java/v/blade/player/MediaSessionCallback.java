@@ -153,7 +153,9 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
 
         updatePlaybackState(false);
         service.notification.update();
-        service.current.pause();
+
+        if(service.current != null)
+            service.current.pause();
     }
 
     @Override

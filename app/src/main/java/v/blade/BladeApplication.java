@@ -14,9 +14,17 @@
  */
 package v.blade;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
@@ -26,6 +34,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import v.blade.library.Library;
+import v.blade.player.MediaBrowserService;
 import v.blade.sources.Source;
 
 public class BladeApplication extends Application
@@ -44,6 +53,52 @@ public class BladeApplication extends Application
     protected void attachBaseContext(Context base)
     {
         super.attachBaseContext(base);
+
+        this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks()
+        {
+            @Override
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle)
+            {
+
+            }
+
+            @Override
+            public void onActivityStarted(@NonNull Activity activity)
+            {
+
+            }
+
+            @Override
+            public void onActivityResumed(@NonNull Activity activity)
+            {
+
+            }
+
+            @Override
+            public void onActivityPaused(@NonNull Activity activity)
+            {
+                System.out.println("BLADE: onActivityPaused....");
+                MediaBrowserService.getInstance().savePlaylist();
+            }
+
+            @Override
+            public void onActivityStopped(@NonNull Activity activity)
+            {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle)
+            {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(@NonNull Activity activity)
+            {
+
+            }
+        });
 
         //Restore theme from preferences
         String dark_theme = PreferenceManager.getDefaultSharedPreferences(base).getString("dark_theme", "system_default");
@@ -68,6 +123,21 @@ public class BladeApplication extends Application
         {
             Source.loadSourcesFromSave();
             Source.initSources();
+
+            // Bind MediaBrowserService to application
+            Intent serviceIntent = new Intent(this, MediaBrowserService.class);
+            bindService(serviceIntent, new ServiceConnection()
+            {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service)
+                {
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name)
+                {
+                }
+            }, 0);
 
             Library.loadFromCache();
 

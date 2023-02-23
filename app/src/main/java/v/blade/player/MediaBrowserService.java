@@ -15,15 +15,32 @@ import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import v.blade.BladeApplication;
+import v.blade.library.Library;
 import v.blade.library.Song;
 import v.blade.sources.Source;
 import v.blade.ui.PlayActivity;
 
 public class MediaBrowserService extends MediaBrowserServiceCompat
 {
+    private static final String CURRENT_PLAYLIST_FILE = "/current_playlist.json";
     private static final String MEDIA_ROOT_ID = "MEDIA_ROOT";
 
     private static MediaBrowserService instance;
@@ -150,6 +167,88 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
         if(current != null) current.pause();
         current = null;
         this.playlist = list;
+    }
+
+    public void savePlaylist()
+    {
+        if(playlist == null || playlist.isEmpty())
+        {
+            File currentPlaylistFile = new File(BladeApplication.appContext.getFilesDir().getAbsolutePath() + CURRENT_PLAYLIST_FILE);
+            currentPlaylistFile.delete();
+            return;
+        }
+
+        Gson gson = new Gson();
+
+        JsonObject currentPlaylistObject = new JsonObject();
+
+        JsonArray songs = new JsonArray();
+        for(Song s : playlist)
+        {
+            JsonObject songJson = Library.songJson(s, gson);
+            songs.add(songJson);
+        }
+        currentPlaylistObject.add("songs", songs);
+
+        currentPlaylistObject.addProperty("index", index);
+
+        File currentPlaylistFile = new File(BladeApplication.appContext.getFilesDir().getAbsolutePath() + CURRENT_PLAYLIST_FILE);
+        try
+        {
+            //noinspection ResultOfMethodCallIgnored
+            currentPlaylistFile.delete();
+            if(!currentPlaylistFile.createNewFile())
+            {
+                System.err.println("Could not save current playlist : could not create file");
+                return;
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(currentPlaylistFile));
+            writer.write(gson.toJson(currentPlaylistObject));
+            writer.close();
+        }
+        catch(IOException ignored)
+        {
+        }
+    }
+
+    public void restorePlaylist()
+    {
+        File currentPlaylistFile = new File(BladeApplication.appContext.getFilesDir().getAbsolutePath() + CURRENT_PLAYLIST_FILE);
+        if(!currentPlaylistFile.exists()) return;
+
+        try
+        {
+            //read file
+            BufferedReader reader = new BufferedReader(new FileReader(currentPlaylistFile));
+            StringBuilder js = new StringBuilder();
+            while(reader.ready()) js.append(reader.readLine()).append("\n");
+            reader.close();
+
+            //obtain from JSON
+            JSONObject root = new JSONObject(js.toString());
+            int index = root.getInt("index");
+
+            ArrayList<Song> playlist = new ArrayList<>();
+            JSONArray library = root.getJSONArray("songs");
+            for(int i = 0; i < library.length(); i++)
+            {
+                JSONObject s = library.getJSONObject(i);
+                playlist.add(Library.jsonSong(s, true));
+            }
+
+            if(playlist.isEmpty()) return;
+
+            // Restore media player
+            this.startIfNotStarted();
+            this.setPlaylist(playlist);
+            this.setIndex(index);
+            //mediaSession.getController().getTransportControls().play();
+            mediaSession.getController().getTransportControls().pause();
+        }
+        catch(IOException | JSONException ignored)
+        {
+        }
     }
 
     public void setIndex(int index)
