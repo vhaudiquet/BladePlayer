@@ -94,4 +94,8 @@
     <string name="could_not_browse_playlist">"Playlist %1$s konnte nicht durchsucht werden  "</string>
     <string name="selection_too_big">Auswahl ist zu groß</string>
     <string name="lyrics">Text</string>
+    <string name="audio_quality">Audio qualität</string>
+    <string name="quality_normal">Normal</string>
+    <string name="quality_high">Hoch</string>
+    <string name="quality_very_high">Sehr hoch</string>
 </resources>

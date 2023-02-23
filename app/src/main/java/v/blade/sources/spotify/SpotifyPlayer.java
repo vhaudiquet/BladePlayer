@@ -134,6 +134,7 @@ public class SpotifyPlayer extends Source.Player
         PlayerConfiguration playerConfiguration = new PlayerConfiguration.Builder()
                 .setOutput(PlayerConfiguration.AudioOutput.CUSTOM)
                 .setOutputClass(BladeSinkOutput.class.getName())
+                .setPreferredQuality(current.spotifyAudioQuality)
                 //.setAutoplayEnabled(false)
                 // NOTE : when i set autoplay disabled, the player crashes at the end of play
                 //  and i can't seem to be able to intercept that crash ; so i just set autoplay

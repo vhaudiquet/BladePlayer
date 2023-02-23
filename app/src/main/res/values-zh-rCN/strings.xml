@@ -58,7 +58,6 @@
     <string name="add_to_current_playlist">加入当前播放列表</string>
     <string name="shuffle">Shuffle</string>
     <string name="repeat">单曲循环</string>
-    <string name="build_type" translatable="false">Build type</string>
     <string name="song_no_source_error">这首歌没有任何可用来源，难道是来源配置出了点问题？</string>
     <string name="search">搜索</string>
     <string name="add_to_playlist">加入播放列表…</string>
@@ -68,7 +67,6 @@
     <string name="song_added_to_list_error">无法将 %1$s 添加至 %2$s</string>
     <string name="new_playlist">新建播放列表</string>
     <string name="name">名字</string>
-    <string name="ok" translatable="false">OK</string>
     <string name="could_not_create_playlist">无法创建 %1$s</string>
     <string name="are_you_sure_delete_playlist">你确定要删除 %1$s 吗？</string>
     <string name="yes">好的</string>
@@ -96,7 +94,7 @@
     <string name="system_default">系统默认</string>
     <string name="explore">探索</string>
     <string name="explore_sources">探索来源</string>
-    <string name="cant_search_here">这里...好像什么都没有？</string>
+    <string name="cant_search_here">这里…好像什么都没有？</string>
     <string name="could_not_search_for">无法搜索 %1$s</string>
     <string name="could_not_browse_album">无法查看专辑 %1$s</string>
     <string name="could_not_browse_artist">无法查看歌手 %1$s</string>
@@ -104,4 +102,8 @@
     <string name="could_not_browse_playlist">无法查看播放列表 %1$s</string>
     <string name="selection_too_big">你选的太多啦</string>
     <string name="lyrics">歌词</string>
+    <string name="audio_quality">音质</string>
+    <string name="quality_normal">普通的</string>
+    <string name="quality_high">高的</string>
+    <string name="quality_very_high">很高</string>
 </resources>

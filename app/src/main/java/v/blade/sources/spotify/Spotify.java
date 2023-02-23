@@ -7,6 +7,8 @@ import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,6 +50,7 @@ import v.blade.library.Song;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
 import v.blade.ui.ExploreFragment;
+import xyz.gianlu.librespot.audio.decoders.AudioQuality;
 
 /*
  * Spotify strategy :
@@ -78,6 +81,8 @@ public class Spotify extends Source
             "user-read-recently-played", "user-top-read", "user-read-playback-position", "user-read-playback-state", "user-modify-playback-state", "user-read-currently-playing"};
     private static final int SPOTIFY_REQUEST_CODE = 0x11;
     protected static final String REDIRECT_URI = "spotify-sdk://auth";
+
+    public AudioQuality spotifyAudioQuality = AudioQuality.HIGH;
 
     public Spotify()
     {
@@ -995,6 +1000,47 @@ public class Spotify extends Source
                                 .build();
                         AuthorizationClient.openLoginActivity(requireActivity(), SPOTIFY_REQUEST_CODE, request);
                     }));
+
+            // Set 'audio quality' content + action
+            ArrayAdapter<CharSequence> audioQualityAdapter = ArrayAdapter.createFromResource(this.requireActivity(), R.array.spotify_audio_quality, android.R.layout.simple_spinner_item);
+            audioQualityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.settingsSpotifyAudioQuality.setAdapter(audioQualityAdapter);
+            switch(spotify.spotifyAudioQuality)
+            {
+                case NORMAL:
+                    binding.settingsSpotifyAudioQuality.setSelection(0);
+                    break;
+                case HIGH:
+                    binding.settingsSpotifyAudioQuality.setSelection(1);
+                    break;
+                case VERY_HIGH:
+                    binding.settingsSpotifyAudioQuality.setSelection(2);
+                    break;
+            }
+            binding.settingsSpotifyAudioQuality.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+            {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
+                {
+                    switch(i)
+                    {
+                        case 0:
+                            spotify.spotifyAudioQuality = AudioQuality.NORMAL;
+                            break;
+                        case 1:
+                            spotify.spotifyAudioQuality = AudioQuality.HIGH;
+                            break;
+                        case 2:
+                            spotify.spotifyAudioQuality = AudioQuality.VERY_HIGH;
+                            break;
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView)
+                {
+                }
+            });
 
             binding.settingsSpotifyInit.setOnClickListener(view ->
             {
