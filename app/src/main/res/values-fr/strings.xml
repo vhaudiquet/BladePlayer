@@ -106,4 +106,6 @@
     <string name="quality_normal">Normale</string>
     <string name="quality_high">Haute</string>
     <string name="quality_very_high">Très haute</string>
+    <string name="preference_show_album_artist_only">Afficher seulement les artistes d\'album</string>
+    <string name="preference_show_album_artist_only_summary">Cacher les artistes qui n\'apparaissent qu\'en featuring (dans des albums d\'autres artistes) dans votre bibliothèque</string>
 </resources>

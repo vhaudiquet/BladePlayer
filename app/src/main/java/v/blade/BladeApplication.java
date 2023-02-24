@@ -59,19 +59,16 @@ public class BladeApplication extends Application
             @Override
             public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle)
             {
-
             }
 
             @Override
             public void onActivityStarted(@NonNull Activity activity)
             {
-
             }
 
             @Override
             public void onActivityResumed(@NonNull Activity activity)
             {
-
             }
 
             @Override
@@ -84,19 +81,16 @@ public class BladeApplication extends Application
             @Override
             public void onActivityStopped(@NonNull Activity activity)
             {
-
             }
 
             @Override
             public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle bundle)
             {
-
             }
 
             @Override
             public void onActivityDestroyed(@NonNull Activity activity)
             {
-
             }
         });
 

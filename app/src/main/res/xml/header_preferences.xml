@@ -7,6 +7,14 @@
         app:key="sources"
         app:title="@string/sources" />
 
+    <CheckBoxPreference
+        app:icon="@drawable/ic_album_artist_24px"
+        app:key="show_album_artist_only"
+        app:title="@string/preference_show_album_artist_only"
+        app:summary="@string/preference_show_album_artist_only_summary"
+        app:singleLineTitle="false"
+        app:defaultValue="true" />
+
     <ListPreference
         app:key="dark_theme"
         android:icon="@drawable/ic_dark_theme"

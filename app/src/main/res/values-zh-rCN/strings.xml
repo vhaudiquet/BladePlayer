@@ -106,4 +106,6 @@
     <string name="quality_normal">普通的</string>
     <string name="quality_high">高的</string>
     <string name="quality_very_high">很高</string>
+    <string name="preference_show_album_artist_only">仅显示专辑艺术家</string>
+    <string name="preference_show_album_artist_only_summary">隐藏仅出现在您资料库中其他艺术家专辑中的艺术家</string>
 </resources>

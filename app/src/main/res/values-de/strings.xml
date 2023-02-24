@@ -98,4 +98,6 @@
     <string name="quality_normal">Normal</string>
     <string name="quality_high">Hoch</string>
     <string name="quality_very_high">Sehr hoch</string>
+    <string name="preference_show_album_artist_only">Nur Albumkünstler anzeigen</string>
+    <string name="preference_show_album_artist_only_summary">Blenden Sie Künstler aus, die nur in Alben anderer Künstler in Ihrer Bibliothek enthalten sind</string>
 </resources>

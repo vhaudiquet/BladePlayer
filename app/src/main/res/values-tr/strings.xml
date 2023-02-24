@@ -99,13 +99,15 @@
 </string>
   <string name="could_not_browse_album">%1$s albümüne göz atılamadı
 </string>
-  <string name="could_not_browse_artist">%1$s sanatçısına göz atılamadı</string>
-  <string name="could_not_show_explore">Keşfet sekmesi gösterilemedi</string>
-  <string name="could_not_browse_playlist">%1$s çalma listesine göz atılamadı</string>
-  <string name="selection_too_big">Seçim çok büyük</string>
-  <string name="lyrics">Sözler</string>
-  <string name="audio_quality">Ses kalitesi</string>
-  <string name="quality_normal">Normal</string>
-  <string name="quality_high">Yüksek</string>
-  <string name="quality_very_high">Çok yüksek</string>
+    <string name="could_not_browse_artist">%1$s sanatçısına göz atılamadı</string>
+    <string name="could_not_show_explore">Keşfet sekmesi gösterilemedi</string>
+    <string name="could_not_browse_playlist">%1$s çalma listesine göz atılamadı</string>
+    <string name="selection_too_big">Seçim çok büyük</string>
+    <string name="lyrics">Sözler</string>
+    <string name="audio_quality">Ses kalitesi</string>
+    <string name="quality_normal">Normal</string>
+    <string name="quality_high">Yüksek</string>
+    <string name="quality_very_high">Çok yüksek</string>
+    <string name="preference_show_album_artist_only">Yalnızca albüm sanatçılarını göster</string>
+    <string name="preference_show_album_artist_only_summary">Yalnızca kitaplığınızdaki diğer sanatçıların albümlerinde yer alan sanatçıları gizleyin</string>
 </resources>

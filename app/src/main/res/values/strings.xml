@@ -108,4 +108,6 @@
     <string name="quality_normal">Normal</string>
     <string name="quality_high">High</string>
     <string name="quality_very_high">Very high</string>
+    <string name="preference_show_album_artist_only">Show album artists only</string>
+    <string name="preference_show_album_artist_only_summary">Hide artists that are only featured in other artists albums in your library</string>
 </resources>

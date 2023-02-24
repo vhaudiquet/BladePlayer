@@ -1,5 +1,7 @@
 package v.blade.library;
 
+import androidx.preference.PreferenceManager;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -88,8 +90,19 @@ public class Library
 
             if(current == null)
             {
-                current = new Artist(artists[i], artistMiniaturesUrl[i]);
-                library_artists.put(current.name.toLowerCase(), current);
+                current = handled_artists.get(artists[i].toLowerCase());
+
+                if(current == null)
+                {
+                    current = new Artist(artists[i], artistMiniaturesUrl[i]);
+
+                    if(PreferenceManager.getDefaultSharedPreferences(BladeApplication.appContext).getBoolean("show_album_artist_only", true))
+                        handled_artists.put(current.name.toLowerCase(), current);
+                    else
+                        library_artists.put(current.name.toLowerCase(), current);
+                }
+                else if(PreferenceManager.getDefaultSharedPreferences(BladeApplication.appContext).getBoolean("show_album_artist_only", true))
+                    library_artists.put(current.name.toLowerCase(), current);
             }
 
             sartists[i] = current;
@@ -135,6 +148,19 @@ public class Library
             s = new Song(title, salbum, sartists, track_number);
             library_songs.put(artists[0].toLowerCase() + ":" + album.toLowerCase() + ":" + title.toLowerCase(), s);
             for(Artist a : sartists) a.track_count++;
+            for(Artist a : saartists)
+            {
+                boolean found = false;
+                for(Artist already : sartists)
+                {
+                    if(already == a)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) a.track_count++;
+            }
             salbum.addSong(s);
         }
 
