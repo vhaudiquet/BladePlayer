@@ -128,7 +128,11 @@ public class MainActivity extends AppCompatActivity
 
                                 if(state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED)
                                 {
-                                    binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.GONE);
+                                    //binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.GONE);
+
+                                    // Try to restore playlist
+                                    // TODO: Do that in a better way maybe ? (catch when it does not work etc)
+                                    MediaBrowserService.getInstance().restorePlaylist();
                                     return;
                                 }
 
@@ -181,7 +185,7 @@ public class MainActivity extends AppCompatActivity
                         System.out.println("STOPPED");
 
                         // Try to restore playlist
-                        // TODO: Do that in a better way maybe ? (catch when it does not work etc) (maybe check if there was something
+                        // TODO: Do that in a better way maybe ? (catch when it does not work etc)
                         MediaBrowserService.getInstance().restorePlaylist();
                     }
 
