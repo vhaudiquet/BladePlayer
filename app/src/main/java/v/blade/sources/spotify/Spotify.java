@@ -659,7 +659,7 @@ public class Spotify extends Source
             jsonParams.put("name", name);
             JSONObject jsonBody = new JSONObject(jsonParams);
             System.out.println("json: " + jsonBody);
-            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonBody.toString());
             Call<SpotifyService.SimplifiedPlaylistObject> call = service.createPlaylist(AUTH_STRING, user_id, body);
 
             try
@@ -854,7 +854,7 @@ public class Spotify extends Source
                 jsonParams.put("tracks", array);
                 JSONObject jsonBody = new JSONObject(jsonParams);
                 System.out.println("json: " + jsonBody);
-                RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonBody.toString());
                 Call<SpotifyService.PlaylistAddResponse> call = service.removePlaylistItem(AUTH_STRING, (String) playlist.getSource().id, body);
 
                 Response<SpotifyService.PlaylistAddResponse> response = call.execute();

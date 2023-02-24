@@ -28,7 +28,15 @@
 {
     <init>(com.google.gson.JsonObject); # method <init> i.e. constructor
 }
+-keep class xyz.gianlu.librespot.json.GenericJson
+{
+    <init>(com.google.gson.JsonObject); # method <init> i.e. constructor
+}
 -keep class xyz.gianlu.librespot.mercury.MercuryRequests$ResolvedContextWrapper
+{
+    <init>(com.google.gson.JsonObject); # method <init> i.e. constructor
+}
+-keep class xyz.gianlu.librespot.json.ResolvedContextWrapper
 {
     <init>(com.google.gson.JsonObject); # method <init> i.e. constructor
 }

@@ -56,7 +56,7 @@ android {
             excludes += ['log4j2.xml', 'META-INF/DEPENDENCIES']
         }
     }
-    buildToolsVersion '32.0.0'
+    buildToolsVersion '33.0.0'
     namespace 'v.blade'
 }
 
@@ -82,12 +82,24 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.8'
 
     /* Spotify : librespot + auth (+ retrofit) */
-    implementation('xyz.gianlu.librespot:librespot-player:1.6.2:thin') {
+    /*implementation('xyz.gianlu.librespot:librespot-player:1.6.2:thin') {
         exclude group: 'xyz.gianlu.librespot', module: 'librespot-sink'
         exclude group: 'com.lmax', module: 'disruptor'
         exclude group: 'org.apache.logging.log4j'
-    }
+    }*/
+    implementation files('libs/librespot-player-1.6.3-20220220.113216-18-thin.jar')
+    implementation files('libs/librespot-lib-1.6.3-20220220.113216-19.jar')
+    implementation files('libs/librespot-sink-api-1.6.3-20220220.113216-19.jar')
+    implementation files('libs/librespot-dacp-1.6.3-20220220.113216-20.jar')
+    implementation files('libs/librespot-decoder-api-1.6.3-20220220.113216-19.jar')
+    implementation 'org.jcraft:jorbis:0.0.17'
+    implementation 'com.badlogicgames.jlayer:jlayer:1.0.2-gdx'
+    implementation 'com.google.protobuf:protobuf-java:3.19.1'
+    implementation 'commons-net:commons-net:3.8.0'
+    implementation 'com.google.code.gson:gson:2.8.9'
+
     implementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0' //Needed to log librespot-player
+
     implementation 'com.spotify.android:auth:1.2.6'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'

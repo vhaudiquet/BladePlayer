@@ -14,7 +14,6 @@ import com.spotify.connectstate.Connect;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +72,7 @@ public class SpotifyPlayer extends Source.Player
 
                 //NOTE : this seems to fix https://github.com/librespot-org/librespot-java/issues/447,
                 // but it is a bad fix ; TODO find a better fix catching the interrupted timeout exception ?
-                .setConnectionTimeout(-1)
+                //.setConnectionTimeout(-1)
                 .setStoreCredentials(false)
                 .setCacheEnabled(true) //TODO : what cache does this exactly controls ? song cache ?
                 .setCacheDir(new File(BladeApplication.appContext.getCacheDir().getAbsolutePath() + "/spotify-librespot-cache"))
@@ -100,6 +99,7 @@ public class SpotifyPlayer extends Source.Player
         }
         catch(NoSuchAlgorithmException e)
         {
+            System.err.println("BLADE-SPOTIFY: login() failed: NoSuchAlgorithmException");
             e.printStackTrace();
         }
 
@@ -121,6 +121,7 @@ public class SpotifyPlayer extends Source.Player
         }
         catch(Exception e)
         {
+            System.err.println("BLADE-SPOTIFY: login() failed: " + e.getMessage());
             e.printStackTrace();
             isLoggingIn = false;
             return false;
@@ -189,6 +190,13 @@ public class SpotifyPlayer extends Source.Player
             }
 
             @Override
+            public void onPlaybackFailed(@NotNull Player player, @NotNull Exception e)
+            {
+                // TODO use this ; we got librespot new version :))
+                isPaused = true;
+            }
+
+            @Override
             public void onTrackSeeked(@NotNull Player player, long trackTime)
             {
 
@@ -214,7 +222,7 @@ public class SpotifyPlayer extends Source.Player
             }
 
             @Override
-            public void onVolumeChanged(@NotNull Player player, @Range(from = 0L, to = 1L) float volume)
+            public void onVolumeChanged(@NotNull Player player, float volume)
             {
 
             }
@@ -489,7 +497,7 @@ public class SpotifyPlayer extends Source.Player
         }
 
         @Override
-        public boolean setVolume(@Range(from = 0L, to = 1L) float volume)
+        public boolean setVolume(float volume)
         {
             if(currentTrack == null) return false;
 
