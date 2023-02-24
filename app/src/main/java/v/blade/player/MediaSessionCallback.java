@@ -55,6 +55,8 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
         }
     };
 
+    private long seekPosition = 0;
+
     protected MediaSessionCallback(MediaBrowserService service)
     {
         this.service = service;
@@ -69,7 +71,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
                 | PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_SEEK_TO
                 | PlaybackStateCompat.ACTION_SET_REPEAT_MODE | PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE);
         stateBuilder.setState(isPlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED,
-                service.current == null ? 0 : service.current.getCurrentPosition(), 1);
+                service.current == null ? seekPosition : service.current.getCurrentPosition(), 1);
         service.mediaSession.setPlaybackState(stateBuilder.build());
     }
 
@@ -134,6 +136,12 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
                 service.current.playSong(song);
                 ContextCompat.getMainExecutor(service).execute(() ->
                         service.notification.update());
+
+                if(seekPosition != 0)
+                {
+                    service.current.seekTo(seekPosition);
+                    seekPosition = 0;
+                }
             });
 
         }
@@ -168,6 +176,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback
             service.current.seekTo(pos);
             updatePlaybackState(!service.current.isPaused());
         }
+        else seekPosition = pos;
     }
 
     @Override

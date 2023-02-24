@@ -192,6 +192,9 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
 
         currentPlaylistObject.addProperty("index", index);
 
+        if(current != null)
+            currentPlaylistObject.addProperty("position", current.getCurrentPosition());
+
         File currentPlaylistFile = new File(BladeApplication.appContext.getFilesDir().getAbsolutePath() + CURRENT_PLAYLIST_FILE);
         try
         {
@@ -243,8 +246,10 @@ public class MediaBrowserService extends MediaBrowserServiceCompat
             this.startIfNotStarted();
             this.setPlaylist(playlist);
             this.setIndex(index);
-            //mediaSession.getController().getTransportControls().play();
             mediaSession.getController().getTransportControls().pause();
+
+            if(root.has("position"))
+                mediaSession.getController().getTransportControls().seekTo(root.getLong("position"));
         }
         catch(IOException | JSONException ignored)
         {

@@ -74,6 +74,9 @@ public class BladeApplication extends Application
             @Override
             public void onActivityPaused(@NonNull Activity activity)
             {
+                // NOTE: This happens even when switching between Main/Play activities
+                // TODO: Maybe find a better place to save playlist ? (this will cost disk usage...)
+                // (it's not as bad as it seems, we have kernel cache...)
                 System.out.println("BLADE: onActivityPaused....");
                 MediaBrowserService.getInstance().savePlaylist();
             }

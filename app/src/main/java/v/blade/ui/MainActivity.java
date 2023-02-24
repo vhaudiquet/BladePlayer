@@ -106,8 +106,12 @@ public class MainActivity extends AppCompatActivity
                         super.onConnected();
 
                         // Restore playlist if needed
-                        System.out.println("BLADE: Restoring playlist");
-                        MediaBrowserService.getInstance().restorePlaylist();
+                        if(MediaBrowserService.getInstance().getPlaylist() == null ||
+                                MediaBrowserService.getInstance().getPlaylist().isEmpty())
+                        {
+                            System.out.println("BLADE: (MainActivity/onConnected()) Restoring playlist");
+                            MediaBrowserService.getInstance().restorePlaylist();
+                        }
 
                         MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
                         MediaControllerCompat mediaController =
@@ -174,9 +178,11 @@ public class MainActivity extends AppCompatActivity
                     public void onConnectionSuspended()
                     {
                         super.onConnectionSuspended();
-                        // The Service has crashed ; Disable transport controls until it automatically reconnects
                         System.out.println("STOPPED");
-                        binding.appBarMain.contentMain.currentplayLayout.setVisibility(View.GONE);
+
+                        // Try to restore playlist
+                        // TODO: Do that in a better way maybe ? (catch when it does not work etc) (maybe check if there was something
+                        MediaBrowserService.getInstance().restorePlaylist();
                     }
 
                     @Override
