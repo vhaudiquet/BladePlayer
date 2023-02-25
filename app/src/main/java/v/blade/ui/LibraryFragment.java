@@ -2,6 +2,7 @@ package v.blade.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,12 +51,15 @@ public class LibraryFragment extends Fragment
         private final CURRENT_TYPE type;
         private final LibraryObject object;
 
-        private BackInformation(String title, List<? extends LibraryObject> list, CURRENT_TYPE type, LibraryObject object)
+        private final Parcelable recylerViewState;
+
+        private BackInformation(String title, List<? extends LibraryObject> list, CURRENT_TYPE type, LibraryObject object, Parcelable recylerViewState)
         {
             this.title = title;
             this.list = list;
             this.type = type;
             this.object = object;
+            this.recylerViewState = recylerViewState;
         }
     }
 
@@ -86,7 +90,7 @@ public class LibraryFragment extends Fragment
      * Update content to list 'replacing', or to root directory
      * If we are updating because going back, we should not push to back : shouldPushToBack is false
      */
-    private void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, LibraryObject object, boolean shouldPushToBack)
+    private void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, LibraryObject object, boolean shouldPushToBack, Parcelable viewState)
     {
         if(replacing == null)
         {
@@ -110,7 +114,9 @@ public class LibraryFragment extends Fragment
         {
             //Push previous state to backStack
             if(shouldPushToBack)
-                backStack.push(new BackInformation(getTitle(), current, currentType, currentObject));
+                backStack.push(new BackInformation(getTitle(), current, currentType, currentObject,
+                        (binding.mainListview.getLayoutManager() == null ? null :
+                                binding.mainListview.getLayoutManager().onSaveInstanceState())));
 
             current = replacing;
             currentType = type;
@@ -119,18 +125,22 @@ public class LibraryFragment extends Fragment
 
         LibraryObjectAdapter adapter = new LibraryObjectAdapter(current, this::onMoreClicked, this::onViewClicked);
         binding.mainListview.setAdapter(adapter);
+
+        if(viewState != null && binding.mainListview.getLayoutManager() != null)
+            binding.mainListview.getLayoutManager().onRestoreInstanceState(viewState);
+
         if(((MainActivity) requireActivity()).binding != null)
             ((MainActivity) requireActivity()).binding.appBarMain.toolbar.setTitle(title);
     }
 
     public void updateContent(String title, List<? extends LibraryObject> replacing, CURRENT_TYPE type, LibraryObject currentObject)
     {
-        updateContent(title, replacing, type, currentObject, true);
+        updateContent(title, replacing, type, currentObject, true, null);
     }
 
     private void updateContent(BackInformation backInformation)
     {
-        updateContent(backInformation.title, backInformation.list, backInformation.type, backInformation.object, false);
+        updateContent(backInformation.title, backInformation.list, backInformation.type, backInformation.object, false, backInformation.recylerViewState);
     }
 
     private void onViewClicked(View view)
