@@ -50,6 +50,7 @@ import v.blade.library.Song;
 import v.blade.sources.Source;
 import v.blade.sources.SourceInformation;
 import v.blade.ui.ExploreFragment;
+import v.blade.ui.SettingsActivity;
 import xyz.gianlu.librespot.audio.decoders.AudioQuality;
 
 /*
@@ -127,12 +128,38 @@ public class Spotify extends Source
         return IMAGE_RESOURCE;
     }
 
+    private void notifyUiForStatus()
+    {
+        // Notify UI
+        if(BladeApplication.currentActivity instanceof SettingsActivity)
+        {
+            SettingsActivity settingsActivity = (SettingsActivity) BladeApplication.currentActivity;
+            settingsActivity.runOnUiThread(() ->
+            {
+                for(Fragment f : settingsActivity.getSupportFragmentManager().getFragments())
+                {
+                    if(f instanceof SettingsActivity.SourcesFragment)
+                    {
+                        SettingsActivity.SourcesFragment sf = (SettingsActivity.SourcesFragment) f;
+                        sf.updateSourcesView();
+                    }
+                    else if(f instanceof SettingsFragment)
+                    {
+                        SettingsFragment sf = (SettingsFragment) f;
+                        sf.refreshStatus();
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void initSource()
     {
         if(status != SourceStatus.STATUS_NEED_INIT) return;
 
         status = SourceStatus.STATUS_CONNECTING;
+        notifyUiForStatus();
 
         //build retrofit client
         retrofit = new Retrofit.Builder().baseUrl(BASE_API_URL).addConverterFactory(GsonConverterFactory.create()).build();
@@ -205,6 +232,9 @@ public class Spotify extends Source
 
                 Source.saveSources();
                 System.out.println("BLADE-SPOTIFY: Spotify initialized");
+
+                // Notify UI
+                notifyUiForStatus();
             }
             catch(IOException e)
             {
@@ -902,12 +932,8 @@ public class Spotify extends Source
             this.spotify = spotify;
         }
 
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public void refreshStatus()
         {
-            binding = SettingsFragmentSpotifyBinding.inflate(inflater, container, false);
-
-            //Set status text
             switch(spotify.getStatus())
             {
                 case STATUS_DOWN:
@@ -923,6 +949,15 @@ public class Spotify extends Source
                     binding.settingsSpotifyStatus.setText(R.string.source_ready_desc);
                     break;
             }
+        }
+
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            binding = SettingsFragmentSpotifyBinding.inflate(inflater, container, false);
+
+            //Set status text
+            refreshStatus();
 
             //Set account text
             if(spotify.account_name == null)
@@ -1055,8 +1090,6 @@ public class Spotify extends Source
             {
                 spotify.status = SourceStatus.STATUS_NEED_INIT;
                 spotify.initSource();
-                //TODO update current interface on callback
-                //Source.saveSources(); //This should not be needed ? as spotify init saves
             });
 
             binding.settingsSpotifyRemove.setOnClickListener(view ->

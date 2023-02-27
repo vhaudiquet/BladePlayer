@@ -14,6 +14,7 @@
  */
 package v.blade;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
@@ -49,6 +50,9 @@ public class BladeApplication extends Application
     public static Context appContext;
     public static boolean shouldDisplayFirstLaunchDialog = false;
 
+    @SuppressLint("StaticFieldLeak")
+    public static Activity currentActivity = null;
+
     @Override
     protected void attachBaseContext(Context base)
     {
@@ -64,16 +68,21 @@ public class BladeApplication extends Application
             @Override
             public void onActivityStarted(@NonNull Activity activity)
             {
+                currentActivity = activity;
             }
 
             @Override
             public void onActivityResumed(@NonNull Activity activity)
             {
+                currentActivity = activity;
             }
 
             @Override
             public void onActivityPaused(@NonNull Activity activity)
             {
+                if(currentActivity == activity)
+                    currentActivity = null;
+
                 // NOTE: This happens even when switching between Main/Play activities
                 // TODO: Maybe find a better place to save playlist ? (this will cost disk usage...)
                 // (it's not as bad as it seems, we have kernel cache...)
@@ -84,6 +93,8 @@ public class BladeApplication extends Application
             @Override
             public void onActivityStopped(@NonNull Activity activity)
             {
+                if(currentActivity == activity)
+                    currentActivity = null;
             }
 
             @Override
@@ -94,6 +105,8 @@ public class BladeApplication extends Application
             @Override
             public void onActivityDestroyed(@NonNull Activity activity)
             {
+                if(currentActivity == activity)
+                    currentActivity = null;
             }
         });
 

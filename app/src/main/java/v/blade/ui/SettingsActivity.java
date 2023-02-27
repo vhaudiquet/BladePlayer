@@ -96,7 +96,7 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref)
+    public boolean onPreferenceStartFragment(@NonNull PreferenceFragmentCompat caller, Preference pref)
     {
         // Instantiate the new Fragment
         final Bundle args = pref.getExtras();
@@ -382,6 +382,17 @@ public class SettingsActivity extends AppCompatActivity implements
             View root = binding.getRoot();
 
             //Set list to current sources
+            updateSourcesView();
+
+            //Set button 'add' action
+            FloatingActionButton floatingActionButton = binding.settingsSourceAdd;
+            floatingActionButton.setOnClickListener(this::showAddSourceDialog);
+
+            return root;
+        }
+
+        public void updateSourcesView()
+        {
             RecyclerView sourcesListView = binding.settingsSourcesListview;
             sourcesListView.setLayoutManager(new LinearLayoutManager(getActivity()));
             ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback(Source.SOURCES)
@@ -398,6 +409,7 @@ public class SettingsActivity extends AppCompatActivity implements
                 }
             });
             touchHelper.attachToRecyclerView(sourcesListView);
+
             SourceAdapter sourceAdapter = new SourceAdapter(touchHelper, view ->
             {
                 int position = sourcesListView.getChildLayoutPosition(view);
@@ -412,12 +424,6 @@ public class SettingsActivity extends AppCompatActivity implements
                 }
             });
             sourcesListView.setAdapter(sourceAdapter);
-
-            //Set button 'add' action
-            FloatingActionButton floatingActionButton = binding.settingsSourceAdd;
-            floatingActionButton.setOnClickListener(this::showAddSourceDialog);
-
-            return root;
         }
 
         //Here we can use NotifyDataSetChanged, as the list of sources will be small anyway
@@ -453,6 +459,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
                 try
                 {
+                    assert c != null;
                     Source toAdd = (Source) c.newInstance();
 
                     //Set source default status
