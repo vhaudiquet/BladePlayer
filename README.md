@@ -10,6 +10,9 @@ Blade is an open source music player for Android, allowing you to play music fro
 services : files on your phone, [Spotify], and more.
 
 Blade is available on [Google Play], or [here on GitHub].
+It seems to also be on [IzzySoft F-Droid], and to stay up to date there.
+Other repos like [Aptoide] or even [ApkPure], [ApkCombo] are not recommended because they don't seem
+to stay up to date fast, and i can't check if they modified the `apk` before publishing it.
 
 <div align="center" style="text-align: center;">
   <img src="https://valou3433.fr/blade0.png" width="350" style="max-width: 350;"/>
@@ -94,6 +97,14 @@ If you want older (i.e. < 2.0) versions of Blade, you can check the [old reposit
 [Google Play]:https://play.google.com/store/apps/details?id=v.blade
 
 [here on GitHub]:https://github.com/vhaudiquet/BladePlayer/releases
+
+[IzzySoft F-Droid]:https://apt.izzysoft.de/fdroid/index/apk/v.blade
+
+[Aptoide]:https://blade-blade.en.aptoide.com/app/
+
+[ApkPure]:https://apkpure.com/blade-player/v.blade/
+
+[ApkCombo]:https://apkcombo.com/blade-player/v.blade/
 
 [Spotify]:https://www.spotify.com
 
