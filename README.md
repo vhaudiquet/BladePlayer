@@ -11,7 +11,9 @@ services : files on your phone, [Spotify], and more.
 
 Blade is available on [Google Play], or [here on GitHub].
 It seems to also be on [IzzySoft F-Droid], and to stay up to date there.
-Other repos like [Aptoide] or even [ApkPure], [ApkCombo] are not recommended because they don't seem
+
+Other repos like ~~[Aptoide]~~ or even ~~[ApkPure]~~, ~~[ApkCombo]~~ are not recommended because
+they don't seem
 to stay up to date fast, and i can't check if they modified the `apk` before publishing it.
 
 <div align="center" style="text-align: center;">
@@ -100,7 +102,7 @@ If you want older (i.e. < 2.0) versions of Blade, you can check the [old reposit
 
 [IzzySoft F-Droid]:https://apt.izzysoft.de/fdroid/index/apk/v.blade
 
-[Aptoide]:https://blade-blade.en.aptoide.com/app/
+[Aptoide]:https://blade-blade.en.aptoide.com/app
 
 [ApkPure]:https://apkpure.com/blade-player/v.blade/
 
