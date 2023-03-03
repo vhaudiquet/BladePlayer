@@ -22,6 +22,8 @@
     <string name="spotify_desc">Play music from a Spotify account</string>
     <string name="local">Local</string>
     <string name="local_desc">Play music from files on your phone</string>
+    <string name="deezer">Deezer</string>
+    <string name="deezer_desc">Play music from a Deezer account</string>
 
     <string name="item_image">Item image</string>
     <string name="item_more">More…</string>

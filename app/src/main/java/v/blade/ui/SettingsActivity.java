@@ -37,6 +37,7 @@ import v.blade.R;
 import v.blade.databinding.SettingsFragmentAboutBinding;
 import v.blade.databinding.SettingsFragmentSourcesBinding;
 import v.blade.sources.Source;
+import v.blade.sources.deezer.Deezer;
 import v.blade.sources.local.Local;
 import v.blade.sources.spotify.Spotify;
 
@@ -207,7 +208,7 @@ public class SettingsActivity extends AppCompatActivity implements
             @Override
             public int getCount()
             {
-                return 2;
+                return 3;
             }
 
             @Override
@@ -219,6 +220,8 @@ public class SettingsActivity extends AppCompatActivity implements
                         return Local.class;
                     case 1:
                         return Spotify.class;
+                    case 2:
+                        return Deezer.class;
                 }
 
                 return null;

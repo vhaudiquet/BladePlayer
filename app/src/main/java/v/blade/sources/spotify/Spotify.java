@@ -964,6 +964,10 @@ public class Spotify extends Source
             {
                 binding.settingsSpotifyAccount.setText(R.string.disconnected);
                 binding.settingsSpotifyAccount.setTextColor(getResources().getColor(R.color.errorRed));
+
+                // Hide audio quality and force init buttons
+                binding.settingsSpotifyAudioQualityLayout.setVisibility(View.GONE);
+                binding.settingsSpotifyInit.setVisibility(View.GONE);
             }
             else
             {
@@ -1206,6 +1210,16 @@ public class Spotify extends Source
                         binding.settingsSpotifyStatus.setText(R.string.source_ready_desc);
                         binding.settingsSpotifyAccount.setText(user.display_name);
                         binding.settingsSpotifyAccount.setTextColor(getResources().getColor(R.color.okGreen));
+
+                        // Hide login buttons (we are already connected)
+                        binding.settingsSpotifyUser.setVisibility(View.GONE);
+                        binding.settingsSpotifyPassword.setVisibility(View.GONE);
+                        binding.settingsSpotifySignIn.setVisibility(View.GONE);
+                        binding.settingsSpotifyCredentialsTwice.setVisibility(View.GONE);
+
+                        // Show audio quality and force init buttons
+                        binding.settingsSpotifyAudioQualityLayout.setVisibility(View.VISIBLE);
+                        binding.settingsSpotifyInit.setVisibility(View.VISIBLE);
                     });
 
                     //Re-Save all sources

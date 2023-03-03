@@ -321,8 +321,13 @@ public abstract class Source
             for(int i = 0; i < sourceArray.length(); i++)
             {
                 Source s = gson.fromJson(sourceArray.get(i).toString(), Source.class);
-                s.index = i;
-                SOURCES.add(s);
+                if(s != null)
+                {
+                    s.index = i;
+                    SOURCES.add(s);
+                }
+                else
+                    System.err.println("BLADE: Found null source from json: " + sourceArray.get(i).toString());
             }
         }
         catch(IOException | JSONException e)

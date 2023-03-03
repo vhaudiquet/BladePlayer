@@ -17,6 +17,8 @@
   <string name="spotify_desc">Spotify hesabından müzik çal</string>
   <string name="local">Yerel</string>
   <string name="local_desc">Telefonundaki dosyalardan müzik çal</string>
+  <string name="deezer">Deezer</string>
+  <string name="deezer_desc">Deezer hesabından müzik çal</string>
   <string name="item_image">Ürün resmi</string>
   <string name="item_more">Daha…</string>
   <string name="source_down_desc">Aşağı - Lütfen yapılandırmayı kontrol edin</string>

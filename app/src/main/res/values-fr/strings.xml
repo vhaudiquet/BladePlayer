@@ -23,6 +23,8 @@
     <string name="local">Local</string>
     <string name="local_desc">Lire de la musique depuis les fichiers du téléphone</string>
 
+    <string name="deezer">Deezer</string>
+    <string name="deezer_desc">Lire de la musique depuis un compte Deezer</string>
     <string name="item_image">Image</string>
     <string name="item_more">Plus…</string>
 

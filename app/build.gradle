@@ -31,6 +31,10 @@ android {
         release {
             buildConfigField 'String', 'SPOTIFY_CLIENT_ID', '\"2f95bc7168584e7aa67697418a684bae\"'
             buildConfigField 'String', 'SPOTIFY_CLIENT_SECRET', '\"3166d3b40ff74582b03cb23d6701c297\"'
+
+            buildConfigField 'String', 'DEEZER_CLIENT_ID', '\"172365\"'
+            buildConfigField 'String', 'DEEZER_CLIENT_SECRET', '\"fb0bec7ccc063dab0417eb7b0d847f34\"'
+
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
@@ -42,6 +46,10 @@ android {
             * Later, if more people work on the project, those 2 variables should be passed via command-line for debug builds */
             buildConfigField 'String', 'SPOTIFY_CLIENT_ID', '\"048adc76814146e7bb049d89813bd6e0\"'
             buildConfigField 'String', 'SPOTIFY_CLIENT_SECRET', '\"854982b95dc04100a2009ebb8a8df758\"'
+
+            buildConfigField 'String', 'DEEZER_CLIENT_ID', '\"\"'
+            buildConfigField 'String', 'DEEZER_CLIENT_SECRET', '\"\"'
+
             debuggable true
         }
     }

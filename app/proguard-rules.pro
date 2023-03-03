@@ -17,6 +17,8 @@
 }
 -keep class v.blade.sources.spotify.Spotify$SpotifyTokenResponse {*;}
 -keep class v.blade.sources.spotify.SpotifyService$* {*;}
+-keep class v.blade.sources.deezer.Deezer$DeezerTokenResponse {*;}
+-keep class v.blade.sources.deezer.Deezer$DeezerErrorObject {*;}
 
 # The spotify librespot player needs an 'output class'
 # for it's audio output ; we need to keep that

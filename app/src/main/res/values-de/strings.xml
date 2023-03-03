@@ -18,6 +18,8 @@
     <string name="spotify_desc">Musik aus einem Spotify-Konto abspielen</string>
     <string name="local_desc">Musik aus Dateien auf dem Gerät abspielen</string>
     <string name="item_more">Mehr…</string>
+    <string name="deezer">Deezer</string>
+    <string name="deezer_desc">Musik aus einem Deezer-Konto abspielen</string>
     <string name="item_image">Bild</string>
     <string name="source_down_desc">Inaktiv - Überprüfen Sie die Einstellungen</string>
     <string name="source_need_init_desc">Einrichtung erforderlich - Entweder erzwingen oder Einstellungen prüfen</string>

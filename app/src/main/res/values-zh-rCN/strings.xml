@@ -23,6 +23,8 @@
     <string name="local">本地</string>
     <string name="local_desc">播放手机上存储的音乐</string>
 
+    <string name="deezer">Deezer</string>
+    <string name="deezer_desc">播放来自 Deezer 账户的音乐</string>
     <string name="item_image">项目图片</string>
     <string name="item_more">更多…</string>
 
