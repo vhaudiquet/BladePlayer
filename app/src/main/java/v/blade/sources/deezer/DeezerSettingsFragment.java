@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -75,23 +74,23 @@ public class DeezerSettingsFragment extends Fragment
 
         // Set 'sign in' button action
         binding.settingsDeezerSignIn.setOnClickListener(v ->
-                BladeApplication.obtainExecutorService().execute(() ->
-                {
-                    // Set deezer parameters
-                    deezer.account_login = binding.settingsDeezerUser.getText().toString();
-                    deezer.account_password = binding.settingsDeezerPassword.getText().toString();
+        {
+            // Set deezer parameters
+            deezer.account_login = binding.settingsDeezerUser.getText().toString();
+            deezer.account_password = binding.settingsDeezerPassword.getText().toString();
 
-                    // Ask for access token
-                    if(deezer.refreshAccessTokenSync())
-                    {
-                        deezer.setStatus(Source.SourceStatus.STATUS_READY);
+            deezer.setStatus(Source.SourceStatus.STATUS_NEED_INIT);
+            deezer.initSource();
+        });
 
-                        requireActivity().runOnUiThread(this::refreshStatus);
-                    }
-                    else
-                        requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), R.string.auth_error, Toast.LENGTH_SHORT).show());
-                }));
+        // Set 'force init' button action
+        binding.settingsDeezerInit.setOnClickListener(v ->
+        {
+            //tODO CHANGE
+            BladeApplication.obtainExecutorService().execute(deezer::synchronizeLibrary);
+            //deezer.setStatus(Source.SourceStatus.STATUS_NEED_INIT);
+            //deezer.initSource();
+        });
 
         return binding.getRoot();
     }
