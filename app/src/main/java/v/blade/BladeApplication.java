@@ -87,7 +87,8 @@ public class BladeApplication extends Application
                 // TODO: Maybe find a better place to save playlist ? (this will cost disk usage...)
                 // (it's not as bad as it seems, we have kernel cache...)
                 System.out.println("BLADE: onActivityPaused....");
-                MediaBrowserService.getInstance().savePlaylist();
+                if(MediaBrowserService.getInstance() != null)
+                    MediaBrowserService.getInstance().savePlaylist();
             }
 
             @Override
