@@ -10,8 +10,8 @@ android {
         applicationId "v.blade"
         minSdk 21
         targetSdk 33
-        versionCode 28
-        versionName "2.3"
+        versionCode 29
+        versionName "2.2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -71,17 +71,17 @@ android {
 
 dependencies {
     /* stdlib */
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.8.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.8.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10'
 
     /* AndroidX (Jetpack) : compat libraries, and Material */
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation 'androidx.preference:preference-ktx:1.2.0'
@@ -96,14 +96,14 @@ dependencies {
         exclude group: 'com.lmax', module: 'disruptor'
         exclude group: 'org.apache.logging.log4j'
     }*/
-    implementation files('libs/librespot-player-1.6.3-20220220.113216-18-thin.jar')
-    implementation files('libs/librespot-lib-1.6.3-20220220.113216-19.jar')
-    implementation files('libs/librespot-sink-api-1.6.3-20220220.113216-19.jar')
-    implementation files('libs/librespot-dacp-1.6.3-20220220.113216-20.jar')
-    implementation files('libs/librespot-decoder-api-1.6.3-20220220.113216-19.jar')
+    implementation files('libs/librespot-player-1.6.4-20230517.074612-1-thin.jar')
+    implementation files('libs/librespot-lib-1.6.4-20230517.074612-1.jar')
+    implementation files('libs/librespot-sink-api-1.6.4-20230517.074612-1.jar')
+    implementation files('libs/librespot-dacp-1.6.4-20230517.074612-1.jar')
+    implementation files('libs/librespot-decoder-api-1.6.4-20230517.074612-1.jar')
     implementation 'org.jcraft:jorbis:0.0.17'
     implementation 'com.badlogicgames.jlayer:jlayer:1.0.2-gdx'
-    implementation 'com.google.protobuf:protobuf-java:3.19.1'
+    implementation 'com.google.protobuf:protobuf-java:3.23.0'
     implementation 'commons-net:commons-net:3.8.0'
     implementation 'com.google.code.gson:gson:2.8.9'
 
