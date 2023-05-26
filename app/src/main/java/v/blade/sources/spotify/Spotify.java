@@ -309,6 +309,7 @@ public class Spotify extends Source
     {
         try
         {
+            System.out.println("BLADE-SPOTIFY: Syncing lib");
             /* Obtain user tracks */
             int tracksLeft;
             int tracksIndex = 0;
@@ -322,12 +323,18 @@ public class Spotify extends Source
                 if(response.code() == 401)
                 {
                     //Expired token
+                    System.err.println("BLADE-SPOTIFY: Expired token while syncing library, refreshing...");
                     refreshAccessTokenSync();
                     synchronizeLibrary();
                     return;
                 }
 
-                if(response.code() != 200 || response.body() == null) break;
+                if(response.code() != 200 || response.body() == null)
+                {
+                    System.err.println("BLADE-SPOTIFY: Error while syncing library: non-200 error code " + response.code());
+                    System.err.println("BLADE-SPOTIFY: Response error body: " + response.errorBody().string());
+                    break;
+                }
                 SpotifyService.PagingObject<SpotifyService.SavedTrackObject> trackPaging = response.body();
 
                 for(SpotifyService.SavedTrackObject savedTrack : trackPaging.items)
@@ -495,8 +502,11 @@ public class Spotify extends Source
         }
         catch(IOException e)
         {
+            System.err.println("BLADE-SPOTIFY: Error while syncing library: " + e.getMessage());
             e.printStackTrace();
         }
+
+        System.out.println("BLADE-SPOTIFY: Lib sync done");
     }
 
     @Override

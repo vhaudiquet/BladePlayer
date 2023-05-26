@@ -369,7 +369,11 @@ public abstract class Source
             while(!allDone)
             {
                 allDone = true;
-                for(Future f : futures) if(!f.isDone()) allDone = false;
+                for(Future f : futures)
+                {
+                    if(!f.isDone())
+                        allDone = false;
+                }
             }
 
             //Every source synchronization is done, we can now sort and save library
