@@ -71,10 +71,10 @@ android {
 
 dependencies {
     /* stdlib */
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.8.10'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.10'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.8.22'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
 
     /* AndroidX (Jetpack) : compat libraries, and Material */
     implementation 'androidx.appcompat:appcompat:1.6.1'
