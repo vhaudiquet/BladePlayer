@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "v.blade"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 30
         versionName "2.2.1"
 
@@ -54,8 +54,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility sourceCompatibility
-        targetCompatibility targetCompatibility
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
     buildFeatures {
         viewBinding true
@@ -65,7 +65,7 @@ android {
             excludes += ['log4j2.xml', 'META-INF/DEPENDENCIES']
         }
     }
-    buildToolsVersion '33.0.0'
+    setBuildToolsVersion('33.0.1')
     namespace 'v.blade'
 }
 
@@ -78,13 +78,13 @@ dependencies {
 
     /* AndroidX (Jetpack) : compat libraries, and Material */
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'androidx.media:media:1.6.0'
 
     /* Image loading : Picasso */
