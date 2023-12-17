@@ -10,10 +10,12 @@ android {
         applicationId "v.blade"
         minSdk 21
         targetSdk 34
-        versionCode 30
-        versionName "2.2.1"
+        versionCode 31
+        versionName "2.2.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        android.buildFeatures.buildConfig true
+        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
     }
 
     signingConfigs {
@@ -65,30 +67,29 @@ android {
             excludes += ['log4j2.xml', 'META-INF/DEPENDENCIES']
         }
     }
-    setBuildToolsVersion('33.0.1')
     namespace 'v.blade'
 }
 
 dependencies {
     /* stdlib */
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.8.22'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-common:1.9.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.21'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.21'
 
     /* AndroidX (Jetpack) : compat libraries, and Material */
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'androidx.media:media:1.6.0'
+    implementation 'androidx.media:media:1.7.0'
 
     /* Image loading : Picasso */
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     /* Spotify : librespot + auth (+ retrofit) */
     /*implementation('xyz.gianlu.librespot:librespot-player:1.6.2:thin') {
@@ -96,20 +97,20 @@ dependencies {
         exclude group: 'com.lmax', module: 'disruptor'
         exclude group: 'org.apache.logging.log4j'
     }*/
-    implementation files('libs/librespot-player-1.6.4-20230517.074612-1-thin.jar')
-    implementation files('libs/librespot-lib-1.6.4-20230517.074612-1.jar')
-    implementation files('libs/librespot-sink-api-1.6.4-20230517.074612-1.jar')
-    implementation files('libs/librespot-dacp-1.6.4-20230517.074612-1.jar')
-    implementation files('libs/librespot-decoder-api-1.6.4-20230517.074612-1.jar')
+    implementation files('libs/librespot-player-1.6.4-20231011.152351-29-thin.jar')
+    implementation files('libs/librespot-lib-1.6.4-20231011.152351-32.jar')
+    implementation files('libs/librespot-sink-api-1.6.4-20231011.152351-35.jar')
+    implementation files('libs/librespot-dacp-1.6.4-20231011.152351-33.jar')
+    implementation files('libs/librespot-decoder-api-1.6.4-20231011.152351-32.jar')
     implementation 'org.jcraft:jorbis:0.0.17'
     implementation 'com.badlogicgames.jlayer:jlayer:1.0.2-gdx'
-    implementation 'com.google.protobuf:protobuf-java:3.23.0'
-    implementation 'commons-net:commons-net:3.8.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.protobuf:protobuf-java:3.25.1'
+    implementation 'commons-net:commons-net:3.10.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
-    implementation 'uk.uuid.slf4j:slf4j-android:1.7.30-0' //Needed to log librespot-player
+    implementation 'uk.uuid.slf4j:slf4j-android:2.0.9-0' //Needed to log librespot-player
 
-    implementation 'com.spotify.android:auth:1.2.6'
+    implementation 'com.spotify.android:auth:2.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
