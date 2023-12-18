@@ -90,7 +90,7 @@ dependencies {
     implementation 'androidx.media:media:1.7.0'
 
     /* Image loading : Picasso */
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.squareup.picasso:picasso:2.8'
 
     /* Spotify : librespot + auth (+ retrofit) */
     /*implementation('xyz.gianlu.librespot:librespot-player:1.6.2:thin') {
