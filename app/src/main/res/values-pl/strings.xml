@@ -1,0 +1,113 @@
+<resources>
+    <string name="app_name">Blade Player</string>
+
+    <string name="navigation_drawer_open">Otwórz panel nawigacji</string>
+    <string name="navigation_drawer_close">Zamknij panel nawigacji</string>
+
+    <string name="action_sync">Zsynchronizuj</string>
+    <string name="action_settings">Ustawienia</string>
+
+    <string name="library">Biblioteka</string>
+    <string name="artists">Artyści</string>
+    <string name="albums">Albumy</string>
+    <string name="songs">Piosenki</string>
+    <string name="playlists">Playlisty</string>
+
+    <string name="sources">Źródła</string>
+    <string name="about">Informacje</string>
+
+    <string name="add_source">Dodaj źródło…</string>
+
+    <string name="spotify">Spotify</string>
+    <string name="spotify_desc">Odtwarzaj muzykę z konta Spotify</string>
+    <string name="local">Lokalne</string>
+    <string name="local_desc">Odtwarzaj muzykę z plików na telefonie</string>
+    <string name="deezer">Deezer</string>
+    <string name="deezer_desc">Odtwarzaj muzykę z konta Deezer</string>
+
+    <string name="item_image">Zdjęcie elementu</string>
+    <string name="item_more">Więcej…</string>
+
+    <string name="source_down_desc">Niedostępne - Proszę, sprawdź konfigurację</string>
+    <string name="source_need_init_desc">Potrzebna inicjalizacja - Wymuś lub sprawdź konfigurację</string>
+    <string name="source_connecting_desc">Łączenie…</string>
+    <string name="source_ready_desc">Gotowe</string>
+
+    <string name="sign_in">Zaloguj się</string>
+    <string name="disconnected">Rozłączono</string>
+    <string name="auth_error">Problem uwierzytelniania</string>
+    <string name="init_error">Nie udało się zainicjować źródła</string>
+    <string name="force_init">Wymuś inicjalizację</string>
+    <string name="remove">Usuń</string>
+    <string name="version">Wersja</string>
+    <string name="about_desc">Blade Player to Androidowy odtwarzacz muzyki (stworzony przez @vhaudiquet), aby odtwarzać muzykę z wielu źródeł.</string>
+    <string name="about_license">Licencja : Apache 2.0</string>
+    <string name="about_logo">Logo: @zularizal</string>
+    <string name="about_sources">Źródło: github.com/vhaudiquet/BladePlayer</string>
+    <string name="about_libraries_used">Użyte biblioteki:</string>
+    <string name="username">Nazwa użytkownika</string>
+    <string name="password">Hasło</string>
+    <string name="spotify_login_desc">(Może być konieczne ponowne wprowadzenie danych uwierzytelniających, dla API i odtwarzacza)</string>
+    <string name="please_sync_to_apply">Proszę zsynchronizuj bibliotekę, aby zaaplikować zmiany</string>
+    <string name="play">Graj</string>
+    <string name="pause">Zatrzymaj</string>
+    <string name="skip_next">Dalej</string>
+    <string name="skip_previous">Cofnij</string>
+    <string name="notification_channel_name">Odtwarzanie multimediów</string>
+    <string name="notification_channel_description">Powiadomienia i sterowanie multimediami</string>
+    <string name="currently_playing">Obecnie gra</string>
+    <string name="play_next">Odtwórz po tej piosence</string>
+    <string name="add_to_current_playlist">Dodaj do aktualnej playlisty</string>
+    <string name="shuffle">Losowo</string>
+    <string name="repeat">Powtórz</string>
+    <string name="song_no_source_error">Ta piosenka nie ma gotowego źródła. Coś musi być nie tak z konfiguracją…</string>
+    <string name="search">Szukaj</string>
+    <string name="add_to_playlist">Dodaj do playlisty…</string>
+    <string name="manage_libraries">Zarządzaj bibliotekami</string>
+    <string name="remove_from_list">Usuń z playlisty</string>
+    <string name="song_added_to_list">Dodano %1$s do listy %2$s</string>
+    <string name="song_added_to_list_error">Nie można dodać %1$s do listy %2$s</string>
+    <string name="new_playlist">Nowa playlista</string>
+    <string name="name">Nazwa</string>
+    <string name="could_not_create_playlist">Nie można utworzyć playlisty %1$s</string>
+    <string name="are_you_sure_delete_playlist">Jesteś pewien, że chcesz usunąć playlistę %1$s ?</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="playlist_removed">Usunięto playlistę %1$s</string>
+    <string name="delete_playlist">Usunięto playlistę</string>
+    <string name="playlist_could_not_remove">Nie można było usunąć playlisty %1$s</string>
+    <string name="song_added_to_library">Piosenka %1$s została dodana do biblioteki</string>
+    <string name="song_added_to_library_error">Piosenka %1$s nie mogła zostać dodana do biblioteki</string>
+    <string name="song_removed_from_library">Piosenka %1$s została usunięta z biblioteki</string>
+    <string name="song_removed_from_library_error">Piosenka %1$s nie mogła zostać usunięta z biblioteki</string>
+    <string name="are_you_sure_remove_from_list">Jesteś pewien, że chcesz usunąć %1$s z playlisty %2$s ?</string>
+    <string name="song_removed_from_list">%1$s usunięto z playlisty %2$s</string>
+    <string name="song_removed_from_list_error">%1$s nie można było usunąć z playlisty %2$s</string>
+    <string name="spotify_player_panic">Błąd odtwarzacza Spotify, coś musi być nie tak (internet/konfiguracja?)</string>
+    <string name="grant_storage_permission">Udziel uprawnień dostępu do pamięci masowej</string>
+    <string name="permission_already_granted">Uprawnienia już udzielone</string>
+    <string name="permission_granted">Uprawnienia udzielone!</string>
+    <string name="collaborative">Współpraca</string>
+    <string name="player_not_ready">%1$s odtwarzacz nie jest gotowy</string>
+    <string name="welcome_to_blade">Witamy w Blade Player!</string>
+    <string name="welcome_message">Wygląda na to, że nie skonfigurowałeś żadnych \'źródeł\' muzyki. Proszę, wejdź w ustawienia (ikona w prawym górnym rogu), \'Źródła\', dodaj źródło używając przycisku + i kliknij na nie, aby je skonfigurować. Po zakończeniu, wróć, naciśnij ikonę \'synchronizacji\' obok ustawień i czekaj na synchronizację. Potem delektuj się swoją muzyką!</string>
+    <string name="dark_theme">Czarny motyw</string>
+    <string name="light_theme">Jasny motyw</string>
+    <string name="system_default">Motyw systemowy</string>
+    <string name="explore">Odkryj</string>
+    <string name="explore_sources">Odkryj źródła</string>
+    <string name="cant_search_here">Nie ma czego tutaj szukać</string>
+    <string name="could_not_search_for">Nie udało się szukać %1$s</string>
+    <string name="could_not_browse_album">Nie można przeglądać albumu %1$s</string>
+    <string name="could_not_browse_artist">Nie można przeglądać artysty %1$s</string>
+    <string name="could_not_show_explore">Nie można wyświetlić zakładki Odkryj</string>
+    <string name="could_not_browse_playlist">Nie można przeglądać playlisty %1$s</string>
+    <string name="selection_too_big">Zaznaczenie jest za duże</string>
+    <string name="lyrics">Tekst</string>
+    <string name="audio_quality">Jakość dźwięku</string>
+    <string name="quality_normal">Normalna</string>
+    <string name="quality_high">Wysoka</string>
+    <string name="quality_very_high">Bardzo wysoka</string>
+    <string name="preference_show_album_artist_only">Pokaż tylko twórców albumu</string>
+    <string name="preference_show_album_artist_only_summary">Ukrywaj artystów, którzy nie są twórcami albumów w bibliotece</string>
+</resources>
